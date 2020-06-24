@@ -425,7 +425,9 @@ void USpatialNetDriver::CreateAndInitializeLoadBalancingClasses()
 	// Check for CLI overriden multiworker settings
 
 	const ASpatialWorldSettings* WorldSettings = GetWorld() ? Cast<ASpatialWorldSettings>(GetWorld()->GetWorldSettings()) : nullptr;
-	const USpatialMultiWorkerSettings* MultiWorkerSettings = WorldSettings != nullptr ? WorldSettings->MultiWorkerSettings->GetDefaultObject<USpatialMultiWorkerSettings>() : nullptr;
+	const USpatialMultiWorkerSettings* MultiWorkerSettings = WorldSettings != nullptr && * WorldSettings->MultiWorkerSettings != nullptr ?
+		WorldSettings->MultiWorkerSettings->GetDefaultObject<USpatialMultiWorkerSettings>() :
+		nullptr;
 
 	if (IsServer())
 	{
