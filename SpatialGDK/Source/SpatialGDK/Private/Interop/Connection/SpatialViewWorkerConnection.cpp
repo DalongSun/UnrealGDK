@@ -41,7 +41,6 @@ void USpatialViewWorkerConnection::DestroyConnection()
 TArray<SpatialGDK::OpList> USpatialViewWorkerConnection::GetOpList()
 {
 	check(Coordinator.IsValid());
-	Coordinator->FlushMessagesToSend();
 	TArray<SpatialGDK::OpList> OpLists;
 	OpLists.Add(Coordinator->Advance());
 	return OpLists;

@@ -1758,11 +1758,10 @@ void USpatialNetDriver::TickFlush(float DeltaTime)
 
 	PollPendingLoads();
 
+#if WITH_SERVER_CODE
 	if (IsServer() && GetSpatialOSNetConnection() != nullptr && bIsReadyToStart)
 	{
 		// Update all clients.
-#if WITH_SERVER_CODE
-
 		int32 Updated = ServerReplicateActors(DeltaTime);
 
 		static int32 LastUpdateCount = 0;
@@ -1782,13 +1781,8 @@ void USpatialNetDriver::TickFlush(float DeltaTime)
 				Sender->ProcessPositionUpdates();
 			}
 		}
-
-		if (Connection != nullptr)
-		{
-			Connection->MaybeFlush();
-		}
-#endif // WITH_SERVER_CODE
 	}
+#endif // WITH_SERVER_CODE
 
 	if (SpatialGDKSettings->UseRPCRingBuffer() && Sender != nullptr)
 	{
@@ -1799,12 +1793,9 @@ void USpatialNetDriver::TickFlush(float DeltaTime)
 
 	TimerManager.Tick(DeltaTime);
 
-	if (SpatialGDKSettings->bRunSpatialWorkerConnectionOnGameThread)
+	if (Connection != nullptr)
 	{
-		if (Connection != nullptr)
-		{
-			Connection->ProcessOutgoingMessages();
-		}
+		Connection->Flush();
 	}
 
 	// Super::TickFlush() will not call ReplicateActors() because Spatial connections have InternalAck set to true.
