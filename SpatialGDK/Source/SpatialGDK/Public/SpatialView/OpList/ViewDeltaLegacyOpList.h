@@ -19,4 +19,5 @@ struct ViewDeltaLegacyOpListData: OpListData
 
 /** Creates an OpList from a ViewDelta. */
 OpList GetOpListFromViewDelta(ViewDelta Delta);
+
 }  // namespace SpatialGDK

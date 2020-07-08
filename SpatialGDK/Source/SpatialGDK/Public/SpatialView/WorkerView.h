@@ -39,11 +39,12 @@ public:
 	void SendLogMessage(LogMessage Log);
 
 private:
+	EntityView View;
+
 	TArray<OpList> QueuedOps;
 	TArray<OpList> OpenCriticalSectionOps;
 
 	TUniquePtr<MessagesToSend> LocalChanges;
-	TSet<EntityComponentId> AddedComponents;
 };
 
 }  // namespace SpatialGDK
