@@ -64,5 +64,5 @@ pushd "$(dirname "$0")"
             -OverrideSpatialNetworking="${RUN_WITH_SPATIAL}"
     popd
 
-    # TODO: UNR-3167 - report tests
+    ./report_tests.sh "${LOG_FILE_PATH}" MacNoEditor
 popd
