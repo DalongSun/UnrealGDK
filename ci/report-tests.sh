@@ -32,8 +32,8 @@ pushd "$(dirname "$0")"
         sed 's?/bower_components/dustjs-linkedin/dist/dust-full.min.js?https://cdnjs.cloudflare.com/ajax/libs/dustjs-linkedin/2.7.5/dust-full.min.js?g'                     "${TEST_RESULTS_FILE}"
         sed 's?/bower_components/numeral/min/numeral.min.js?https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.4/numeral.min.js?g'                                       "${TEST_RESULTS_FILE}"
 
-        "Test results in a nicer format can be found <a href='artifact://$formatted_test_result_dir\index.html'>here</a>."| buildkite-agent annotate 
-            --context "unreal-gdk-test-artifact-location"  `
+        "Test results in a nicer format can be found <a href='artifact://${TEST_RESULTS_FILE}'>here</a>."| buildkite-agent annotate
+            --context "unreal-gdk-test-artifact-location"
             --style info
 
     else
