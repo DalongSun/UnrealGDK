@@ -41,14 +41,13 @@ pushd "$(dirname "$0")"
         exit 1
     fi
 
-    # Upload artifacts to Buildkite, capture output to extract artifact ID in the Slack message generation
-    buildkite-agent artifact upload "${TEST_RESULTS_DIRECTORY}/*" > bk_log.tmp
-    UPLOAD_OUTPUT=$(cat bk_log.tmp)
-    if [ $? -ne 0 ]; then
+    # Upload artifacts to Buildkite, capture output to extract artifact ID in the Slack message generation.
+    if buildkite-agent artifact upload "${TEST_RESULTS_DIRECTORY}/*" > bk_log.tmp; then
         echo "Failed to upload artifact."
         exit 1
     fi
 
+    UPLOAD_OUTPUT=$(cat bk_log.tmp)
     echo "${UPLOAD_OUTPUT}"
     # Artifacts are assigned an ID upon upload, so grab IDs from upload process output to build the artifact URLs
     # The output log is: "Uploading artifact <artifact id> <upload path>". We are interested in the artifact id
