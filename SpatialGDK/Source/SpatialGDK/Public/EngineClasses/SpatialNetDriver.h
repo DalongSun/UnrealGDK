@@ -44,9 +44,9 @@ class USpatialWorkerFlags;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSpatialOSNetDriver, Log, All);
 
-DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Consider List Size"), STAT_SpatialConsiderList, STATGROUP_SpatialNet,);
-DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Num Relevant Actors"), STAT_SpatialActorsRelevant, STATGROUP_SpatialNet,);
-DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Num Changed Relevant Actors"), STAT_SpatialActorsChanged, STATGROUP_SpatialNet,);
+DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Consider List Size"), STAT_SpatialConsiderList, STATGROUP_SpatialNet, );
+DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Num Relevant Actors"), STAT_SpatialActorsRelevant, STATGROUP_SpatialNet, );
+DECLARE_DWORD_ACCUMULATOR_STAT_EXTERN(TEXT("Num Changed Relevant Actors"), STAT_SpatialActorsChanged, STATGROUP_SpatialNet, );
 
 UCLASS()
 class SPATIALGDK_API USpatialNetDriver : public UIpNetDriver
@@ -54,7 +54,6 @@ class SPATIALGDK_API USpatialNetDriver : public UIpNetDriver
 	GENERATED_BODY()
 
 public:
-
 	USpatialNetDriver(const FObjectInitializer& ObjectInitializer);
 
 	// Begin UObject Interface
@@ -70,7 +69,8 @@ public:
 	virtual bool InitBase(bool bInitAsClient, FNetworkNotify* InNotify, const FURL& URL, bool bReuseAddressAndPort, FString& Error) override;
 	virtual int32 ServerReplicateActors(float DeltaSeconds) override;
 	virtual void TickDispatch(float DeltaTime) override;
-	virtual void ProcessRemoteFunction(class AActor* Actor, class UFunction* Function, void* Parameters, struct FOutParmRec* OutParms, struct FFrame* NotStack, class UObject* SubObject = NULL ) override;
+	virtual void ProcessRemoteFunction(
+		class AActor* Actor, class UFunction* Function, void* Parameters, struct FOutParmRec* OutParms, struct FFrame* NotStack, class UObject* SubObject = NULL) override;
 	virtual void TickFlush(float DeltaTime) override;
 	virtual bool IsLevelInitializedForActor(const AActor* InActor, const UNetConnection* InConnection) const override;
 	virtual void NotifyActorDestroyed(AActor* Actor, bool IsSeamlessTravel = false) override;
@@ -165,12 +165,24 @@ public:
 	TUniquePtr<SpatialVirtualWorkerTranslationManager> VirtualWorkerTranslationManager;
 	void InitializeVirtualWorkerTranslationManager();
 
-	bool IsAuthoritativeDestructionAllowed() const { return bAuthoritativeDestruction; }
-	void StartIgnoringAuthoritativeDestruction() { bAuthoritativeDestruction = false; }
-	void StopIgnoringAuthoritativeDestruction() { bAuthoritativeDestruction = true; }
+	bool IsAuthoritativeDestructionAllowed() const
+	{
+		return bAuthoritativeDestruction;
+	}
+	void StartIgnoringAuthoritativeDestruction()
+	{
+		bAuthoritativeDestruction = false;
+	}
+	void StopIgnoringAuthoritativeDestruction()
+	{
+		bAuthoritativeDestruction = true;
+	}
 
 #if !UE_BUILD_SHIPPING
-	int32 GetConsiderListSize() const { return ConsiderListSize; }
+	int32 GetConsiderListSize() const
+	{
+		return ConsiderListSize;
+	}
 #endif
 
 	void DelayedRetireEntity(Worker_EntityId EntityId, float Delay, bool bIsNetStartupActor);
@@ -187,7 +199,6 @@ public:
 	bool IsReady() const;
 
 private:
-
 	TUniquePtr<SpatialDispatcher> Dispatcher;
 	TUniquePtr<SpatialSnapshotManager> SnapshotManager;
 	TUniquePtr<FSpatialOutputDevice> SpatialOutputDevice;
@@ -248,8 +259,14 @@ private:
 	// SpatialGDK: These functions all exist in UNetDriver, but we need to modify/simplify them in certain ways.
 	// Could have marked them virtual in base class but that's a pointless source change as these functions are not meant to be called from anywhere except USpatialNetDriver::ServerReplicateActors.
 	int32 ServerReplicateActors_PrepConnections(const float DeltaSeconds);
-	int32 ServerReplicateActors_PrioritizeActors(UNetConnection* Connection, const TArray<FNetViewer>& ConnectionViewers, const TArray<FNetworkObjectInfo*> ConsiderList, const bool bCPUSaturated, FActorPriority*& OutPriorityList, FActorPriority**& OutPriorityActors);
-	void ServerReplicateActors_ProcessPrioritizedActors(UNetConnection* Connection, const TArray<FNetViewer>& ConnectionViewers, FActorPriority** PriorityActors, const int32 FinalSortedCount, int32& OutUpdated);
+	int32 ServerReplicateActors_PrioritizeActors(UNetConnection* Connection,
+												 const TArray<FNetViewer>& ConnectionViewers,
+												 const TArray<FNetworkObjectInfo*> ConsiderList,
+												 const bool bCPUSaturated,
+												 FActorPriority*& OutPriorityList,
+												 FActorPriority**& OutPriorityActors);
+	void ServerReplicateActors_ProcessPrioritizedActors(
+		UNetConnection* Connection, const TArray<FNetViewer>& ConnectionViewers, FActorPriority** PriorityActors, const int32 FinalSortedCount, int32& OutUpdated);
 #endif
 
 	void ProcessRPC(AActor* Actor, UObject* SubObject, UFunction* Function, void* Parameters);

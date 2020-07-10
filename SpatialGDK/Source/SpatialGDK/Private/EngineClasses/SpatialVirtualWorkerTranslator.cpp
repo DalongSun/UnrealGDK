@@ -7,8 +7,7 @@
 
 DEFINE_LOG_CATEGORY(LogSpatialVirtualWorkerTranslator);
 
-SpatialVirtualWorkerTranslator::SpatialVirtualWorkerTranslator(UAbstractLBStrategy* InLoadBalanceStrategy,
-	PhysicalWorkerName InPhysicalWorkerName)
+SpatialVirtualWorkerTranslator::SpatialVirtualWorkerTranslator(UAbstractLBStrategy* InLoadBalanceStrategy, PhysicalWorkerName InPhysicalWorkerName)
 	: LoadBalanceStrategy(InLoadBalanceStrategy)
 	, bIsReady(false)
 	, LocalPhysicalWorkerName(InPhysicalWorkerName)
@@ -37,9 +36,9 @@ Worker_EntityId SpatialVirtualWorkerTranslator::GetServerWorkerEntityForVirtualW
 
 void SpatialVirtualWorkerTranslator::ApplyVirtualWorkerManagerData(Schema_Object* ComponentObject)
 {
-    UE_LOG(LogSpatialVirtualWorkerTranslator, Log, TEXT("(%d) ApplyVirtualWorkerManagerData"), LocalVirtualWorkerId);
+	UE_LOG(LogSpatialVirtualWorkerTranslator, Log, TEXT("(%d) ApplyVirtualWorkerManagerData"), LocalVirtualWorkerId);
 
-	// The translation schema is a list of Mappings, where each entry has a virtual and physical worker ID. 
+	// The translation schema is a list of Mappings, where each entry has a virtual and physical worker ID.
 	ApplyMappingFromSchema(ComponentObject);
 
 	for (const auto& Entry : VirtualToPhysicalWorkerMapping)

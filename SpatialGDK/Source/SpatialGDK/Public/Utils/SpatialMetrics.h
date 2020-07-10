@@ -29,8 +29,14 @@ public:
 
 	double CalculateLoad() const;
 
-	double GetAverageFPS() const { return AverageFPS; }
-	double GetWorkerLoad() const { return WorkerLoad; }
+	double GetAverageFPS() const
+	{
+		return AverageFPS;
+	}
+	double GetWorkerLoad() const
+	{
+		return WorkerLoad;
+	}
 
 	UFUNCTION(Exec)
 	void SpatialStartRPCMetrics();
@@ -57,11 +63,14 @@ public:
 	DECLARE_DELEGATE_RetVal(FUnrealObjectRef, FControllerRefProviderDelegate);
 	FControllerRefProviderDelegate ControllerRefProvider;
 
-	void SetWorkerLoadDelegate(const UserSuppliedMetric& Delegate) { WorkerLoadDelegate = Delegate; }
+	void SetWorkerLoadDelegate(const UserSuppliedMetric& Delegate)
+	{
+		WorkerLoadDelegate = Delegate;
+	}
 	void SetCustomMetric(const FString& Metric, const UserSuppliedMetric& Delegate);
 	void RemoveCustomMetric(const FString& Metric);
-private:
 
+private:
 	UPROPERTY()
 	USpatialWorkerConnection* Connection;
 
@@ -94,4 +103,3 @@ private:
 	bool bRPCTrackingEnabled;
 	float RPCTrackingStartTime;
 };
-

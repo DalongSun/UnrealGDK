@@ -16,7 +16,6 @@
 
 namespace SpatialGDK
 {
-
 struct ComponentPresence : Component
 {
 	static const Worker_ComponentId ComponentId = SpatialConstants::COMPONENT_PRESENCE_COMPONENT_ID;
@@ -24,7 +23,8 @@ struct ComponentPresence : Component
 	ComponentPresence() = default;
 
 	ComponentPresence(TArray<Worker_ComponentId>&& InComponentList)
-		: ComponentList(MoveTemp(InComponentList)) {}
+		: ComponentList(MoveTemp(InComponentList))
+	{}
 
 	ComponentPresence(const Worker_ComponentData& Data)
 	{
@@ -108,8 +108,7 @@ struct ComponentPresence : Component
 
 	void RemoveComponentIds(const TArray<Worker_ComponentId>& ComponentsToRemove)
 	{
-		ComponentList.RemoveAll([&](Worker_ComponentId PresentComponent)
-		{
+		ComponentList.RemoveAll([&](Worker_ComponentId PresentComponent) {
 			return ComponentsToRemove.Contains(PresentComponent);
 		});
 	}

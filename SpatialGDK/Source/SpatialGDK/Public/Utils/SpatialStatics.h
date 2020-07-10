@@ -20,21 +20,20 @@ DECLARE_LOG_CATEGORY_EXTERN(LogSpatial, Log, All);
 UCLASS()
 class SPATIALGDK_API USpatialStatics : public UBlueprintFunctionLibrary
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-
 	/**
 	 * Returns true if SpatialOS Networking is enabled.
 	 */
 	UFUNCTION(BlueprintPure, Category = "SpatialOS")
 	static bool IsSpatialNetworkingEnabled();
 
-    /**
-    * Returns true if there is more than one worker layer in the SpatialWorldSettings and IsMultiWorkerEnabled.
-    */
-    UFUNCTION(BlueprintPure, Category = "SpatialOS|Offloading")
-    static bool IsSpatialOffloadingEnabled(const UWorld* World);
+	/**
+	 * Returns true if there is more than one worker layer in the SpatialWorldSettings and IsMultiWorkerEnabled.
+	 */
+	UFUNCTION(BlueprintPure, Category = "SpatialOS|Offloading")
+	static bool IsSpatialOffloadingEnabled(const UWorld* World);
 
 	/**
 	 * Returns true if the current Worker Type owns the Actor Group this Actor belongs to.
@@ -53,14 +52,20 @@ public:
 	/**
 	 * Functionally the same as the native Unreal PrintString but also logs to the spatial runtime.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext, Keywords = "log print spatial", AdvancedDisplay = "2", DevelopmentOnly), Category = "Utilities|String")
-	static void PrintStringSpatial(UObject* WorldContextObject, const FString& InString = FString(TEXT("Hello")), bool bPrintToScreen = true, FLinearColor TextColor = FLinearColor(0.0, 0.66, 1.0), float Duration = 2.f);
+	UFUNCTION(BlueprintCallable,
+			  meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext, Keywords = "log print spatial", AdvancedDisplay = "2", DevelopmentOnly),
+			  Category = "Utilities|String")
+	static void PrintStringSpatial(
+		UObject* WorldContextObject, const FString& InString = FString(TEXT("Hello")), bool bPrintToScreen = true, FLinearColor TextColor = FLinearColor(0.0, 0.66, 1.0), float Duration = 2.f);
 
 	/**
 	 * Functionally the same as the native Unreal PrintText but also logs to the spatial runtime.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext, Keywords = "log spatial", AdvancedDisplay = "2", DevelopmentOnly), Category = "Utilities|Text")
-	static void PrintTextSpatial(UObject* WorldContextObject, const FText InText = INVTEXT("Hello"), bool bPrintToScreen = true, FLinearColor TextColor = FLinearColor(0.0, 0.66, 1.0), float Duration = 2.f);
+	UFUNCTION(BlueprintCallable,
+			  meta = (WorldContext = "WorldContextObject", CallableWithoutWorldContext, Keywords = "log spatial", AdvancedDisplay = "2", DevelopmentOnly),
+			  Category = "Utilities|Text")
+	static void PrintTextSpatial(
+		UObject* WorldContextObject, const FText InText = INVTEXT("Hello"), bool bPrintToScreen = true, FLinearColor TextColor = FLinearColor(0.0, 0.66, 1.0), float Duration = 2.f);
 
 	/**
 	 * Returns true if worker flag with the given name was found.
@@ -106,8 +111,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpatialOS")
 	static FString GetActorEntityIdAsString(const AActor* Actor);
 
-
 private:
-
 	static FName GetCurrentWorkerType(const UObject* WorldContext);
 };

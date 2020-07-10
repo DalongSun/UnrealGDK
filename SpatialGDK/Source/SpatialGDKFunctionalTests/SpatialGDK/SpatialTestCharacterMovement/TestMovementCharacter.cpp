@@ -1,11 +1,10 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
-
 #include "TestMovementCharacter.h"
-#include "Engine/Classes/Camera/CameraComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Materials/Material.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/Classes/Camera/CameraComponent.h"
+#include "Materials/Material.h"
 
 ATestMovementCharacter::ATestMovementCharacter()
 {

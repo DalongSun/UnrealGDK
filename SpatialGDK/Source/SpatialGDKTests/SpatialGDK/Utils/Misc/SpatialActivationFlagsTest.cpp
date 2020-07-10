@@ -2,17 +2,17 @@
 
 #include "CoreMinimal.h"
 
-#include "Tests/TestDefinitions.h"
-#include "Tests/AutomationCommon.h"
 #include "Runtime/EngineSettings/Public/EngineSettings.h"
+#include "Tests/AutomationCommon.h"
+#include "Tests/TestDefinitions.h"
 
 namespace
 {
-	bool bEarliestFlag;
+bool bEarliestFlag;
 
-	const FString EarliestFlagReport = TEXT("Spatial activation Flag [Earliest]:");
-	const FString CurrentFlagReport = TEXT("Spatial activation Flag [Current]:");
-}
+const FString EarliestFlagReport = TEXT("Spatial activation Flag [Earliest]:");
+const FString CurrentFlagReport = TEXT("Spatial activation Flag [Current]:");
+} // namespace
 
 void InitializeSpatialFlagEarlyValues()
 {
@@ -31,37 +31,36 @@ GDK_SLOW_TEST(Core, UGeneralProjectSettings, SpatialActivationReport)
 
 namespace
 {
-	struct ReportedFlags
-	{
-		bool bEarliestFlag;
-		bool bCurrentFlag;
+struct ReportedFlags
+{
+	bool bEarliestFlag;
+	bool bCurrentFlag;
+};
+
+ReportedFlags RunSubProcessAndExtractFlags(FAutomationTestBase& Test, const FString& CommandLineArgs)
+{
+	ReportedFlags Flags;
+
+	int32 ReturnCode = 1;
+	FString StdOut;
+	FString StdErr;
+
+	FPlatformProcess::ExecProcess(TEXT("UE4Editor"), *CommandLineArgs, &ReturnCode, &StdOut, &StdErr);
+
+	Test.TestTrue("Successful run", ReturnCode == 0);
+
+	auto ExtractFlag = [&](const FString& Pattern, bool& bFlag) {
+		int32 PatternPos = StdOut.Find(Pattern);
+		Test.TestTrue(*(TEXT("Found pattern : ") + Pattern), PatternPos >= 0);
+		bFlag = FCString::Atoi(&StdOut[PatternPos + Pattern.Len() + 1]) != 0;
 	};
 
-	ReportedFlags RunSubProcessAndExtractFlags(FAutomationTestBase& Test, const FString& CommandLineArgs)
-	{
-		ReportedFlags Flags;
+	ExtractFlag(EarliestFlagReport, Flags.bEarliestFlag);
+	ExtractFlag(CurrentFlagReport, Flags.bCurrentFlag);
 
-		int32 ReturnCode = 1;
-		FString StdOut;
-		FString StdErr;
-
-		FPlatformProcess::ExecProcess(TEXT("UE4Editor"), *CommandLineArgs, &ReturnCode, &StdOut, &StdErr);
-
-		Test.TestTrue("Successful run", ReturnCode == 0);
-
-		auto ExtractFlag = [&](const FString& Pattern, bool& bFlag)
-		{
-			int32 PatternPos = StdOut.Find(Pattern);
-			Test.TestTrue(*(TEXT("Found pattern : ") + Pattern),  PatternPos >= 0);
-			bFlag = FCString::Atoi(&StdOut[PatternPos + Pattern.Len() + 1]) != 0;
-		};
-
-		ExtractFlag(EarliestFlagReport, Flags.bEarliestFlag);
-		ExtractFlag(CurrentFlagReport, Flags.bCurrentFlag);
-
-		return Flags;
-	}
+	return Flags;
 }
+} // namespace
 
 struct SpatialActivationFlagTestFixture
 {
@@ -115,7 +114,9 @@ bool FRunSubProcessCommand::Update()
 {
 	if (!Fixture->CheckResult.IsValid())
 	{
-		Fixture->CheckResult = Async(EAsyncExecution::Thread, TFunction<ReportedFlags()>([&] {return RunSubProcessAndExtractFlags(*Test, Fixture->CommandLineArgs); }));
+		Fixture->CheckResult = Async(EAsyncExecution::Thread, TFunction<ReportedFlags()>([&] {
+										 return RunSubProcessAndExtractFlags(*Test, Fixture->CommandLineArgs);
+									 }));
 	}
 
 	if (!Fixture->CheckResult.IsReady())
@@ -129,7 +130,6 @@ bool FRunSubProcessCommand::Update()
 
 	return true;
 }
-
 
 GDK_SLOW_TEST(Core, UGeneralProjectSettings, SpatialActivationSetting_False)
 {

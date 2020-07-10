@@ -14,18 +14,18 @@
 #include "Settings/LevelEditorPlaySettings.h"
 #endif
 
-#include "EngineStats.h"
 #include "EngineClasses/SpatialNetConnection.h"
 #include "EngineClasses/SpatialNetDriver.h"
 #include "EngineClasses/SpatialPackageMapClient.h"
+#include "EngineStats.h"
 #include "Interop/GlobalStateManager.h"
 #include "Interop/SpatialReceiver.h"
 #include "Interop/SpatialSender.h"
 #include "LoadBalancing/AbstractLBStrategy.h"
 #include "Schema/ClientRPCEndpointLegacy.h"
 #include "Schema/NetOwningClientWorker.h"
-#include "Schema/SpatialDebugging.h"
 #include "Schema/ServerRPCEndpointLegacy.h"
+#include "Schema/SpatialDebugging.h"
 #include "SpatialConstants.h"
 #include "SpatialGDKSettings.h"
 #include "Utils/RepLayoutUtils.h"
@@ -62,7 +62,7 @@ void UpdateChangelistHistory(TUniquePtr<FRepState>& RepState)
 	{
 		const int32 HistoryIndex = i % MaxSendingChangeHistory;
 
-		FRepChangedHistory & HistoryItem = SendingRepState->ChangeHistory[HistoryIndex];
+		FRepChangedHistory& HistoryItem = SendingRepState->ChangeHistory[HistoryIndex];
 
 		// All active history items should contain a change list
 		check(HistoryItem.Changed.Num() > 0);
@@ -160,7 +160,7 @@ void FSpatialObjectRepState::UpdateRefToRepStateMap(FObjectToRepStateMap& RepSta
 	// Inspired by FObjectReplicator::UpdateGuidToReplicatorMap
 	UnresolvedRefs.Empty();
 
-	TSet< FUnrealObjectRef > LocalReferencedObj;
+	TSet<FUnrealObjectRef> LocalReferencedObj;
 	for (auto& Entry : ReferenceMap)
 	{
 		GatherObjectRef(LocalReferencedObj, UnresolvedRefs, Entry.Value);
@@ -210,8 +210,7 @@ USpatialActorChannel::USpatialActorChannel(const FObjectInitializer& ObjectIniti
 	, NetDriver(nullptr)
 	, LastPositionSinceUpdate(FVector::ZeroVector)
 	, TimeWhenPositionLastUpdated(0.0f)
-{
-}
+{}
 
 void USpatialActorChannel::Init(UNetConnection* InConnection, int32 ChannelIndex, EChannelCreateFlags CreateFlag)
 {
@@ -279,7 +278,8 @@ void USpatialActorChannel::RetireEntityIfAuthoritative()
 		else if (bCreatedEntity) // We have not gained authority yet
 		{
 			Actor->SetReplicates(false);
-			Receiver->RetireWhenAuthoritive(EntityId, NetDriver->ClassInfoManager->GetComponentIdForClass(*Actor->GetClass()), Actor->IsNetStartupActor(), Actor->GetTearOff()); // Ensure we don't recreate the actor
+			Receiver->RetireWhenAuthoritive(
+				EntityId, NetDriver->ClassInfoManager->GetComponentIdForClass(*Actor->GetClass()), Actor->IsNetStartupActor(), Actor->GetTearOff()); // Ensure we don't recreate the actor
 		}
 	}
 	else
@@ -296,10 +296,7 @@ bool USpatialActorChannel::CleanUp(const bool bForDestroy, EChannelCloseReason C
 #if WITH_EDITOR
 		const bool bDeleteDynamicEntities = GetDefault<ULevelEditorPlaySettings>()->GetDeleteDynamicEntities();
 
-		if (bDeleteDynamicEntities &&
-			NetDriver->IsServer() &&
-			NetDriver->GetActorChannelByEntityId(EntityId) != nullptr &&
-			CloseReason != EChannelCloseReason::Dormancy)
+		if (bDeleteDynamicEntities && NetDriver->IsServer() && NetDriver->GetActorChannelByEntityId(EntityId) != nullptr && CloseReason != EChannelCloseReason::Dormancy)
 		{
 			// If we're a server worker, and the entity hasn't already been cleaned up, delete it on shutdown.
 			RetireEntityIfAuthoritative();
@@ -323,7 +320,6 @@ bool USpatialActorChannel::CleanUp(const bool bForDestroy, EChannelCloseReason C
 		}
 		NetDriver->RemoveActorChannel(EntityId, *this);
 	}
-
 
 	return UActorChannel::CleanUp(bForDestroy, CloseReason);
 }
@@ -568,7 +564,7 @@ int64 USpatialActorChannel::ReplicateActor()
 
 	UE_LOG(LogNetTraffic, Log, TEXT("Replicate %s, bNetInitial: %d, bNetOwner: %d"), *Actor->GetName(), RepFlags.bNetInitial, RepFlags.bNetOwner);
 
-	FMemMark MemMark(FMemStack::Get());	// The calls to ReplicateProperties will allocate memory on FMemStack::Get(), and use it in ::PostSendBunch. we free it below
+	FMemMark MemMark(FMemStack::Get()); // The calls to ReplicateProperties will allocate memory on FMemStack::Get(), and use it in ::PostSendBunch. we free it below
 
 	// ----------------------------------------------------------
 	// Replicate Actor and Component properties and RPCs
@@ -596,7 +592,8 @@ int64 USpatialActorChannel::ReplicateActor()
 	// Update the replicated property change list.
 	FRepChangelistState* ChangelistState = ActorReplicator->ChangelistMgr->GetRepChangelistState();
 
-	ActorReplicator->RepLayout->UpdateChangelistMgr(ActorReplicator->RepState->GetSendingRepState(), *ActorReplicator->ChangelistMgr, Actor, Connection->Driver->ReplicationFrame, RepFlags, bForceCompareProperties);
+	ActorReplicator->RepLayout->UpdateChangelistMgr(
+		ActorReplicator->RepState->GetSendingRepState(), *ActorReplicator->ChangelistMgr, Actor, Connection->Driver->ReplicationFrame, RepFlags, bForceCompareProperties);
 	FSendingRepState* SendingRepState = ActorReplicator->RepState->GetSendingRepState();
 
 	const int32 PossibleNewHistoryIndex = SendingRepState->HistoryEnd % MaxSendingChangeHistory;
@@ -745,8 +742,7 @@ int64 USpatialActorChannel::ReplicateActor()
 
 	// TODO: the 'bWroteSomethingImportant' check causes problems for actors that need to transition in groups (ex. Character, PlayerController, PlayerState),
 	// so disabling it for now.  Figure out a way to deal with this to recover the perf lost by calling ShouldChangeAuthority() frequently. [UNR-2387]
-	if (NetDriver->LoadBalanceStrategy != nullptr &&
-		NetDriver->StaticComponentView->HasAuthority(EntityId, SpatialConstants::AUTHORITY_INTENT_COMPONENT_ID))
+	if (NetDriver->LoadBalanceStrategy != nullptr && NetDriver->StaticComponentView->HasAuthority(EntityId, SpatialConstants::AUTHORITY_INTENT_COMPONENT_ID))
 	{
 		if (!NetDriver->LoadBalanceStrategy->ShouldHaveAuthority(*Actor) && !NetDriver->LockingPolicy->IsLocked(Actor))
 		{
@@ -812,7 +808,7 @@ int64 USpatialActorChannel::ReplicateActor()
 
 	bIsReplicatingActor = false;
 
-	bForceCompareProperties = false;		// Only do this once per frame when set
+	bForceCompareProperties = false; // Only do this once per frame when set
 
 	if (ReplicationBytesWritten > 0)
 	{
@@ -920,7 +916,8 @@ bool USpatialActorChannel::ReplicateSubobject(UObject* Object, const FReplicatio
 
 	FRepChangelistState* ChangelistState = Replicator.ChangelistMgr->GetRepChangelistState();
 
-	Replicator.RepLayout->UpdateChangelistMgr(Replicator.RepState->GetSendingRepState(), *Replicator.ChangelistMgr, Object, Replicator.Connection->Driver->ReplicationFrame, RepFlags, bForceCompareProperties);
+	Replicator.RepLayout->UpdateChangelistMgr(
+		Replicator.RepState->GetSendingRepState(), *Replicator.ChangelistMgr, Object, Replicator.Connection->Driver->ReplicationFrame, RepFlags, bForceCompareProperties);
 	FSendingRepState* SendingRepState = Replicator.RepState->GetSendingRepState();
 
 	const int32 PossibleNewHistoryIndex = SendingRepState->HistoryEnd % MaxSendingChangeHistory;
@@ -1020,7 +1017,6 @@ TMap<UObject*, const FClassInfo*> USpatialActorChannel::GetHandoverSubobjects()
 		{
 			Object = NetDriver->PackageMap->GetObjectFromUnrealObjectRef(FUnrealObjectRef(EntityId, SubobjectInfoPair.Key)).Get();
 		}
-
 
 		if (Object == nullptr)
 		{
@@ -1192,19 +1188,37 @@ void USpatialActorChannel::OnCreateEntityResponse(const Worker_CreateEntityRespo
 	switch (static_cast<Worker_StatusCode>(Op.status_code))
 	{
 	case WORKER_STATUS_CODE_SUCCESS:
-		UE_LOG(LogSpatialActorChannel, Verbose, TEXT("Create entity request succeeded. "
-			"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+		UE_LOG(LogSpatialActorChannel,
+			   Verbose,
+			   TEXT("Create entity request succeeded. "
+					"Actor %s, request id: %d, entity id: %lld, message: %s"),
+			   *Actor->GetName(),
+			   Op.request_id,
+			   Op.entity_id,
+			   UTF8_TO_TCHAR(Op.message));
 		break;
 	case WORKER_STATUS_CODE_TIMEOUT:
 		if (bEntityIsInView)
 		{
-			UE_LOG(LogSpatialActorChannel, Log, TEXT("Create entity request failed but the entity was already in view. "
-				"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+			UE_LOG(LogSpatialActorChannel,
+				   Log,
+				   TEXT("Create entity request failed but the entity was already in view. "
+						"Actor %s, request id: %d, entity id: %lld, message: %s"),
+				   *Actor->GetName(),
+				   Op.request_id,
+				   Op.entity_id,
+				   UTF8_TO_TCHAR(Op.message));
 		}
 		else
 		{
-			UE_LOG(LogSpatialActorChannel, Warning, TEXT("Create entity request timed out. Retrying. "
-				"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+			UE_LOG(LogSpatialActorChannel,
+				   Warning,
+				   TEXT("Create entity request timed out. Retrying. "
+						"Actor %s, request id: %d, entity id: %lld, message: %s"),
+				   *Actor->GetName(),
+				   Op.request_id,
+				   Op.entity_id,
+				   UTF8_TO_TCHAR(Op.message));
 
 			// TODO: UNR-664 - Track these bytes written to use in saturation.
 			uint32 BytesWritten = 0;
@@ -1214,19 +1228,37 @@ void USpatialActorChannel::OnCreateEntityResponse(const Worker_CreateEntityRespo
 	case WORKER_STATUS_CODE_APPLICATION_ERROR:
 		if (bEntityIsInView)
 		{
-			UE_LOG(LogSpatialActorChannel, Log, TEXT("Create entity request failed as the entity already exists and is in view. "
-				"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+			UE_LOG(LogSpatialActorChannel,
+				   Log,
+				   TEXT("Create entity request failed as the entity already exists and is in view. "
+						"Actor %s, request id: %d, entity id: %lld, message: %s"),
+				   *Actor->GetName(),
+				   Op.request_id,
+				   Op.entity_id,
+				   UTF8_TO_TCHAR(Op.message));
 		}
 		else
 		{
-			UE_LOG(LogSpatialActorChannel, Warning, TEXT("Create entity request failed."
-				"Either the reservation expired, the entity already existed, or the entity was invalid. "
-				"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+			UE_LOG(LogSpatialActorChannel,
+				   Warning,
+				   TEXT("Create entity request failed."
+						"Either the reservation expired, the entity already existed, or the entity was invalid. "
+						"Actor %s, request id: %d, entity id: %lld, message: %s"),
+				   *Actor->GetName(),
+				   Op.request_id,
+				   Op.entity_id,
+				   UTF8_TO_TCHAR(Op.message));
 		}
 		break;
 	default:
-		UE_LOG(LogSpatialActorChannel, Error, TEXT("Create entity request failed. This likely indicates a bug in the Unreal GDK and should be reported."
-			"Actor %s, request id: %d, entity id: %lld, message: %s"), *Actor->GetName(), Op.request_id, Op.entity_id, UTF8_TO_TCHAR(Op.message));
+		UE_LOG(LogSpatialActorChannel,
+			   Error,
+			   TEXT("Create entity request failed. This likely indicates a bug in the Unreal GDK and should be reported."
+					"Actor %s, request id: %d, entity id: %lld, message: %s"),
+			   *Actor->GetName(),
+			   Op.request_id,
+			   Op.entity_id,
+			   UTF8_TO_TCHAR(Op.message));
 		break;
 	}
 }
@@ -1296,8 +1328,7 @@ void USpatialActorChannel::RemoveRepNotifiesWithUnresolvedObjs(TArray<UProperty*
 {
 	// Prevent rep notify callbacks from being issued when unresolved obj references exist inside UStructs.
 	// This prevents undefined behaviour when engine rep callbacks are issued where they don't expect unresolved objects in native flow.
-	RepNotifies.RemoveAll([&](UProperty* Property)
-	{
+	RepNotifies.RemoveAll([&](UProperty* Property) {
 		for (auto& ObjRef : RefMap)
 		{
 			// ParentIndex will be -1 for handover properties.

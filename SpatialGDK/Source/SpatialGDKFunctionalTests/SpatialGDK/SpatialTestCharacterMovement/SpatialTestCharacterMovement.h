@@ -11,8 +11,8 @@ UCLASS()
 class ASpatialTestCharacterMovement : public ASpatialFunctionalTest
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ASpatialTestCharacterMovement();
 
 	virtual void BeginPlay() override;

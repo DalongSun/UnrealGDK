@@ -2,24 +2,20 @@
 
 #pragma once
 
+#include "Containers/Array.h"
 #include "SpatialView/ConnectionHandlers/AbstractConnectionHandler.h"
 #include "SpatialView/OpList/AbstractOpList.h"
-#include "Containers/Array.h"
 
 namespace SpatialGDK
 {
-
 class QueuedOpListConnectionHandler : public AbstractConnectionHandler
 {
 public:
 	explicit QueuedOpListConnectionHandler(Worker_Connection* Connection)
-	: Connection(Connection)
-	{
-	}
+		: Connection(Connection)
+	{}
 
-	void Advance() override
-	{
-	}
+	void Advance() override {}
 
 	uint32 GetOpListCount() override
 	{
@@ -53,4 +49,4 @@ private:
 	TArray<TUniquePtr<AbstractOpList>> OpLists;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

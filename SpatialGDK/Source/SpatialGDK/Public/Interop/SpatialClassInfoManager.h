@@ -86,7 +86,6 @@ class SPATIALGDK_API USpatialClassInfoManager : public UObject
 	GENERATED_BODY()
 
 public:
-
 	bool TryInit(USpatialNetDriver* InNetDriver);
 
 	// Checks whether a class is supported and quits the game if not. This is to avoid crashing
@@ -107,7 +106,7 @@ public:
 
 	Worker_ComponentId GetComponentIdForClass(const UClass& Class) const;
 	TArray<Worker_ComponentId> GetComponentIdsForClassHierarchy(const UClass& BaseClass, const bool bIncludeDerivedTypes = true) const;
-	
+
 	const FRPCInfo& GetRPCInfo(UObject* Object, UFunction* Function);
 
 	Worker_ComponentId GetComponentIdFromLevelPath(const FString& LevelPath) const;

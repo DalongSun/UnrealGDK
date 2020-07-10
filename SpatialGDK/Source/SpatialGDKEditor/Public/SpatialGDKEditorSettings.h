@@ -68,8 +68,7 @@ struct FWorkerPermissionsSection
 		, bAllowEntityDeletion(true)
 		, bAllowEntityQuery(true)
 		, Components()
-	{
-	}
+	{}
 
 	/** Gives all permissions to a worker instance. */
 	UPROPERTY(Category = "SpatialGDK", EditAnywhere, config, meta = (DisplayName = "All"))
@@ -100,8 +99,7 @@ struct FLoginRateLimitSection
 	FLoginRateLimitSection()
 		: Duration()
 		, RequestsPerDuration(0)
-	{
-	}
+	{}
 
 	/** The duration for which worker connection requests will be limited. */
 	UPROPERTY(Category = "SpatialGDK", EditAnywhere, config)
@@ -122,8 +120,7 @@ struct FWorkerTypeLaunchSection
 		, bAutoNumEditorInstances(true)
 		, NumEditorInstances(1)
 		, bManualWorkerConnectionOnly(false)
-	{
-	}
+	{}
 
 	/** Worker type name, deprecated in favor of defining them in the runtime settings.*/
 	UPROPERTY(config)
@@ -188,38 +185,38 @@ struct FSpatialLaunchConfigDescription
 };
 
 /**
-* Enumerates available Region Codes
-*/
+ * Enumerates available Region Codes
+ */
 UENUM()
 namespace ERegionCode
 {
-	enum Type
-	{
-		US = 1,
-		EU,
-		AP,
-		CN UMETA(Hidden)
-	};
+enum Type
+{
+	US = 1,
+	EU,
+	AP,
+	CN UMETA(Hidden)
+};
 }
 
 UENUM()
 namespace ESpatialOSNetFlow
 {
-	enum Type
-	{
-		LocalDeployment,
-		CloudDeployment
-	};
+enum Type
+{
+	LocalDeployment,
+	CloudDeployment
+};
 }
 
 UENUM()
 namespace ESpatialOSRuntimeVariant
 {
-	enum Type
-	{
-		Standard,
-		CompatibilityMode
-	};
+enum Type
+{
+	Standard,
+	CompatibilityMode
+};
 }
 
 USTRUCT()
@@ -230,10 +227,12 @@ struct SPATIALGDKEDITOR_API FRuntimeVariantVersion
 
 	GENERATED_BODY()
 
-	FRuntimeVariantVersion() : PinnedVersion(SpatialGDKServicesConstants::SpatialOSRuntimePinnedStandardVersion)
+	FRuntimeVariantVersion()
+		: PinnedVersion(SpatialGDKServicesConstants::SpatialOSRuntimePinnedStandardVersion)
 	{}
 
-	FRuntimeVariantVersion(const FString& InPinnedVersion) : PinnedVersion(InPinnedVersion)
+	FRuntimeVariantVersion(const FString& InPinnedVersion)
+		: PinnedVersion(InPinnedVersion)
 	{}
 
 	/** Returns the Runtime version to use for cloud deployments, either the pinned one, or the user-specified one depending on the settings. */
@@ -242,14 +241,22 @@ struct SPATIALGDKEDITOR_API FRuntimeVariantVersion
 	/** Returns the Runtime version to use for local deployments, either the pinned one, or the user-specified one depending on the settings. */
 	const FString& GetVersionForLocal() const;
 
-	bool GetUseGDKPinnedRuntimeVersionForLocal() const { return bUseGDKPinnedRuntimeVersionForLocal; }
+	bool GetUseGDKPinnedRuntimeVersionForLocal() const
+	{
+		return bUseGDKPinnedRuntimeVersionForLocal;
+	}
 
-	bool GetUseGDKPinnedRuntimeVersionForCloud() const { return bUseGDKPinnedRuntimeVersionForCloud; }
+	bool GetUseGDKPinnedRuntimeVersionForCloud() const
+	{
+		return bUseGDKPinnedRuntimeVersionForCloud;
+	}
 
-	const FString& GetPinnedVersion() const { return PinnedVersion; }
+	const FString& GetPinnedVersion() const
+	{
+		return PinnedVersion;
+	}
 
 private:
-
 	/** Whether to use the GDK-associated SpatialOS runtime version for local deployments, or to use the one specified in the RuntimeVersion field. */
 	UPROPERTY(EditAnywhere, config, Category = "Runtime", meta = (DisplayName = "Use GDK pinned runtime version for local"))
 	bool bUseGDKPinnedRuntimeVersionForLocal = true;
@@ -287,16 +294,21 @@ public:
 	UPROPERTY(EditAnywhere, config, Category = "General", meta = (DisplayName = "Show Spatial service button"))
 	bool bShowSpatialServiceButton;
 
-	/** Select to delete all a server-worker instance’s dynamically-spawned entities when the server-worker instance shuts down. If NOT selected, a new server-worker instance has all of these entities from the former server-worker instance’s session. */
+	/** Select to delete all a server-worker instance’s dynamically-spawned entities when the server-worker instance shuts down. If NOT selected, a new server-worker instance has all of these entities
+	 * from the former server-worker instance’s session. */
 	UPROPERTY(EditAnywhere, config, Category = "Play in editor settings", meta = (DisplayName = "Delete dynamically spawned entities"))
 	bool bDeleteDynamicEntities;
 
-	/** Select the check box for the GDK to auto-generate a launch configuration file for your game when you launch a deployment session. If NOT selected, you must specify a launch configuration `.json` file. */
+	/** Select the check box for the GDK to auto-generate a launch configuration file for your game when you launch a deployment session. If NOT selected, you must specify a launch configuration
+	 * `.json` file. */
 	UPROPERTY(EditAnywhere, config, Category = "Launch", meta = (DisplayName = "Auto-generate launch configuration file"))
 	bool bGenerateDefaultLaunchConfig;
 
 	/** Returns which runtime variant we should use. */
-	TEnumAsByte<ESpatialOSRuntimeVariant::Type> GetSpatialOSRuntimeVariant() const { return RuntimeVariant; }
+	TEnumAsByte<ESpatialOSRuntimeVariant::Type> GetSpatialOSRuntimeVariant() const
+	{
+		return RuntimeVariant;
+	}
 
 	/** Returns the version information for the currently set variant*/
 	const FRuntimeVariantVersion& GetSelectedRuntimeVariantVersion() const
@@ -316,7 +328,6 @@ public:
 	mutable FOnDefaultTemplateNameRequireUpdate OnDefaultTemplateNameRequireUpdate;
 
 private:
-
 	FRuntimeVariantVersion& GetRuntimeVariantVersion(ESpatialOSRuntimeVariant::Type);
 
 	/** If you are not using auto-generate launch configuration file, specify a launch configuration `.json` file and location here.  */
@@ -488,9 +499,7 @@ public:
 
 	FORCEINLINE FString GetSpatialOSSnapshotToSave() const
 	{
-		return SpatialOSSnapshotToSave.IsEmpty()
-			? FString(TEXT("default.snapshot"))
-			: SpatialOSSnapshotToSave;
+		return SpatialOSSnapshotToSave.IsEmpty() ? FString(TEXT("default.snapshot")) : SpatialOSSnapshotToSave;
 	}
 
 	FORCEINLINE FString GetSpatialOSSnapshotToSavePath() const
@@ -500,9 +509,7 @@ public:
 
 	FORCEINLINE FString GetSpatialOSSnapshotToLoad() const
 	{
-		return SpatialOSSnapshotToLoad.IsEmpty()
-			? FString(TEXT("default.snapshot"))
-			: SpatialOSSnapshotToLoad;
+		return SpatialOSSnapshotToLoad.IsEmpty() ? FString(TEXT("default.snapshot")) : SpatialOSSnapshotToLoad;
 	}
 
 	FString GetCookAndGenerateSchemaTargetPlatform() const;
@@ -560,7 +567,6 @@ public:
 	void SetPrimaryLaunchConfigPath(const FString& Path);
 	FORCEINLINE FString GetPrimaryLaunchConfigPath() const
 	{
-
 		return PrimaryLaunchConfigPath.FilePath;
 	}
 

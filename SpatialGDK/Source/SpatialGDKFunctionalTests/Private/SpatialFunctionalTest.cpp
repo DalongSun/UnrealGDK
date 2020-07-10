@@ -2,12 +2,12 @@
 
 #include "SpatialFunctionalTest.h"
 
-#include "Engine/World.h"
-#include "GameFramework/PlayerController.h"
-#include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
-#include "LoadBalancing/AbstractLBStrategy.h"
+#include "Engine/World.h"
 #include "EngineClasses/SpatialNetDriver.h"
+#include "GameFramework/PlayerController.h"
+#include "LoadBalancing/AbstractLBStrategy.h"
+#include "Net/UnrealNetwork.h"
 #include "SpatialFunctionalTestFlowController.h"
 #include "SpatialGDKFunctionalTestsPrivate.h"
 
@@ -18,13 +18,13 @@ ASpatialFunctionalTest::ASpatialFunctionalTest()
 	bReplicates = true;
 	NetPriority = 3.0f;
 	NetUpdateFrequency = 100.0f;
-	
+
 	bAlwaysRelevant = true;
 
 	PrimaryActorTick.TickInterval = 0.0f;
 }
 
-void ASpatialFunctionalTest::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+void ASpatialFunctionalTest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASpatialFunctionalTest, bReadyToSpawnServerControllers);
@@ -32,7 +32,7 @@ void ASpatialFunctionalTest::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 	DOREPLIFETIME(ASpatialFunctionalTest, CurrentStepIndex);
 }
 
-void ASpatialFunctionalTest::BeginPlay() 
+void ASpatialFunctionalTest::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -71,12 +71,12 @@ void ASpatialFunctionalTest::Tick(float DeltaSeconds)
 				FinishTest(EFunctionalTestResult::Succeeded, "");
 			}
 		}
-		else 
+		else
 		{
 			TimeRunningStep += DeltaSeconds;
 
 			float CurrentStepTimeLimit = StepDefinitions[CurrentStepIndex].TimeLimit;
-						
+
 			if (CurrentStepTimeLimit > 0.0f && TimeRunningStep >= CurrentStepTimeLimit)
 			{
 				FinishTest(EFunctionalTestResult::Failed, TEXT("Step time limit reached"));
@@ -97,9 +97,9 @@ void ASpatialFunctionalTest::RegisterAutoDestroyActor(AActor* ActorToAutoDestroy
 	{
 		Super::RegisterAutoDestroyActor(ActorToAutoDestroy);
 	}
-	else if(LocalFlowController != nullptr)
+	else if (LocalFlowController != nullptr)
 	{
-		if(LocalFlowController->ControllerType == ESpatialFunctionalTestFlowControllerType::Server)
+		if (LocalFlowController->ControllerType == ESpatialFunctionalTestFlowControllerType::Server)
 		{
 			CrossServerRegisterAutoDestroyActor(ActorToAutoDestroy);
 		}
@@ -146,7 +146,7 @@ void ASpatialFunctionalTest::FinishStep()
 {
 	auto* AuxLocalFlowController = GetLocalFlowController();
 	ensureMsgf(AuxLocalFlowController != nullptr, TEXT("Can't Find LocalFlowController"));
-	if(AuxLocalFlowController != nullptr)
+	if (AuxLocalFlowController != nullptr)
 	{
 		AuxLocalFlowController->NotifyStepFinished();
 	}
@@ -227,7 +227,7 @@ void ASpatialFunctionalTest::RegisterFlowController(ASpatialFunctionalTestFlowCo
 
 	if (!HasAuthority())
 	{
-		//FlowControllers invoke this on each worker's local context when checkout and ready, we only want to act in the authority
+		// FlowControllers invoke this on each worker's local context when checkout and ready, we only want to act in the authority
 		return;
 	}
 
@@ -236,7 +236,7 @@ void ASpatialFunctionalTest::RegisterFlowController(ASpatialFunctionalTestFlowCo
 		// Since Clients can spawn on any worker we need to centralize the assignment of their ids to the Test Authority.
 		FlowControllerSpawner.AssignClientFlowControllerId(FlowController);
 	}
-	
+
 	FlowControllers.Add(FlowController);
 }
 
@@ -248,7 +248,8 @@ ASpatialFunctionalTestFlowController* ASpatialFunctionalTest::GetLocalFlowContro
 
 // Add Steps for Blueprints
 
-void ASpatialFunctionalTest::AddUniversalStep(const FString& StepName, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
+void ASpatialFunctionalTest::AddUniversalStep(
+	const FString& StepName, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = false;
@@ -264,7 +265,8 @@ void ASpatialFunctionalTest::AddUniversalStep(const FString& StepName, const FSt
 	StepDefinitions.Add(StepDefinition);
 }
 
-void ASpatialFunctionalTest::AddClientStep(const FString& StepName, int ClientId, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
+void ASpatialFunctionalTest::AddClientStep(
+	const FString& StepName, int ClientId, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = false;
@@ -279,7 +281,8 @@ void ASpatialFunctionalTest::AddClientStep(const FString& StepName, int ClientId
 	StepDefinitions.Add(StepDefinition);
 }
 
-void ASpatialFunctionalTest::AddServerStep(const FString& StepName, int ServerId, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
+void ASpatialFunctionalTest::AddServerStep(
+	const FString& StepName, int ServerId, const FStepIsReadyDelegate& IsReadyEvent, const FStepStartDelegate& StartEvent, const FStepTickDelegate& TickEvent, float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = false;
@@ -319,8 +322,7 @@ void ASpatialFunctionalTest::StartStep(const int StepIndex)
 			}
 			for (auto* FlowController : FlowControllers)
 			{
-				if (FlowController->ControllerType == Worker.ControllerType &&
-					(WorkerId <= FWorkerDefinition::ALL_WORKERS_ID || FlowController->ControllerInstanceId == WorkerId))
+				if (FlowController->ControllerType == Worker.ControllerType && (WorkerId <= FWorkerDefinition::ALL_WORKERS_ID || FlowController->ControllerInstanceId == WorkerId))
 				{
 					FlowControllersExecutingStep.AddUnique(FlowController);
 				}
@@ -356,7 +358,8 @@ void ASpatialFunctionalTest::StartStep(const int StepIndex)
 
 // Add Steps for C++
 
-FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddUniversalStep(const FString& StepName, FIsReadyEventFunc IsReadyEvent /*= nullptr*/, FStartEventFunc StartEvent /*= nullptr*/, FTickEventFunc TickEvent /*= nullptr*/, float StepTimeLimit /*= 0.0f*/)
+FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddUniversalStep(
+	const FString& StepName, FIsReadyEventFunc IsReadyEvent /*= nullptr*/, FStartEventFunc StartEvent /*= nullptr*/, FTickEventFunc TickEvent /*= nullptr*/, float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = true;
@@ -383,7 +386,12 @@ FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddUniversalStep(c
 	return StepDefinitions[StepDefinitions.Num() - 1];
 }
 
-FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddClientStep(const FString& StepName, int ClientId, FIsReadyEventFunc IsReadyEvent /*= nullptr*/, FStartEventFunc StartEvent /*= nullptr*/, FTickEventFunc TickEvent /*= nullptr*/, float StepTimeLimit /*= 0.0f*/)
+FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddClientStep(const FString& StepName,
+																			int ClientId,
+																			FIsReadyEventFunc IsReadyEvent /*= nullptr*/,
+																			FStartEventFunc StartEvent /*= nullptr*/,
+																			FTickEventFunc TickEvent /*= nullptr*/,
+																			float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = true;
@@ -409,7 +417,12 @@ FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddClientStep(cons
 	return StepDefinitions[StepDefinitions.Num() - 1];
 }
 
-FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddServerStep(const FString& StepName, int ServerId, FIsReadyEventFunc IsReadyEvent /*= nullptr*/, FStartEventFunc StartEvent /*= nullptr*/, FTickEventFunc TickEvent /*= nullptr*/, float StepTimeLimit /*= 0.0f*/)
+FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddServerStep(const FString& StepName,
+																			int ServerId,
+																			FIsReadyEventFunc IsReadyEvent /*= nullptr*/,
+																			FStartEventFunc StartEvent /*= nullptr*/,
+																			FTickEventFunc TickEvent /*= nullptr*/,
+																			float StepTimeLimit /*= 0.0f*/)
 {
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 	StepDefinition.bIsNativeDefinition = true;
@@ -435,7 +448,6 @@ FSpatialFunctionalTestStepDefinition& ASpatialFunctionalTest::AddServerStep(cons
 	return StepDefinitions[StepDefinitions.Num() - 1];
 }
 
-
 ASpatialFunctionalTestFlowController* ASpatialFunctionalTest::GetFlowController(ESpatialFunctionalTestFlowControllerType ControllerType, int InstanceId)
 {
 	for (auto* FlowController : FlowControllers)
@@ -456,9 +468,9 @@ void ASpatialFunctionalTest::CrossServerNotifyStepFinished_Implementation(ASpati
 	}
 
 	const FString FLowControllerDisplayName = FlowController->GetDisplayName();
-	
+
 	UE_LOG(LogSpatialGDKFunctionalTests, Display, TEXT("%s finished Step"), *FLowControllerDisplayName);
-	
+
 	if (FlowControllersExecutingStep.RemoveSwap(FlowController) == 0)
 	{
 		FString ErrorMsg = FString::Printf(TEXT("%s was not in list of workers executing"), *FLowControllerDisplayName);
@@ -471,10 +483,10 @@ void ASpatialFunctionalTest::OnReplicated_CurrentStepIndex()
 {
 	if (CurrentStepIndex == SPATIAL_FUNCTIONAL_TEST_FINISHED)
 	{
-		//test finished
-		if(StartTime > 0)
+		// test finished
+		if (StartTime > 0)
 		{
-			//if we ever started in first place
+			// if we ever started in first place
 			ASpatialFunctionalTestFlowController* AuxLocalFlowController = GetLocalFlowController();
 			if (AuxLocalFlowController != nullptr)
 			{
@@ -505,18 +517,15 @@ void ASpatialFunctionalTest::StartServerFlowControllerSpawn()
 
 void ASpatialFunctionalTest::SetupClientPlayerRegistrationFlow()
 {
-	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda(
-		[this](AActor* Spawned)
+	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateLambda([this](AActor* Spawned) {
+		if (APlayerController* PlayerController = Cast<APlayerController>(Spawned))
 		{
-			if (APlayerController* PlayerController = Cast<APlayerController>(Spawned))
+			if (PlayerController->HasAuthority())
 			{
-				if(PlayerController->HasAuthority())
-				{
-					this->FlowControllerSpawner.SpawnClientFlowController(PlayerController);
-				}
+				this->FlowControllerSpawner.SpawnClientFlowController(PlayerController);
 			}
 		}
-	));
+	}));
 }
 
 void ASpatialFunctionalTest::CrossServerRegisterAutoDestroyActor_Implementation(AActor* ActorToAutoDestroy)
@@ -537,8 +546,13 @@ void ASpatialFunctionalTest::MulticastAutoDestroyActors_Implementation(const TAr
 		for (AActor* Actor : ActorsToDestroy)
 		{
 			if (IsValid(Actor))
-			{				
-				UE_LOG(LogSpatialGDKFunctionalTests, Display, TEXT("%s trying to delete actor: %s ; result now would be: %s"), *DisplayName, *Actor->GetName(), Actor->Role == ROLE_Authority ? TEXT("SUCCESS") : TEXT("FAILURE"));
+			{
+				UE_LOG(LogSpatialGDKFunctionalTests,
+					   Display,
+					   TEXT("%s trying to delete actor: %s ; result now would be: %s"),
+					   *DisplayName,
+					   *Actor->GetName(),
+					   Actor->Role == ROLE_Authority ? TEXT("SUCCESS") : TEXT("FAILURE"));
 				Actor->SetLifeSpan(0.01f);
 			}
 		}
@@ -549,7 +563,12 @@ void ASpatialFunctionalTest::MulticastAutoDestroyActors_Implementation(const TAr
 		{
 			if (IsValid(Actor))
 			{
-				UE_LOG(LogSpatialGDKFunctionalTests, Display, TEXT("%s TEST_AUTH - will have tried to delete actor: %s ; result now would be: %s"), *DisplayName, *Actor->GetName(), Actor->Role == ROLE_Authority ? TEXT("SUCCESS") : TEXT("FAILURE"));
+				UE_LOG(LogSpatialGDKFunctionalTests,
+					   Display,
+					   TEXT("%s TEST_AUTH - will have tried to delete actor: %s ; result now would be: %s"),
+					   *DisplayName,
+					   *Actor->GetName(),
+					   Actor->Role == ROLE_Authority ? TEXT("SUCCESS") : TEXT("FAILURE"));
 			}
 		}
 	}

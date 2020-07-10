@@ -9,12 +9,12 @@
 #include "Interop/SpatialRPCService.h"
 #include "LoadBalancing/AbstractLBStrategy.h"
 #include "Schema/AuthorityIntent.h"
+#include "Schema/ClientRPCEndpointLegacy.h"
 #include "Schema/ComponentPresence.h"
 #include "Schema/Heartbeat.h"
-#include "Schema/ClientRPCEndpointLegacy.h"
-#include "Schema/ServerRPCEndpointLegacy.h"
 #include "Schema/NetOwningClientWorker.h"
 #include "Schema/RPCPayload.h"
+#include "Schema/ServerRPCEndpointLegacy.h"
 #include "Schema/SpatialDebugging.h"
 #include "Schema/SpawnData.h"
 #include "Schema/Tombstone.h"
@@ -35,13 +35,12 @@ DEFINE_LOG_CATEGORY(LogEntityFactory);
 
 namespace SpatialGDK
 {
-
 EntityFactory::EntityFactory(USpatialNetDriver* InNetDriver, USpatialPackageMapClient* InPackageMap, USpatialClassInfoManager* InClassInfoManager, SpatialRPCService* InRPCService)
 	: NetDriver(InNetDriver)
 	, PackageMap(InPackageMap)
 	, ClassInfoManager(InClassInfoManager)
 	, RPCService(InRPCService)
-{ }
+{}
 
 TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActorChannel* Channel, FRPCsOnEntityCreationMap& OutgoingOnCreateEntityRPCs, uint32& OutBytesWritten)
 {
@@ -71,7 +70,11 @@ TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActor
 	}
 	else
 	{
-		UE_LOG(LogEntityFactory, Error, TEXT("Load balancing strategy provided invalid local virtual worker ID during Actor spawn. Actor: %s. Strategy: %s"), *Actor->GetName(), *NetDriver->LoadBalanceStrategy->GetName());
+		UE_LOG(LogEntityFactory,
+			   Error,
+			   TEXT("Load balancing strategy provided invalid local virtual worker ID during Actor spawn. Actor: %s. Strategy: %s"),
+			   *Actor->GetName(),
+			   *NetDriver->LoadBalanceStrategy->GetName());
 	}
 
 	const WorkerRequirementSet AuthoritativeWorkerRequirementSet = { WorkerAttributeOrSpecificWorker };
@@ -145,8 +148,7 @@ TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActor
 
 	Worker_ComponentId ActorInterestComponentId = ClassInfoManager->ComputeActorInterestComponentId(Actor);
 
-	ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-	{
+	ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 		Worker_ComponentId ComponentId = Info.SchemaComponents[Type];
 		if (ComponentId == SpatialConstants::INVALID_COMPONENT_ID)
 		{
@@ -167,8 +169,7 @@ TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActor
 			continue;
 		}
 
-		ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-		{
+		ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 			Worker_ComponentId ComponentId = SubobjectInfo.SchemaComponents[Type];
 			if (ComponentId == SpatialConstants::INVALID_COMPONENT_ID)
 			{
@@ -315,8 +316,7 @@ TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActor
 			FRepChangeState SubobjectRepChanges = Channel->CreateInitialRepChangeState(Subobject);
 			FHandoverChangeState SubobjectHandoverChanges = Channel->CreateInitialHandoverChangeState(SubobjectInfo);
 
-			ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-			{
+			ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 				if (SubobjectInfo.SchemaComponents[Type] != SpatialConstants::INVALID_COMPONENT_ID)
 				{
 					ComponentWriteAcl.Add(SubobjectInfo.SchemaComponents[Type], AuthoritativeWorkerRequirementSet);
@@ -358,7 +358,8 @@ TArray<FWorkerComponentData> EntityFactory::CreateEntityComponents(USpatialActor
 
 		FHandoverChangeState SubobjectHandoverChanges = Channel->CreateInitialHandoverChangeState(SubobjectInfo);
 
-		FWorkerComponentData SubobjectHandoverData = DataFactory.CreateHandoverComponentData(SubobjectInfo.SchemaComponents[SCHEMA_Handover], Subobject, SubobjectInfo, SubobjectHandoverChanges, OutBytesWritten);
+		FWorkerComponentData SubobjectHandoverData
+			= DataFactory.CreateHandoverComponentData(SubobjectInfo.SchemaComponents[SCHEMA_Handover], Subobject, SubobjectInfo, SubobjectHandoverChanges, OutBytesWritten);
 
 		ComponentDatas.Add(SubobjectHandoverData);
 
@@ -438,4 +439,4 @@ TArray<FWorkerComponentData> EntityFactory::CreateTombstoneEntityComponents(AAct
 	return Components;
 }
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

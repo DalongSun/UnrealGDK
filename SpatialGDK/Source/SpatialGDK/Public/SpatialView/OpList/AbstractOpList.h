@@ -6,7 +6,6 @@
 
 namespace SpatialGDK
 {
-
 class AbstractOpList
 {
 public:
@@ -17,4 +16,4 @@ public:
 	virtual const Worker_Op& operator[](uint32 Index) const = 0;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

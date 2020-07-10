@@ -14,7 +14,6 @@ const float FullFrequencyHz = 0.f;
 
 namespace SpatialGDK
 {
-
 // And this the empty optional type it will be translated to.
 const TSchemaOption<float> FullFrequencyOptional = TSchemaOption<float>();
 
@@ -54,14 +53,12 @@ FrequencyConstraints NetCullDistanceInterest::CreateLegacyNetCullDistanceConstra
 	TMap<UClass*, float> ActorComponentSetToRadius = NetCullDistanceInterest::GetActorTypeToRadius();
 
 	// For every interest distance that we still want, build a map from radius to list of actor type components that match that radius.
-	TMap<float, TArray<UClass*>> DistanceToActorTypeComponents = NetCullDistanceInterest::DedupeDistancesAcrossActorTypes(
-		ActorComponentSetToRadius);
+	TMap<float, TArray<UClass*>> DistanceToActorTypeComponents = NetCullDistanceInterest::DedupeDistancesAcrossActorTypes(ActorComponentSetToRadius);
 
 	// The previously built map removes duplicates of spatial constraints. Now the actual query constraints can be built of the form:
 	// OR(AND(cylinder(radius), OR(actor 1 components, actor 2 components, ...)), ...)
 	// which is equivalent to having a separate spatial query for each actor type if the radius is the same.
-	TArray<QueryConstraint> CheckoutRadiusConstraints = NetCullDistanceInterest::BuildNonDefaultActorCheckoutConstraints(
-		DistanceToActorTypeComponents, InClassInfoManager);
+	TArray<QueryConstraint> CheckoutRadiusConstraints = NetCullDistanceInterest::BuildNonDefaultActorCheckoutConstraints(DistanceToActorTypeComponents, InClassInfoManager);
 
 	// Add all the different actor queries to the overall checkout constraint.
 	for (auto& ActorCheckoutConstraint : CheckoutRadiusConstraints)
@@ -177,8 +174,7 @@ QueryConstraint NetCullDistanceInterest::GetDefaultCheckoutRadiusConstraint()
 
 	if (MaxDistanceSquared > FLT_EPSILON && DefaultDistanceSquared > MaxDistanceSquared)
 	{
-		UE_LOG(LogNetCullDistanceInterest, Warning, TEXT("Default NetCullDistanceSquared is too large, clamping from %f to %f"),
-			DefaultDistanceSquared, MaxDistanceSquared);
+		UE_LOG(LogNetCullDistanceInterest, Warning, TEXT("Default NetCullDistanceSquared is too large, clamping from %f to %f"), DefaultDistanceSquared, MaxDistanceSquared);
 
 		DefaultDistanceSquared = MaxDistanceSquared;
 	}
@@ -226,8 +222,7 @@ TMap<UClass*, float> NetCullDistanceInterest::GetActorTypeToRadius()
 
 			if (MaxDistanceSquared > FLT_EPSILON && IteratedDefaultActor->NetCullDistanceSquared > MaxDistanceSquared)
 			{
-				UE_LOG(LogNetCullDistanceInterest, Warning, TEXT("NetCullDistanceSquared for %s too large, clamping from %f to %f"),
-					*It->GetName(), ActorNetCullDistanceSquared, MaxDistanceSquared);
+				UE_LOG(LogNetCullDistanceInterest, Warning, TEXT("NetCullDistanceSquared for %s too large, clamping from %f to %f"), *It->GetName(), ActorNetCullDistanceSquared, MaxDistanceSquared);
 
 				ActorNetCullDistanceSquared = MaxDistanceSquared;
 			}

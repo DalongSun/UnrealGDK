@@ -265,9 +265,15 @@ public:
 		}
 	}
 
-	FString GetReceptionistHost() const { return ReceptionistHost; }
+	FString GetReceptionistHost() const
+	{
+		return ReceptionistHost;
+	}
 
-	uint16 GetReceptionistPort() const { return ReceptionistPort; }
+	uint16 GetReceptionistPort() const
+	{
+		return ReceptionistPort;
+	}
 
 private:
 	void SetReceptionistHost(const FString& Host)
@@ -278,7 +284,10 @@ private:
 		}
 	}
 
-	void SetReceptionistPort(const uint16 Port) { ReceptionistPort = Port; }
+	void SetReceptionistPort(const uint16 Port)
+	{
+		ReceptionistPort = Port;
+	}
 
 	FString ReceptionistHost;
 

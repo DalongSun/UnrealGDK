@@ -8,11 +8,11 @@
 #include "Framework/Application/SlateApplication.h"
 #include "Framework/Docking/TabManager.h"
 #include "Misc/FileHelper.h"
-#include "SpatialCommandUtils.h"
 #include "SSpatialOutputLog.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "SpatialCommandUtils.h"
 #include "SpatialGDKServicesConstants.h"
 #include "SpatialGDKServicesPrivate.h"
 #include "Widgets/Docking/SDockTab.h"
@@ -27,18 +27,13 @@ static const FName SpatialOutputLogTabName = FName(TEXT("SpatialOutputLog"));
 
 TSharedRef<SDockTab> SpawnSpatialOutputLog(const FSpawnTabArgs& Args)
 {
-	return SNew(SDockTab)
-		.Icon(FEditorStyle::GetBrush("Log.TabIcon"))
-		.TabRole(ETabRole::NomadTab)
-		.Label(NSLOCTEXT("SpatialOutputLog", "TabTitle", "Spatial Output"))
-		[
-			SNew(SSpatialOutputLog)
-		];
+	return SNew(SDockTab).Icon(FEditorStyle::GetBrush("Log.TabIcon")).TabRole(ETabRole::NomadTab).Label(NSLOCTEXT("SpatialOutputLog", "TabTitle", "Spatial Output"))[SNew(SSpatialOutputLog)];
 }
 
 void FSpatialGDKServicesModule::StartupModule()
 {
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(SpatialOutputLogTabName, FOnSpawnTab::CreateStatic(&SpawnSpatialOutputLog))
+	FGlobalTabmanager::Get()
+		->RegisterNomadTabSpawner(SpatialOutputLogTabName, FOnSpawnTab::CreateStatic(&SpawnSpatialOutputLog))
 		.SetDisplayName(NSLOCTEXT("UnrealEditor", "SpatialOutputLogTab", "Spatial Output Log"))
 		.SetTooltipText(NSLOCTEXT("UnrealEditor", "SpatialOutputLogTooltipText", "Open the Spatial Output Log tab."))
 		.SetGroup(WorkspaceMenu::GetMenuStructure().GetDeveloperToolsLogCategory())
@@ -82,7 +77,11 @@ bool FSpatialGDKServicesModule::SpatialPreRunChecks(bool bIsInChina)
 
 	if (!bSuccess)
 	{
-		UE_LOG(LogSpatialDeploymentManager, Warning, TEXT("%s does not exist on this machine! Please make sure Spatial is installed before trying to start a local deployment. %s"), *SpatialGDKServicesConstants::SpatialExe, *SpatialExistenceCheckResult);
+		UE_LOG(LogSpatialDeploymentManager,
+			   Warning,
+			   TEXT("%s does not exist on this machine! Please make sure Spatial is installed before trying to start a local deployment. %s"),
+			   *SpatialGDKServicesConstants::SpatialExe,
+			   *SpatialExistenceCheckResult);
 		return false;
 	}
 
@@ -92,7 +91,10 @@ bool FSpatialGDKServicesModule::SpatialPreRunChecks(bool bIsInChina)
 
 	if (ExitCode != 0)
 	{
-		UE_LOG(LogSpatialDeploymentManager, Warning, TEXT("%s does not exist on this machine! Please make sure to run Setup.bat in the UnrealGDK Plugin before trying to start a local deployment."), *SpatialGDKServicesConstants::SpotExe);
+		UE_LOG(LogSpatialDeploymentManager,
+			   Warning,
+			   TEXT("%s does not exist on this machine! Please make sure to run Setup.bat in the UnrealGDK Plugin before trying to start a local deployment."),
+			   *SpatialGDKServicesConstants::SpotExe);
 		return false;
 	}
 
@@ -119,7 +121,7 @@ void FSpatialGDKServicesModule::ExecuteAndReadOutput(const FString& Executable, 
 
 	if (ProcHandle.IsValid())
 	{
-		for (bool bProcessFinished = false; !bProcessFinished; )
+		for (bool bProcessFinished = false; !bProcessFinished;)
 		{
 			bProcessFinished = FPlatformProcess::GetProcReturnCode(ProcHandle, &ExitCode);
 
@@ -145,7 +147,11 @@ void FSpatialGDKServicesModule::SetProjectName(const FString& InProjectName)
 	TSharedPtr<FJsonObject> JsonParsedSpatialFile = ParseProjectFile();
 	if (!JsonParsedSpatialFile.IsValid())
 	{
-		UE_LOG(LogSpatialGDKServices, Error, TEXT("Failed to update project name(%s). Please ensure that the following file exists: %s"), *InProjectName, *SpatialGDKServicesConstants::SpatialOSConfigFileName);
+		UE_LOG(LogSpatialGDKServices,
+			   Error,
+			   TEXT("Failed to update project name(%s). Please ensure that the following file exists: %s"),
+			   *InProjectName,
+			   *SpatialGDKServicesConstants::SpatialOSConfigFileName);
 		return;
 	}
 	JsonParsedSpatialFile->SetStringField("name", InProjectName);

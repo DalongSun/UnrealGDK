@@ -30,18 +30,15 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNetCullDistanceInterest, Log, All);
 
 namespace SpatialGDK
 {
-
 class SPATIALGDK_API NetCullDistanceInterest
 {
 public:
-
 	static FrequencyConstraints CreateCheckoutRadiusConstraints(USpatialClassInfoManager* InClassInfoManager);
 
 	// visible for testing
 	static TMap<float, TArray<UClass*>> DedupeDistancesAcrossActorTypes(const TMap<UClass*, float> ComponentSetToRadius);
 
 private:
-
 	static FrequencyConstraints CreateLegacyNetCullDistanceConstraint(USpatialClassInfoManager* InClassInfoManager);
 	static FrequencyConstraints CreateNetCullDistanceConstraint(USpatialClassInfoManager* InClassInfoManager);
 	static FrequencyConstraints CreateNetCullDistanceConstraintWithFrequency(USpatialClassInfoManager* InClassInfoManager);

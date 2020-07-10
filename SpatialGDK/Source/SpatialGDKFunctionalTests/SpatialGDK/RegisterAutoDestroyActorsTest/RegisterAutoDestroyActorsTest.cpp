@@ -1,9 +1,8 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
-
 #include "RegisterAutoDestroyActorsTest.h"
-#include "GameFramework/Character.h"
 #include "EngineClasses/SpatialNetDriver.h"
+#include "GameFramework/Character.h"
 #include "LoadBalancing/AbstractLBStrategy.h"
 #include "SpatialFunctionalTestFlowController.h"
 
@@ -16,8 +15,8 @@ ARegisterAutoDestroyActorsTestPart1::ARegisterAutoDestroyActorsTestPart1()
 void ARegisterAutoDestroyActorsTestPart1::BeginPlay()
 {
 	Super::BeginPlay();
-	{ // Step 1 - Spawn Actor On Auth 
-		AddServerStep(TEXT("SERVER_1_Spawn"), 1, nullptr, [](ASpatialFunctionalTest* NetTest){
+	{ // Step 1 - Spawn Actor On Auth
+		AddServerStep(TEXT("SERVER_1_Spawn"), 1, nullptr, [](ASpatialFunctionalTest* NetTest) {
 			UWorld* World = NetTest->GetWorld();
 			int NumVirtualWorkers = NetTest->GetNumberOfServerWorkers();
 
@@ -26,10 +25,11 @@ void ARegisterAutoDestroyActorsTestPart1::BeginPlay()
 			// and spawn them in that radius
 			FVector SpawnPosition = FVector(200.0f, -200.0f, 0.0f);
 			FRotator SpawnPositionRotator = FRotator(0.0f, 360.0f / NumVirtualWorkers, 0.0f);
-			for(int i = 0; i != NumVirtualWorkers; ++i)
+			for (int i = 0; i != NumVirtualWorkers; ++i)
 			{
 				ACharacter* Character = World->SpawnActor<ACharacter>(SpawnPosition, FRotator::ZeroRotator);
-				NetTest->AssertTrue(IsValid(Character), FString::Printf(TEXT("Spawned ACharacter in worker %s"), *NetTest->GetFlowController(ESpatialFunctionalTestFlowControllerType::Server, i+1)->GetDisplayName()));
+				NetTest->AssertTrue(IsValid(Character),
+									FString::Printf(TEXT("Spawned ACharacter in worker %s"), *NetTest->GetFlowController(ESpatialFunctionalTestFlowControllerType::Server, i + 1)->GetDisplayName()));
 				SpawnPosition = SpawnPositionRotator.RotateVector(SpawnPosition);
 			}
 			NetTest->FinishStep();
@@ -37,7 +37,12 @@ void ARegisterAutoDestroyActorsTestPart1::BeginPlay()
 	}
 
 	{ // Step 2 - Check If Clients have it
-		AddClientStep(TEXT("CLIENT_ALL_CheckActorsSpawned"), FWorkerDefinition::ALL_WORKERS_ID, nullptr, nullptr, [](ASpatialFunctionalTest* NetTest, float DeltaTime){
+		AddClientStep(
+			TEXT("CLIENT_ALL_CheckActorsSpawned"),
+			FWorkerDefinition::ALL_WORKERS_ID,
+			nullptr,
+			nullptr,
+			[](ASpatialFunctionalTest* NetTest, float DeltaTime) {
 				int NumCharactersFound = 0;
 				int NumCharactersExpected = NetTest->GetNumberOfServerWorkers();
 				UWorld* World = NetTest->GetWorld();
@@ -46,34 +51,40 @@ void ARegisterAutoDestroyActorsTestPart1::BeginPlay()
 					++NumCharactersFound;
 				}
 
-				if(NumCharactersFound == NumCharactersExpected)
+				if (NumCharactersFound == NumCharactersExpected)
 				{
 					NetTest->FinishStep();
 				}
-		}, 5.0f);
+			},
+			5.0f);
 	}
 
 	{ // Step 3 - Destroy by second server that doesn't have authority
-		AddServerStep(TEXT("SERVER_2_RegisterAutoDestroyActors"), 2, [](ASpatialFunctionalTest* NetTest) -> bool {
-			int NumCharactersFound = 0;
-			int NumCharactersExpected = NetTest->GetNumberOfServerWorkers();
-			UWorld* World = NetTest->GetWorld();
-			for (TActorIterator<ACharacter> It(World, ACharacter::StaticClass()); It; ++It)
-			{
-				++NumCharactersFound;
-			}
+		AddServerStep(
+			TEXT("SERVER_2_RegisterAutoDestroyActors"),
+			2,
+			[](ASpatialFunctionalTest* NetTest) -> bool {
+				int NumCharactersFound = 0;
+				int NumCharactersExpected = NetTest->GetNumberOfServerWorkers();
+				UWorld* World = NetTest->GetWorld();
+				for (TActorIterator<ACharacter> It(World, ACharacter::StaticClass()); It; ++It)
+				{
+					++NumCharactersFound;
+				}
 
-			return NumCharactersFound == NumCharactersExpected;
-		}, 
-		[](ASpatialFunctionalTest* NetTest) {
-			UWorld* World = NetTest->GetWorld();
-			for (TActorIterator<ACharacter> It(World); It; ++It)
-			{
-				NetTest->AssertTrue(IsValid(*It), TEXT("Registering ACharacter for destruction"));
-				NetTest->RegisterAutoDestroyActor(*It);
-			}
-			NetTest->FinishStep();
-		}, nullptr, 5.0f);
+				return NumCharactersFound == NumCharactersExpected;
+			},
+			[](ASpatialFunctionalTest* NetTest) {
+				UWorld* World = NetTest->GetWorld();
+				for (TActorIterator<ACharacter> It(World); It; ++It)
+				{
+					NetTest->AssertTrue(IsValid(*It), TEXT("Registering ACharacter for destruction"));
+					NetTest->RegisterAutoDestroyActor(*It);
+				}
+				NetTest->FinishStep();
+			},
+			nullptr,
+			5.0f);
 	}
 }
 
@@ -91,8 +102,8 @@ void ARegisterAutoDestroyActorsTestPart2::BeginPlay()
 		FSpatialFunctionalTestStepDefinition StepDefinition;
 		StepDefinition.bIsNativeDefinition = true;
 		StepDefinition.TimeLimit = 0.0f;
-		StepDefinition.Workers.Add(FWorkerDefinition{ESpatialFunctionalTestFlowControllerType::Server, FWorkerDefinition::ALL_WORKERS_ID});
-		StepDefinition.Workers.Add(FWorkerDefinition{ESpatialFunctionalTestFlowControllerType::Client, FWorkerDefinition::ALL_WORKERS_ID});
+		StepDefinition.Workers.Add(FWorkerDefinition{ ESpatialFunctionalTestFlowControllerType::Server, FWorkerDefinition::ALL_WORKERS_ID });
+		StepDefinition.Workers.Add(FWorkerDefinition{ ESpatialFunctionalTestFlowControllerType::Client, FWorkerDefinition::ALL_WORKERS_ID });
 		StepDefinition.NativeStartEvent.BindLambda([](ASpatialFunctionalTest* NetTest) {
 			UWorld* World = NetTest->GetWorld();
 			TActorIterator<ACharacter> It(World);

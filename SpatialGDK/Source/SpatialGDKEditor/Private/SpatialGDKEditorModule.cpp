@@ -18,8 +18,8 @@
 #include "SpatialGDKEditorSettings.h"
 #include "SpatialGDKSettings.h"
 #include "SpatialLaunchConfigCustomization.h"
-#include "Utils/LaunchConfigurationEditor.h"
 #include "SpatialRuntimeVersionCustomization.h"
+#include "Utils/LaunchConfigurationEditor.h"
 #include "WorkerTypeCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FSpatialGDKEditorModule"
@@ -27,9 +27,7 @@
 FSpatialGDKEditorModule::FSpatialGDKEditorModule()
 	: ExtensionManager(MakeUnique<FLBStrategyEditorExtensionManager>())
 	, CommandLineArgsManager(MakeUnique<FSpatialGDKEditorCommandLineArgsManager>())
-{
-
-}
+{}
 
 void FSpatialGDKEditorModule::StartupModule()
 {
@@ -97,7 +95,8 @@ bool FSpatialGDKEditorModule::CanStartSession(FText& OutErrorMessage) const
 	{
 		if (GetDevAuthToken().IsEmpty())
 		{
-			OutErrorMessage = LOCTEXT("MissingDevelopmentAuthenticationToken", "You have to generate or provide a development authentication token in the SpatialOS GDK Editor Settings section to enable connecting to a cloud deployment.");
+			OutErrorMessage = LOCTEXT("MissingDevelopmentAuthenticationToken",
+									  "You have to generate or provide a development authentication token in the SpatialOS GDK Editor Settings section to enable connecting to a cloud deployment.");
 			return false;
 		}
 
@@ -172,23 +171,27 @@ void FSpatialGDKEditorModule::RegisterSettings()
 	{
 		ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer("Project");
 
-		SettingsContainer->DescribeCategory("SpatialGDKEditor", LOCTEXT("RuntimeWDCategoryName", "SpatialOS GDK for Unreal"),
-			LOCTEXT("RuntimeWDCategoryDescription", "Configuration for the SpatialOS GDK for Unreal"));
+		SettingsContainer->DescribeCategory(
+			"SpatialGDKEditor", LOCTEXT("RuntimeWDCategoryName", "SpatialOS GDK for Unreal"), LOCTEXT("RuntimeWDCategoryDescription", "Configuration for the SpatialOS GDK for Unreal"));
 
-		ISettingsSectionPtr EditorSettingsSection = SettingsModule->RegisterSettings("Project", "SpatialGDKEditor", "Editor Settings",
-			LOCTEXT("SpatialEditorGeneralSettingsName", "Editor Settings"),
-			LOCTEXT("SpatialEditorGeneralSettingsDescription", "Editor configuration for the SpatialOS GDK for Unreal"),
-			GetMutableDefault<USpatialGDKEditorSettings>());
+		ISettingsSectionPtr EditorSettingsSection = SettingsModule->RegisterSettings("Project",
+																					 "SpatialGDKEditor",
+																					 "Editor Settings",
+																					 LOCTEXT("SpatialEditorGeneralSettingsName", "Editor Settings"),
+																					 LOCTEXT("SpatialEditorGeneralSettingsDescription", "Editor configuration for the SpatialOS GDK for Unreal"),
+																					 GetMutableDefault<USpatialGDKEditorSettings>());
 
 		if (EditorSettingsSection.IsValid())
 		{
 			EditorSettingsSection->OnModified().BindRaw(this, &FSpatialGDKEditorModule::HandleEditorSettingsSaved);
 		}
 
-		ISettingsSectionPtr RuntimeSettingsSection = SettingsModule->RegisterSettings("Project", "SpatialGDKEditor", "Runtime Settings",
-			LOCTEXT("SpatialRuntimeGeneralSettingsName", "Runtime Settings"),
-			LOCTEXT("SpatialRuntimeGeneralSettingsDescription", "Runtime configuration for the SpatialOS GDK for Unreal"),
-			GetMutableDefault<USpatialGDKSettings>());
+		ISettingsSectionPtr RuntimeSettingsSection = SettingsModule->RegisterSettings("Project",
+																					  "SpatialGDKEditor",
+																					  "Runtime Settings",
+																					  LOCTEXT("SpatialRuntimeGeneralSettingsName", "Runtime Settings"),
+																					  LOCTEXT("SpatialRuntimeGeneralSettingsDescription", "Runtime configuration for the SpatialOS GDK for Unreal"),
+																					  GetMutableDefault<USpatialGDKSettings>());
 
 		if (RuntimeSettingsSection.IsValid())
 		{

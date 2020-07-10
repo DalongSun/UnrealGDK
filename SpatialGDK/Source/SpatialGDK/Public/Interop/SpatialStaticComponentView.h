@@ -45,7 +45,10 @@ public:
 	void OnComponentUpdate(const Worker_ComponentUpdateOp& Op);
 	void OnAuthorityChange(const Worker_AuthorityChangeOp& Op);
 
-	void GetEntityIds(TArray<Worker_EntityId_Key>& OutEntityIds) const { EntityComponentMap.GetKeys(OutEntityIds); }
+	void GetEntityIds(TArray<Worker_EntityId_Key>& OutEntityIds) const
+	{
+		EntityComponentMap.GetKeys(OutEntityIds);
+	}
 
 private:
 	Worker_Authority GetAuthority(Worker_EntityId EntityId, Worker_ComponentId ComponentId) const;

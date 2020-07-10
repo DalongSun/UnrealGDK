@@ -14,13 +14,11 @@
 #include "Tests/AutomationEditorCommon.h"
 #include "Tests/TestDefinitions.h"
 
-#define GRIDBASEDLBSTRATEGY_TEST(TestName) \
-	GDK_TEST(Core, UGridBasedLBStrategy, TestName)
+#define GRIDBASEDLBSTRATEGY_TEST(TestName) GDK_TEST(Core, UGridBasedLBStrategy, TestName)
 
 // Test Globals
 namespace
 {
-
 UWorld* TestWorld;
 TMap<FName, AActor*> TestActors;
 UGridBasedLBStrategy* Strat;
@@ -32,8 +30,7 @@ UWorld* GetAnyGameWorld()
 	const TIndirectArray<FWorldContext>& WorldContexts = GEngine->GetWorldContexts();
 	for (const FWorldContext& Context : WorldContexts)
 	{
-		if ((Context.WorldType == EWorldType::PIE || Context.WorldType == EWorldType::Game)
-			&& (Context.World() != nullptr))
+		if ((Context.WorldType == EWorldType::PIE || Context.WorldType == EWorldType::Game) && (Context.World() != nullptr))
 		{
 			World = Context.World();
 			break;
@@ -141,8 +138,7 @@ bool FCheckVirtualWorkersDiffer::Update()
 		const uint32 WorkerId = Strat->WhoShouldHaveAuthority(*TestActors[Handles[i]]);
 		if (WorkerIdToHandle.Contains(WorkerId))
 		{
-			Test->AddError(FString::Printf(TEXT("%s and %s both belong to virtual worker %d"),
-				*WorkerIdToHandle[WorkerId].ToString(), *Handles[i].ToString(), WorkerId));
+			Test->AddError(FString::Printf(TEXT("%s and %s both belong to virtual worker %d"), *WorkerIdToHandle[WorkerId].ToString(), *Handles[i].ToString(), WorkerId));
 		}
 		else
 		{
@@ -161,9 +157,9 @@ bool FCheckVirtualWorkersMatch::Update()
 	for (int i = 1; i < Handles.Num(); i++)
 	{
 		uint32 NextVirtualWorkerId = Strat->WhoShouldHaveAuthority(*TestActors[Handles[i]]);
-		Test->TestEqual(FString::Printf(TEXT("Should Have Authority %s(%d) and %s(%d)"),
-			*Handles[0].ToString(), VirtualWorkerId, *Handles[i].ToString(), NextVirtualWorkerId),
-			VirtualWorkerId, NextVirtualWorkerId);
+		Test->TestEqual(FString::Printf(TEXT("Should Have Authority %s(%d) and %s(%d)"), *Handles[0].ToString(), VirtualWorkerId, *Handles[i].ToString(), NextVirtualWorkerId),
+						VirtualWorkerId,
+						NextVirtualWorkerId);
 	}
 
 	return true;
@@ -216,7 +212,7 @@ GRIDBASEDLBSTRATEGY_TEST(GIVEN_four_cells_WHEN_get_worker_interest_for_virtual_w
 	TestEqual("Edge length in x is as expected", Box.EdgeLength.X, TestEdgeLength);
 	TestEqual("Edge length in z is as expected", Box.EdgeLength.Z, TestEdgeLength);
 
-	// The height of the box is "some very large number which is effectively infinite", so just sanity check it here. 
+	// The height of the box is "some very large number which is effectively infinite", so just sanity check it here.
 	TestTrue("Edge length in y is greater than 0", Box.EdgeLength.Y > 0);
 
 	return true;
@@ -239,25 +235,25 @@ GRIDBASEDLBSTRATEGY_TEST(GIVEN_four_cells_WHEN_get_worker_entity_position_for_vi
 GRIDBASEDLBSTRATEGY_TEST(GIVEN_one_cell_WHEN_requires_handover_data_called_THEN_returns_false)
 {
 	CreateStrategy(1, 1, 10000.f, 10000.f, 1);
-	TestFalse("Strategy doesn't require handover data",Strat->RequiresHandoverData());
+	TestFalse("Strategy doesn't require handover data", Strat->RequiresHandoverData());
 	return true;
 }
 
 GRIDBASEDLBSTRATEGY_TEST(GIVEN_more_than_one_row_WHEN_requires_handover_data_called_THEN_returns_true)
 {
 	CreateStrategy(2, 1, 10000.f, 10000.f, 1);
-	TestTrue("Strategy doesn't require handover data",Strat->RequiresHandoverData());
+	TestTrue("Strategy doesn't require handover data", Strat->RequiresHandoverData());
 	return true;
 }
 
 GRIDBASEDLBSTRATEGY_TEST(GIVEN_more_than_one_column_WHEN_requires_handover_data_called_THEN_returns_true)
 {
 	CreateStrategy(1, 2, 10000.f, 10000.f, 1);
-	TestTrue("Strategy doesn't require handover data",Strat->RequiresHandoverData());
+	TestTrue("Strategy doesn't require handover data", Strat->RequiresHandoverData());
 	return true;
 }
 
-}  // anonymous namespace
+} // anonymous namespace
 
 GRIDBASEDLBSTRATEGY_TEST(GIVEN_a_single_cell_and_valid_local_id_WHEN_should_relinquish_called_THEN_returns_false)
 {
@@ -287,7 +283,7 @@ GRIDBASEDLBSTRATEGY_TEST(GIVEN_four_cells_WHEN_actors_in_each_cell_THEN_should_r
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForActor("Actor2"));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForActor("Actor3"));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForActor("Actor4"));
-	ADD_LATENT_AUTOMATION_COMMAND(FCheckVirtualWorkersDiffer(this, {"Actor1", "Actor2", "Actor3", "Actor4"}));
+	ADD_LATENT_AUTOMATION_COMMAND(FCheckVirtualWorkersDiffer(this, { "Actor1", "Actor2", "Actor3", "Actor4" }));
 	ADD_LATENT_AUTOMATION_COMMAND(FCleanup());
 
 	return true;
@@ -342,4 +338,3 @@ GRIDBASEDLBSTRATEGY_TEST(GIVEN_two_cells_WHEN_actor_in_one_cell_THEN_strategy_re
 
 	return true;
 }
-

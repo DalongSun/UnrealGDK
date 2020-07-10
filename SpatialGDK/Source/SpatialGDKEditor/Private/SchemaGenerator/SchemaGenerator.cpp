@@ -8,11 +8,11 @@
 #include "UObject/TextProperty.h"
 
 #include "Interop/SpatialClassInfoManager.h"
+#include "SpatialGDKEditorSchemaGenerator.h"
 #include "SpatialGDKSettings.h"
 #include "Utils/CodeWriter.h"
 #include "Utils/ComponentIdGenerator.h"
 #include "Utils/DataTypeUtilities.h"
-#include "SpatialGDKEditorSchemaGenerator.h"
 
 using namespace SpatialGDKEditor::Schema;
 
@@ -20,7 +20,6 @@ DEFINE_LOG_CATEGORY(LogSchemaGenerator);
 
 namespace
 {
-
 ESchemaComponentType PropertyGroupToSchemaComponentType(EReplicatedPropertyGroup Group)
 {
 	if (Group == REP_MultiClient)
@@ -121,24 +120,23 @@ FString PropertyToSchemaType(UProperty* Property)
 
 void WriteSchemaRepField(FCodeWriter& Writer, const TSharedPtr<FUnrealProperty> RepProp, const int FieldCounter)
 {
-	Writer.Printf("{0} {1} = {2};",
-		*PropertyToSchemaType(RepProp->Property),
-		*SchemaFieldName(RepProp),
-		FieldCounter
-	);
+	Writer.Printf("{0} {1} = {2};", *PropertyToSchemaType(RepProp->Property), *SchemaFieldName(RepProp), FieldCounter);
 }
 
 void WriteSchemaHandoverField(FCodeWriter& Writer, const TSharedPtr<FUnrealProperty> HandoverProp, const int FieldCounter)
 {
-	Writer.Printf("{0} {1} = {2};",
-		*PropertyToSchemaType(HandoverProp->Property),
-		*SchemaFieldName(HandoverProp),
-		FieldCounter
-	);
+	Writer.Printf("{0} {1} = {2};", *PropertyToSchemaType(HandoverProp->Property), *SchemaFieldName(HandoverProp), FieldCounter);
 }
 
 // Generates schema for a statically attached subobject on an Actor.
-FActorSpecificSubobjectSchemaData GenerateSchemaForStaticallyAttachedSubobject(FCodeWriter& Writer, FComponentIdGenerator& IdGenerator, FString PropertyName, TSharedPtr<FUnrealType>& TypeInfo, UClass* ComponentClass, UClass* ActorClass, int MapIndex, const FActorSpecificSubobjectSchemaData* ExistingSchemaData)
+FActorSpecificSubobjectSchemaData GenerateSchemaForStaticallyAttachedSubobject(FCodeWriter& Writer,
+																			   FComponentIdGenerator& IdGenerator,
+																			   FString PropertyName,
+																			   TSharedPtr<FUnrealType>& TypeInfo,
+																			   UClass* ComponentClass,
+																			   UClass* ActorClass,
+																			   int MapIndex,
+																			   const FActorSpecificSubobjectSchemaData* ExistingSchemaData)
 {
 	FUnrealFlatRepData RepData = GetFlatRepData(TypeInfo);
 
@@ -235,7 +233,8 @@ void GenerateSubobjectSchemaForActorIncludes(FCodeWriter& Writer, TSharedPtr<FUn
 }
 
 // Generates schema for all statically attached subobjects on an Actor.
-void GenerateSubobjectSchemaForActor(FComponentIdGenerator& IdGenerator, UClass* ActorClass, TSharedPtr<FUnrealType> TypeInfo, FString SchemaPath, FActorSchemaData& ActorSchemaData, const FActorSchemaData* ExistingSchemaData)
+void GenerateSubobjectSchemaForActor(
+	FComponentIdGenerator& IdGenerator, UClass* ActorClass, TSharedPtr<FUnrealType> TypeInfo, FString SchemaPath, FActorSchemaData& ActorSchemaData, const FActorSchemaData* ExistingSchemaData)
 {
 	FCodeWriter Writer;
 
@@ -243,7 +242,7 @@ void GenerateSubobjectSchemaForActor(FComponentIdGenerator& IdGenerator, UClass*
 		// Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 		// Note that this file has been generated automatically
 		package unreal.generated.{0}.subobjects;)""",
-		*ClassPathToSchemaName[ActorClass->GetPathName()].ToLower());
+				  *ClassPathToSchemaName[ActorClass->GetPathName()].ToLower());
 
 	Writer.PrintNewLine();
 
@@ -276,7 +275,8 @@ void GenerateSubobjectSchemaForActor(FComponentIdGenerator& IdGenerator, UClass*
 					}
 				}
 			}
-			SubobjectData = GenerateSchemaForStaticallyAttachedSubobject(Writer, IdGenerator, UnrealNameToSchemaComponentName(SubobjectTypeInfo->Name.ToString()), SubobjectTypeInfo, SubobjectClass, ActorClass, 0, ExistingSubobjectSchemaData);
+			SubobjectData = GenerateSchemaForStaticallyAttachedSubobject(
+				Writer, IdGenerator, UnrealNameToSchemaComponentName(SubobjectTypeInfo->Name.ToString()), SubobjectTypeInfo, SubobjectClass, ActorClass, 0, ExistingSubobjectSchemaData);
 		}
 		else
 		{
@@ -408,9 +408,11 @@ void GenerateSubobjectSchema(FComponentIdGenerator& IdGenerator, UClass* Class, 
 
 			if (!(ExpectedReplicatesPropData.IsValid() && ExpectedReplicatesPropData->Property == ReplicatesProp))
 			{
-				UE_LOG(LogSchemaGenerator, Error, TEXT("Did not find ActorComponent->bReplicates at field %d for class %s. Modifying the base Actor Component class is currently not supported."),
-					SpatialConstants::ACTOR_COMPONENT_REPLICATES_ID,
-					*Class->GetName());
+				UE_LOG(LogSchemaGenerator,
+					   Error,
+					   TEXT("Did not find ActorComponent->bReplicates at field %d for class %s. Modifying the base Actor Component class is currently not supported."),
+					   SpatialConstants::ACTOR_COMPONENT_REPLICATES_ID,
+					   *Class->GetName());
 			}
 		}
 
@@ -419,9 +421,7 @@ void GenerateSubobjectSchema(FComponentIdGenerator& IdGenerator, UClass* Class, 
 		Writer.Indent();
 		for (auto& RepProp : RepData[Group])
 		{
-			WriteSchemaRepField(Writer,
-				RepProp.Value,
-				RepProp.Value->ReplicationData->Handle);
+			WriteSchemaRepField(Writer, RepProp.Value, RepProp.Value->ReplicationData->Handle);
 		}
 		Writer.Outdent().Print("}");
 	}
@@ -437,9 +437,7 @@ void GenerateSubobjectSchema(FComponentIdGenerator& IdGenerator, UClass* Class, 
 		for (auto& Prop : HandoverData)
 		{
 			FieldCounter++;
-			WriteSchemaHandoverField(Writer,
-				Prop.Value,
-				FieldCounter);
+			WriteSchemaHandoverField(Writer, Prop.Value, FieldCounter);
 		}
 		Writer.Outdent().Print("}");
 	}
@@ -452,11 +450,14 @@ void GenerateSubobjectSchema(FComponentIdGenerator& IdGenerator, UClass* Class, 
 
 	// Use previously generated component IDs when possible.
 	const FSubobjectSchemaData* const ExistingSchemaData = SubobjectClassPathToSchema.Find(Class->GetPathName());
-	if (ExistingSchemaData != nullptr && !ExistingSchemaData->GeneratedSchemaName.IsEmpty()
-		&& ExistingSchemaData->GeneratedSchemaName != ClassPathToSchemaName[Class->GetPathName()])
+	if (ExistingSchemaData != nullptr && !ExistingSchemaData->GeneratedSchemaName.IsEmpty() && ExistingSchemaData->GeneratedSchemaName != ClassPathToSchemaName[Class->GetPathName()])
 	{
-		UE_LOG(LogSchemaGenerator, Error, TEXT("Saved generated schema name does not match in-memory version for class %s - schema %s : %s"),
-			*Class->GetPathName(), *ExistingSchemaData->GeneratedSchemaName, *ClassPathToSchemaName[Class->GetPathName()]);
+		UE_LOG(LogSchemaGenerator,
+			   Error,
+			   TEXT("Saved generated schema name does not match in-memory version for class %s - schema %s : %s"),
+			   *Class->GetPathName(),
+			   *ExistingSchemaData->GeneratedSchemaName,
+			   *ClassPathToSchemaName[Class->GetPathName()]);
 		UE_LOG(LogSchemaGenerator, Error, TEXT("Schema generation may have resulted in component name clash, recommend you perform a full schema generation"));
 	}
 
@@ -540,7 +541,7 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 		// Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 		// Note that this file has been generated automatically
 		package unreal.generated.{0};)""",
-		*ClassPathToSchemaName[Class->GetPathName()].ToLower());
+				  *ClassPathToSchemaName[Class->GetPathName()].ToLower());
 
 	// Will always be included since AActor has replicated pointers to other actors
 	Writer.PrintNewLine();
@@ -559,7 +560,7 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 			continue;
 		}
 
-		// If this class is an Actor, it MUST have bTearOff at field ID 3.	
+		// If this class is an Actor, it MUST have bTearOff at field ID 3.
 		if (Group == REP_MultiClient && Class->IsChildOf<AActor>())
 		{
 			TSharedPtr<FUnrealProperty> ExpectedReplicatesPropData = RepData[Group].FindRef(SpatialConstants::ACTOR_TEAROFF_ID);
@@ -567,9 +568,11 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 
 			if (!(ExpectedReplicatesPropData.IsValid() && ExpectedReplicatesPropData->Property == ReplicatesProp))
 			{
-				UE_LOG(LogSchemaGenerator, Error, TEXT("Did not find Actor->bTearOff at field %d for class %s. Modifying the base Actor class is currently not supported."),
-					SpatialConstants::ACTOR_TEAROFF_ID,
-					*Class->GetName());
+				UE_LOG(LogSchemaGenerator,
+					   Error,
+					   TEXT("Did not find Actor->bTearOff at field %d for class %s. Modifying the base Actor class is currently not supported."),
+					   SpatialConstants::ACTOR_TEAROFF_ID,
+					   *Class->GetName());
 			}
 		}
 
@@ -595,9 +598,7 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 		for (auto& RepProp : RepData[Group])
 		{
 			FieldCounter++;
-			WriteSchemaRepField(Writer,
-				RepProp.Value,
-				RepProp.Value->ReplicationData->Handle);
+			WriteSchemaRepField(Writer, RepProp.Value, RepProp.Value->ReplicationData->Handle);
 		}
 
 		Writer.Outdent().Print("}");
@@ -629,9 +630,7 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 		for (auto& Prop : HandoverData)
 		{
 			FieldCounter++;
-			WriteSchemaHandoverField(Writer,
-				Prop.Value,
-				FieldCounter);
+			WriteSchemaHandoverField(Writer, Prop.Value, FieldCounter);
 		}
 		Writer.Outdent().Print("}");
 	}
@@ -648,8 +647,12 @@ void GenerateActorSchema(FComponentIdGenerator& IdGenerator, UClass* Class, TSha
 		{
 			if (FMath::FloorToFloat(NCD) != NCD)
 			{
-				UE_LOG(LogSchemaGenerator, Warning, TEXT("Fractional Net Cull Distance values are not supported and may result in incorrect behaviour. "
-					"Please modify class's (%s) Net Cull Distance Squared value (%f)"), *Class->GetPathName(), NCD);
+				UE_LOG(LogSchemaGenerator,
+					   Warning,
+					   TEXT("Fractional Net Cull Distance values are not supported and may result in incorrect behaviour. "
+							"Please modify class's (%s) Net Cull Distance Squared value (%f)"),
+					   *Class->GetPathName(),
+					   NCD);
 			}
 
 			NetCullDistanceToComponentId.Add(NCD, 0);
@@ -671,8 +674,16 @@ void GenerateRPCEndpointsSchema(FString SchemaPath)
 	Writer.Print("import \"unreal/gdk/core_types.schema\";");
 	Writer.Print("import \"unreal/gdk/rpc_payload.schema\";");
 
-	GenerateRPCEndpoint(Writer, TEXT("ClientEndpoint"), SpatialConstants::CLIENT_ENDPOINT_COMPONENT_ID, { ERPCType::ServerReliable, ERPCType::ServerUnreliable }, { ERPCType::ClientReliable, ERPCType::ClientUnreliable });
-	GenerateRPCEndpoint(Writer, TEXT("ServerEndpoint"), SpatialConstants::SERVER_ENDPOINT_COMPONENT_ID, { ERPCType::ClientReliable, ERPCType::ClientUnreliable }, { ERPCType::ServerReliable, ERPCType::ServerUnreliable });
+	GenerateRPCEndpoint(Writer,
+						TEXT("ClientEndpoint"),
+						SpatialConstants::CLIENT_ENDPOINT_COMPONENT_ID,
+						{ ERPCType::ServerReliable, ERPCType::ServerUnreliable },
+						{ ERPCType::ClientReliable, ERPCType::ClientUnreliable });
+	GenerateRPCEndpoint(Writer,
+						TEXT("ServerEndpoint"),
+						SpatialConstants::SERVER_ENDPOINT_COMPONENT_ID,
+						{ ERPCType::ClientReliable, ERPCType::ClientUnreliable },
+						{ ERPCType::ServerReliable, ERPCType::ServerUnreliable });
 	GenerateRPCEndpoint(Writer, TEXT("MulticastRPCs"), SpatialConstants::MULTICAST_RPCS_COMPONENT_ID, { ERPCType::NetMulticast }, {});
 
 	Writer.WriteToFile(FString::Printf(TEXT("%srpc_endpoints.schema"), *SchemaPath));

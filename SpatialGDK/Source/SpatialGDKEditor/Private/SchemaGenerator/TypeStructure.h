@@ -75,7 +75,7 @@ struct FUnrealType
 {
 	UStruct* Type;
 	UObject* Object; // Actual instance of the object. Could be the CDO or a Subobject on the CDO/BlueprintGeneratedClass
-	FName Name; // Name for the object. This is either the name of the object itself, or the name of the property in the blueprint
+	FName Name;		 // Name for the object. This is either the name of the object itself, or the name of the property in the blueprint
 	TMultiMap<UProperty*, TSharedPtr<FUnrealProperty>> Properties;
 	TWeakPtr<FUnrealProperty> ParentProperty;
 };
@@ -84,8 +84,8 @@ struct FUnrealType
 struct FUnrealProperty
 {
 	UProperty* Property;
-	TSharedPtr<FUnrealType> Type; // Only set if strong reference to object/struct property.
-	TSharedPtr<FUnrealRepData> ReplicationData; // Only set if property is replicated.
+	TSharedPtr<FUnrealType> Type;				  // Only set if strong reference to object/struct property.
+	TSharedPtr<FUnrealRepData> ReplicationData;	  // Only set if property is replicated.
 	TSharedPtr<FUnrealHandoverData> HandoverData; // Only set if property is marked for handover (and not replicated).
 	TWeakPtr<FUnrealType> ContainerType;
 
@@ -123,8 +123,8 @@ TArray<EReplicatedPropertyGroup> GetAllReplicatedPropertyGroups();
 // Convert a replicated property group to a string. Used to generate component names.
 FString GetReplicatedPropertyGroupName(EReplicatedPropertyGroup Group);
 
-// Given an AST, this applies the function 'Visitor' to all FUnrealType's contained transitively within the properties. bRecurseIntoObjects will control	
-// whether this function will recurse into a UObject's properties, which may not always be desirable. However, it will always recurse into substructs.	
+// Given an AST, this applies the function 'Visitor' to all FUnrealType's contained transitively within the properties. bRecurseIntoObjects will control
+// whether this function will recurse into a UObject's properties, which may not always be desirable. However, it will always recurse into substructs.
 // If the Visitor function returns false, it will not recurse any further into that part of the tree.
 void VisitAllObjects(TSharedPtr<FUnrealType> TypeNode, TFunction<bool(TSharedPtr<FUnrealType>)> Visitor);
 

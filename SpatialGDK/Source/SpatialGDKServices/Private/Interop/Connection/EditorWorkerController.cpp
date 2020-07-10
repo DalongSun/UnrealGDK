@@ -29,7 +29,7 @@ struct EditorWorkerController
 
 	void OnSpatialShutdown()
 	{
-		LastPIEEndTime = 0;	// Reset PIE end time to ensure replace-a-worker isn't called
+		LastPIEEndTime = 0; // Reset PIE end time to ensure replace-a-worker isn't called
 		FEditorDelegates::PrePIEEnded.Remove(PIEEndHandle);
 	}
 
@@ -88,7 +88,7 @@ struct EditorWorkerController
 
 	TArray<FString> WorkerIds;
 	TArray<FProcHandle> ReplaceProcesses;
-	int64 LastPIEEndTime = 0;	// Unix epoch time in seconds
+	int64 LastPIEEndTime = 0; // Unix epoch time in seconds
 	FDelegateHandle PIEEndHandle;
 	FDelegateHandle SpatialShutdownHandle;
 	bool bHasInitialized = false;

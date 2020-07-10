@@ -6,19 +6,17 @@
 
 #include "EntityComponentTestUtils.h"
 
-#define ENTITYCOMPONENTRECORD_TEST(TestName) \
-	GDK_TEST(Core, EntityComponentRecord, TestName)
+#define ENTITYCOMPONENTRECORD_TEST(TestName) GDK_TEST(Core, EntityComponentRecord, TestName)
 
 namespace SpatialGDK
 {
-
 namespace
 {
-	const Worker_EntityId TEST_ENTITY_ID = 1337;
-	const Worker_ComponentId TEST_COMPONENT_ID = 1338;
-	const double TEST_VALUE = 7331;
-	const double TEST_UPDATE_VALUE = 7332;
-}  // anonymous namespace
+const Worker_EntityId TEST_ENTITY_ID = 1337;
+const Worker_ComponentId TEST_COMPONENT_ID = 1338;
+const double TEST_VALUE = 7331;
+const double TEST_UPDATE_VALUE = 7332;
+} // anonymous namespace
 
 ENTITYCOMPONENTRECORD_TEST(GIVEN_empty_component_record_WHEN_component_added_THEN_has_component_data)
 {

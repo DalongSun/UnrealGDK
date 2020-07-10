@@ -45,11 +45,14 @@ bool USpatialClassInfoManager::ValidateOrExit_IsSupportedClass(const FString& Pa
 {
 	if (!IsSupportedClass(PathName))
 	{
-		UE_LOG(LogSpatialClassInfoManager, Error, TEXT("Could not find class %s in schema database. Double-check whether replication is enabled for this class, the class is marked as SpatialType, and schema has been generated."), *PathName);
+		UE_LOG(LogSpatialClassInfoManager,
+			   Error,
+			   TEXT("Could not find class %s in schema database. Double-check whether replication is enabled for this class, the class is marked as SpatialType, and schema has been generated."),
+			   *PathName);
 #if !UE_BUILD_SHIPPING
 		UE_LOG(LogSpatialClassInfoManager, Error, TEXT("Disconnecting due to no generated schema for %s."), *PathName);
 		QuitGame();
-#endif //!UE_BUILD_SHIPPING
+#endif //! UE_BUILD_SHIPPING
 		return false;
 	}
 
@@ -180,8 +183,7 @@ void USpatialClassInfoManager::CreateClassInfoForClass(UClass* Class)
 
 void USpatialClassInfoManager::FinishConstructingActorClassInfo(const FString& ClassPath, TSharedRef<FClassInfo>& Info)
 {
-	ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-	{
+	ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 		Worker_ComponentId ComponentId = SchemaDatabase->ActorClassPathToSchema[ClassPath].SchemaComponents[Type];
 
 		if (!ShouldTrackHandoverProperties() && Type == SCHEMA_Handover)
@@ -206,7 +208,12 @@ void USpatialClassInfoManager::FinishConstructingActorClassInfo(const FString& C
 		UClass* SubobjectClass = ResolveClass(SubobjectSchemaData.ClassPath);
 		if (SubobjectClass == nullptr)
 		{
-			UE_LOG(LogSpatialClassInfoManager, Error, TEXT("Failed to resolve the class for subobject %s (class path: %s) on actor class %s! This subobject will not be able to replicate in Spatial!"), *SubobjectSchemaData.Name.ToString(), *SubobjectSchemaData.ClassPath, *ClassPath);
+			UE_LOG(LogSpatialClassInfoManager,
+				   Error,
+				   TEXT("Failed to resolve the class for subobject %s (class path: %s) on actor class %s! This subobject will not be able to replicate in Spatial!"),
+				   *SubobjectSchemaData.Name.ToString(),
+				   *SubobjectSchemaData.ClassPath,
+				   *ClassPath);
 			continue;
 		}
 
@@ -216,8 +223,7 @@ void USpatialClassInfoManager::FinishConstructingActorClassInfo(const FString& C
 		TSharedRef<FClassInfo> ActorSubobjectInfo = MakeShared<FClassInfo>(SubobjectInfo);
 		ActorSubobjectInfo->SubobjectName = SubobjectSchemaData.Name;
 
-		ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-		{
+		ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 			if (!ShouldTrackHandoverProperties() && Type == SCHEMA_Handover)
 			{
 				return;
@@ -247,8 +253,7 @@ void USpatialClassInfoManager::FinishConstructingSubobjectClassInfo(const FStrin
 		int32 Offset = DynamicSubobjectData.SchemaComponents[SCHEMA_Data];
 		check(Offset != SpatialConstants::INVALID_COMPONENT_ID);
 
-		ForAllSchemaComponentTypes([&](ESchemaComponentType Type)
-		{
+		ForAllSchemaComponentTypes([&](ESchemaComponentType Type) {
 			Worker_ComponentId ComponentId = DynamicSubobjectData.SchemaComponents[Type];
 
 			if (ComponentId != SpatialConstants::INVALID_COMPONENT_ID)
@@ -404,12 +409,10 @@ TArray<Worker_ComponentId> USpatialClassInfoManager::GetComponentIdsForClassHier
 		{
 			OutComponentIds.Add(ComponentId);
 		}
-
 	}
 
 	return OutComponentIds;
 }
-
 
 bool USpatialClassInfoManager::GetOffsetByComponentId(Worker_ComponentId ComponentId, uint32& OutOffset)
 {
@@ -526,8 +529,12 @@ const FClassInfo* USpatialClassInfoManager::GetClassInfoForNewSubobject(const UO
 	if (Info == nullptr)
 	{
 		const AActor* Actor = Cast<AActor>(PackageMapClient->GetObjectFromEntityId(EntityId));
-		UE_LOG(LogSpatialPackageMap, Error, TEXT("Too many dynamic subobjects of type %s attached to Actor %s! Please increase"
-			" the max number of dynamically attached subobjects per class in the SpatialOS runtime settings."), *Object->GetClass()->GetName(), *GetNameSafe(Actor));
+		UE_LOG(LogSpatialPackageMap,
+			   Error,
+			   TEXT("Too many dynamic subobjects of type %s attached to Actor %s! Please increase"
+					" the max number of dynamically attached subobjects per class in the SpatialOS runtime settings."),
+			   *Object->GetClass()->GetName(),
+			   *GetNameSafe(Actor));
 	}
 
 	return Info;
@@ -590,15 +597,23 @@ Worker_ComponentId USpatialClassInfoManager::ComputeActorInterestComponentId(con
 		const AActor* DefaultActor = ActorForRelevancy->GetClass()->GetDefaultObject<AActor>();
 		if (ActorForRelevancy->NetCullDistanceSquared != DefaultActor->NetCullDistanceSquared)
 		{
-			UE_LOG(LogSpatialClassInfoManager, Error, TEXT("Could not find Net Cull Distance Component for distance %f, processing Actor %s via %s, because its Net Cull Distance is different from its default one."),
-				ActorForRelevancy->NetCullDistanceSquared, *Actor->GetPathName(), *ActorForRelevancy->GetPathName());
+			UE_LOG(LogSpatialClassInfoManager,
+				   Error,
+				   TEXT("Could not find Net Cull Distance Component for distance %f, processing Actor %s via %s, because its Net Cull Distance is different from its default one."),
+				   ActorForRelevancy->NetCullDistanceSquared,
+				   *Actor->GetPathName(),
+				   *ActorForRelevancy->GetPathName());
 
 			return ComputeActorInterestComponentId(DefaultActor);
 		}
 		else
 		{
-			UE_LOG(LogSpatialClassInfoManager, Error, TEXT("Could not find Net Cull Distance Component for distance %f, processing Actor %s via %s. Have you generated schema?"),
-				ActorForRelevancy->NetCullDistanceSquared, *Actor->GetPathName(), *ActorForRelevancy->GetPathName());
+			UE_LOG(LogSpatialClassInfoManager,
+				   Error,
+				   TEXT("Could not find Net Cull Distance Component for distance %f, processing Actor %s via %s. Have you generated schema?"),
+				   ActorForRelevancy->NetCullDistanceSquared,
+				   *Actor->GetPathName(),
+				   *ActorForRelevancy->GetPathName());
 		}
 	}
 	return SpatialConstants::INVALID_COMPONENT_ID;

@@ -1,14 +1,14 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
 #include "SpatialTestPossession.h"
-#include "TestPossessionPawn.h"
-#include "GameFramework/PlayerController.h"
 #include "Containers/Array.h"
+#include "GameFramework/PlayerController.h"
 #include "SpatialFunctionalTestFlowController.h"
+#include "TestPossessionPawn.h"
 
 /**
  * This test tests client possession over pawns.
- * 
+ *
  * The test includes a single server and two client workers. The client workers begin with a player controller and their default pawns, which they initially possess.
  * The flow is as follows:
  *  - Setup:
@@ -60,9 +60,11 @@ void ASpatialTestPossession::BeginPlay()
 		}
 
 		Test->FinishStep();
-		});
+	});
 
-	AddClientStep(TEXT("SpatialTestPossessionClientCheckStep"), 0,
+	AddClientStep(
+		TEXT("SpatialTestPossessionClientCheckStep"),
+		0,
 		[](ASpatialFunctionalTest* NetTest) -> bool {
 			AController* PlayerController = Cast<AController>(NetTest->GetLocalFlowController()->GetOwner());
 			return IsValid(PlayerController->GetPawn());
@@ -86,5 +88,5 @@ void ASpatialTestPossession::BeginPlay()
 			OriginalPawnPair.Key->Possess(OriginalPawnPair.Value);
 		}
 		Test->FinishStep();
-		});
+	});
 }

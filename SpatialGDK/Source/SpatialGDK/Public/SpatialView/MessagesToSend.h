@@ -2,17 +2,16 @@
 
 #pragma once
 
-#include "SpatialView/OutgoingComponentMessage.h"
-#include "SpatialView/CommandMessages.h"
 #include "Containers/Array.h"
+#include "SpatialView/CommandMessages.h"
+#include "SpatialView/OutgoingComponentMessage.h"
 
 namespace SpatialGDK
 {
-
 struct MessagesToSend
 {
 	TArray<CreateEntityRequest> CreateEntityRequests;
 	TArray<OutgoingComponentMessage> ComponentMessages;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

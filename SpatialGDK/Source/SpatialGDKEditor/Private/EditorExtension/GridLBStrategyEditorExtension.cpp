@@ -7,10 +7,10 @@
 class UGridBasedLBStrategy_Spy : public UGridBasedLBStrategy
 {
 public:
-	using UGridBasedLBStrategy::WorldWidth;
-	using UGridBasedLBStrategy::WorldHeight;
-	using UGridBasedLBStrategy::Rows;
 	using UGridBasedLBStrategy::Cols;
+	using UGridBasedLBStrategy::Rows;
+	using UGridBasedLBStrategy::WorldHeight;
+	using UGridBasedLBStrategy::WorldWidth;
 };
 
 bool FGridLBStrategyEditorExtension::GetDefaultLaunchConfiguration(const UGridBasedLBStrategy* Strategy, UAbstractRuntimeLoadBalancingStrategy*& OutConfiguration, FIntPoint& OutWorldDimensions) const

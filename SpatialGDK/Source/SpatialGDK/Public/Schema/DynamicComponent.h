@@ -8,7 +8,6 @@
 
 namespace SpatialGDK
 {
-
 // Represents any Unreal rep component
 struct DynamicComponent : Component
 {
@@ -16,8 +15,7 @@ struct DynamicComponent : Component
 
 	DynamicComponent(const Worker_ComponentData& InComponentData)
 		: ComponentData(Worker_AcquireComponentData(&InComponentData))
-	{
-	}
+	{}
 
 	~DynamicComponent()
 	{

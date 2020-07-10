@@ -38,7 +38,9 @@ void USpatialPingComponent::BeginPlay()
 	OwningController = Cast<APlayerController>(GetOwner());
 	if (OwningController == nullptr)
 	{
-		UE_LOG(LogSpatialPingComponent, Warning, TEXT("SpatialPingComponent did not find a valid owning PlayerController and will not function correctly. Ensure this component is only attached to a PlayerController."));
+		UE_LOG(LogSpatialPingComponent,
+			   Warning,
+			   TEXT("SpatialPingComponent did not find a valid owning PlayerController and will not function correctly. Ensure this component is only attached to a PlayerController."));
 	}
 
 	if (bStartWithPingEnabled)

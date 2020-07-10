@@ -5,13 +5,13 @@
 #include "Async/Async.h"
 #include "DirectoryWatcherModule.h"
 #include "Editor.h"
+#include "Internationalization/Regex.h"
 #include "Misc/CoreDelegates.h"
 #include "Misc/FileHelper.h"
 #include "Modules/ModuleManager.h"
 #include "SlateOptMacros.h"
 #include "SpatialGDKServicesConstants.h"
 #include "SpatialGDKServicesModule.h"
-#include "Internationalization/Regex.h"
 
 #define LOCTEXT_NAMESPACE "SSpatialOutputLog"
 
@@ -65,8 +65,7 @@ void SSpatialOutputLog::ReadLatestLogFile()
 	FDateTime LatestLogDirTime;
 
 	// Go through all log directories in the spatial logs and find the most recently created (if one exists) and print the log file to the Spatial Output.
-	bool bGetLatestLogDir = IFileManager::Get().IterateDirectoryStat(*LocalDeploymentLogsDir, [&LatestLogDir, &LatestLogDirTime](const TCHAR* FileName, const FFileStatData& FileStats)
-	{
+	bool bGetLatestLogDir = IFileManager::Get().IterateDirectoryStat(*LocalDeploymentLogsDir, [&LatestLogDir, &LatestLogDirTime](const TCHAR* FileName, const FFileStatData& FileStats) {
 		if (FileStats.bIsDirectory)
 		{
 			if (FileStats.CreationTime > LatestLogDirTime)
@@ -95,8 +94,7 @@ SSpatialOutputLog::~SSpatialOutputLog()
 void SSpatialOutputLog::StartUpLogDirectoryWatcher(const FString& LogDirectory)
 {
 	// This function will be called from the Slate thread and thus we must switch to the Game thread to create the Directory Watcher.
-	AsyncTask(ENamedThreads::GameThread, [this, LogDirectory]
-	{
+	AsyncTask(ENamedThreads::GameThread, [this, LogDirectory] {
 		FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 		if (IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get())
 		{
@@ -113,7 +111,10 @@ void SSpatialOutputLog::StartUpLogDirectoryWatcher(const FString& LogDirectory)
 			}
 
 			LogDirectoryChangedDelegate = IDirectoryWatcher::FDirectoryChanged::CreateRaw(this, &SSpatialOutputLog::OnLogDirectoryChanged);
-			DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(LogDirectory, LogDirectoryChangedDelegate, LogDirectoryChangedDelegateHandle, IDirectoryWatcher::WatchOptions::IncludeDirectoryChanges | IDirectoryWatcher::WatchOptions::IgnoreChangesInSubtree);
+			DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(LogDirectory,
+																	  LogDirectoryChangedDelegate,
+																	  LogDirectoryChangedDelegateHandle,
+																	  IDirectoryWatcher::WatchOptions::IncludeDirectoryChanges | IDirectoryWatcher::WatchOptions::IgnoreChangesInSubtree);
 		}
 	});
 }
@@ -152,8 +153,7 @@ void SSpatialOutputLog::OnClearLog()
 
 void SSpatialOutputLog::ShutdownLogDirectoryWatcher(const FString& LogDirectory)
 {
-	AsyncTask(ENamedThreads::GameThread, [LogDirectory, LogDirectoryChangedDelegateHandle = LogDirectoryChangedDelegateHandle]
-	{
+	AsyncTask(ENamedThreads::GameThread, [LogDirectory, LogDirectoryChangedDelegateHandle = LogDirectoryChangedDelegateHandle] {
 		FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 		if (IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get())
 		{
@@ -202,8 +202,7 @@ void SSpatialOutputLog::ResetPollingLogFile(const FString& LogFilePath)
 void SSpatialOutputLog::PollLogFile(const FString& LogFilePath)
 {
 	// Poll log files in a background thread since we are doing a lot of string operations.
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this, LogFilePath]
-	{
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this, LogFilePath] {
 		FScopeLock PollLock(&LogReaderMutex);
 
 		if (!LogReader.IsValid())
@@ -250,15 +249,17 @@ void SSpatialOutputLog::StartPollTimer(const FString& LogFilePath)
 {
 	// Start a timer to read the log file every PollTimeInterval seconds
 	// Timers must be started on the game thread.
-	AsyncTask(ENamedThreads::GameThread, [this, LogFilePath]
-	{
+	AsyncTask(ENamedThreads::GameThread, [this, LogFilePath] {
 		// It's possible that GEditor won't exist when shutting down.
 		if (GEditor != nullptr)
 		{
-			GEditor->GetTimerManager()->SetTimer(PollTimer, [this, LogFilePath]()
-			{
-				PollLogFile(LogFilePath);
-			}, PollTimeInterval, false);
+			GEditor->GetTimerManager()->SetTimer(
+				PollTimer,
+				[this, LogFilePath]() {
+					PollLogFile(LogFilePath);
+				},
+				PollTimeInterval,
+				false);
 		}
 	});
 }
@@ -288,8 +289,7 @@ void SSpatialOutputLog::FormatAndPrintRawErrorLine(const FString& LogLine)
 	FString LogMessage = FString::Printf(TEXT("%s \n Code: %s \n Code String: %s \n Error: %s \n Stack: %s"), *Message, *ErrorCode, *ErrorCodeString, *ErrorMessage, *Stack);
 
 	// Serialization must be done on the game thread.
-	AsyncTask(ENamedThreads::GameThread, [this, LogMessage]
-	{
+	AsyncTask(ENamedThreads::GameThread, [this, LogMessage] {
 		Serialize(*LogMessage, ELogVerbosity::Error, FName(TEXT("SpatialService")));
 	});
 }
@@ -320,7 +320,7 @@ void SSpatialOutputLog::FormatAndPrintRawLogLine(const FString& LogLine)
 
 		if (WorkerLogMatcher.FindNext())
 		{
-			LogCategory = WorkerLogMatcher.GetCaptureGroup(1); // Worker Name
+			LogCategory = WorkerLogMatcher.GetCaptureGroup(1);		  // Worker Name
 			FString WorkerType = WorkerLogMatcher.GetCaptureGroup(2); // Worker Type
 
 			if (LogCategory.StartsWith(WorkerType))
@@ -357,8 +357,7 @@ void SSpatialOutputLog::FormatAndPrintRawLogLine(const FString& LogLine)
 	}
 
 	// Serialization must be done on the game thread.
-	AsyncTask(ENamedThreads::GameThread, [this, LogMessage, LogVerbosity, LogCategory]
-	{
+	AsyncTask(ENamedThreads::GameThread, [this, LogMessage, LogVerbosity, LogCategory] {
 		Serialize(*LogMessage, LogVerbosity, FName(*LogCategory));
 	});
 }

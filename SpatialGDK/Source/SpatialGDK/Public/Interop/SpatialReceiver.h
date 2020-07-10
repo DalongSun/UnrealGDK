@@ -35,7 +35,10 @@ struct PendingAddComponentWrapper
 {
 	PendingAddComponentWrapper() = default;
 	PendingAddComponentWrapper(Worker_EntityId InEntityId, Worker_ComponentId InComponentId, TUniquePtr<SpatialGDK::DynamicComponent>&& InData)
-		: EntityId(InEntityId), ComponentId(InComponentId), Data(MoveTemp(InData)) {}
+		: EntityId(InEntityId)
+		, ComponentId(InComponentId)
+		, Data(MoveTemp(InData))
+	{}
 
 	// We define equality to cover just entity and component IDs since duplicated AddComponent ops
 	// will be moved into unique pointers and we cannot equate the underlying Worker_ComponentData.
@@ -101,6 +104,7 @@ public:
 	void MoveMappedObjectToUnmapped(const FUnrealObjectRef&);
 
 	void RetireWhenAuthoritive(Worker_EntityId EntityId, Worker_ComponentId ActorClassId, bool bIsNetStartup, bool bNeedsTearOff);
+
 private:
 	void EnterCriticalSection();
 	void LeaveCriticalSection();
@@ -120,10 +124,11 @@ private:
 	void HandleActorAuthority(const Worker_AuthorityChangeOp& Op);
 
 	void HandleRPCLegacy(const Worker_ComponentUpdateOp& Op);
-	void ProcessRPCEventField(Worker_EntityId EntityId, const Worker_ComponentUpdateOp &Op, const Worker_ComponentId RPCEndpointComponentId);
+	void ProcessRPCEventField(Worker_EntityId EntityId, const Worker_ComponentUpdateOp& Op, const Worker_ComponentId RPCEndpointComponentId);
 	void HandleRPC(const Worker_ComponentUpdateOp& Op);
 
-	void ApplyComponentDataOnActorCreation(Worker_EntityId EntityId, const Worker_ComponentData& Data, USpatialActorChannel& Channel, const FClassInfo& ActorClassInfo, TArray<ObjectPtrRefPair>& OutObjectsToResolve);
+	void ApplyComponentDataOnActorCreation(
+		Worker_EntityId EntityId, const Worker_ComponentData& Data, USpatialActorChannel& Channel, const FClassInfo& ActorClassInfo, TArray<ObjectPtrRefPair>& OutObjectsToResolve);
 	void ApplyComponentData(USpatialActorChannel& Channel, UObject& TargetObject, const Worker_ComponentData& Data);
 
 	void HandleIndividualAddComponent(Worker_EntityId EntityId, Worker_ComponentId ComponentId, TUniquePtr<SpatialGDK::DynamicComponent> Data);
@@ -142,7 +147,15 @@ private:
 
 	void ResolveIncomingOperations(UObject* Object, const FUnrealObjectRef& ObjectRef);
 
-	void ResolveObjectReferences(FRepLayout& RepLayout, UObject* ReplicatedObject, FSpatialObjectRepState& RepState, FObjectReferencesMap& ObjectReferencesMap, uint8* RESTRICT StoredData, uint8* RESTRICT Data, int32 MaxAbsOffset, TArray<UProperty*>& RepNotifies, bool& bOutSomeObjectsWereMapped);
+	void ResolveObjectReferences(FRepLayout& RepLayout,
+								 UObject* ReplicatedObject,
+								 FSpatialObjectRepState& RepState,
+								 FObjectReferencesMap& ObjectReferencesMap,
+								 uint8* RESTRICT StoredData,
+								 uint8* RESTRICT Data,
+								 int32 MaxAbsOffset,
+								 TArray<UProperty*>& RepNotifies,
+								 bool& bOutSomeObjectsWereMapped);
 
 	void ProcessQueuedActorRPCsOnEntityCreation(Worker_EntityId EntityId, SpatialGDK::RPCsOnEntityCreation& QueuedRPCs);
 	void UpdateShadowData(Worker_EntityId EntityId);

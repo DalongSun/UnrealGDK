@@ -5,8 +5,8 @@
 #include "Schema/Interest.h"
 
 #include "CoreMinimal.h"
-#include "Misc/Optional.h"
 #include "IpConnection.h"
+#include "Misc/Optional.h"
 #include "Runtime/Launch/Resources/Version.h"
 
 #include <WorkerSDK/improbable/c_worker.h>
@@ -39,12 +39,24 @@ public:
 
 	virtual void FlushDormancy(class AActor* Actor) override;
 
-	virtual bool IsReplayConnection() const override { return false; }
+	virtual bool IsReplayConnection() const override
+	{
+		return false;
+	}
 
 	// These functions don't make a lot of sense in a SpatialOS implementation.
-	virtual FString LowLevelGetRemoteAddress(bool bAppendPort = false) override { return TEXT(""); }
-	virtual FString LowLevelDescribe() override { return TEXT(""); }
-	virtual FString RemoteAddressToString() override { return TEXT(""); }
+	virtual FString LowLevelGetRemoteAddress(bool bAppendPort = false) override
+	{
+		return TEXT("");
+	}
+	virtual FString LowLevelDescribe() override
+	{
+		return TEXT("");
+	}
+	virtual FString RemoteAddressToString() override
+	{
+		return TEXT("");
+	}
 	virtual void CleanUp() override;
 	///////
 	// End NetConnection Interface

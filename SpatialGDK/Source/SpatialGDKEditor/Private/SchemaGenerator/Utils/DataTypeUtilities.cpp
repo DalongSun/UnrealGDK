@@ -34,7 +34,11 @@ FString UnrealNameToSchemaName(const FString& UnrealName, bool bWarnAboutRename 
 		FString Result = TEXT("ZZ") + Sanitized;
 		if (bWarnAboutRename)
 		{
-			UE_LOG(LogSpatialGDKSchemaGenerator, Warning, TEXT("%s starts with a digit (potentially after removing non-alphanumeric characters), so its schema name was changed to %s instead. To remove this warning, rename your asset."), *UnrealName, *Result);
+			UE_LOG(LogSpatialGDKSchemaGenerator,
+				   Warning,
+				   TEXT("%s starts with a digit (potentially after removing non-alphanumeric characters), so its schema name was changed to %s instead. To remove this warning, rename your asset."),
+				   *UnrealName,
+				   *Result);
 		}
 		return Result;
 	}
@@ -80,8 +84,7 @@ FString SchemaFieldName(const TSharedPtr<FUnrealProperty> Property)
 {
 	// Transform the property chain into a chain of names.
 	TArray<FString> ChainNames;
-	Algo::Transform(GetPropertyChain(Property), ChainNames, [](const TSharedPtr<FUnrealProperty>& Property) -> FString
-	{
+	Algo::Transform(GetPropertyChain(Property), ChainNames, [](const TSharedPtr<FUnrealProperty>& Property) -> FString {
 		FString PropName = Property->Property->GetName().ToLower();
 		if (Property->Property->ArrayDim > 1)
 		{

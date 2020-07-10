@@ -48,14 +48,12 @@ struct FWorkerRegionInfo
 	FBox2D Extents;
 };
 
-UCLASS(SpatialType=(NotPersistent), Blueprintable, NotPlaceable)
-class SPATIALGDK_API ASpatialDebugger :
-	public AInfo
+UCLASS(SpatialType = (NotPersistent), Blueprintable, NotPlaceable)
+class SPATIALGDK_API ASpatialDebugger : public AInfo
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
@@ -98,19 +96,19 @@ public:
 	bool bShowWorkerRegions = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visualization, meta = (ToolTip = "Texture to use for the Auth Icon"))
-	UTexture2D *AuthTexture;
+	UTexture2D* AuthTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visualization, meta = (ToolTip = "Texture to use for the Auth Intent Icon"))
-	UTexture2D *AuthIntentTexture;
+	UTexture2D* AuthIntentTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visualization, meta = (ToolTip = "Texture to use for the Unlocked Icon"))
-	UTexture2D *UnlockedTexture;
+	UTexture2D* UnlockedTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visualization, meta = (ToolTip = "Texture to use for the Locked Icon"))
-	UTexture2D *LockedTexture;
+	UTexture2D* LockedTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visualization, meta = (ToolTip = "Texture to use for the Box Icon"))
-	UTexture2D *BoxTexture;
+	UTexture2D* BoxTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visualization, meta = (ToolTip = "WorldSpace offset of tag from actor pivot"))
 	FVector WorldSpaceActorTagOffset = FVector(0.0f, 0.0f, 200.0f);

@@ -4,9 +4,8 @@
 
 namespace SpatialGDK
 {
-
 ViewCoordinator::ViewCoordinator(TUniquePtr<AbstractConnectionHandler> ConnectionHandler)
-: ConnectionHandler(MoveTemp(ConnectionHandler))
+	: ConnectionHandler(MoveTemp(ConnectionHandler))
 {
 	Delta = View.GenerateViewDelta();
 }
@@ -87,4 +86,4 @@ TUniquePtr<AbstractOpList> ViewCoordinator::GenerateLegacyOpList() const
 	return Delta->GenerateLegacyOpList();
 }
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

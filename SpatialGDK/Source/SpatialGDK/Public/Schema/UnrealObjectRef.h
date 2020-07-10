@@ -53,12 +53,10 @@ struct SPATIALGDK_API FUnrealObjectRef
 
 	FORCEINLINE bool operator==(const FUnrealObjectRef& Other) const
 	{
-		return Entity == Other.Entity &&
-			Offset == Other.Offset &&
-			((!Path && !Other.Path) || (Path && Other.Path && Path->Equals(*Other.Path))) &&
-			((!Outer && !Other.Outer) || (Outer && Other.Outer && *Outer == *Other.Outer)) &&
-			// Intentionally don't compare bNoLoadOnClient since it does not affect equality.
-			bUseClassPathToLoadObject == Other.bUseClassPathToLoadObject;
+		return Entity == Other.Entity && Offset == Other.Offset && ((!Path && !Other.Path) || (Path && Other.Path && Path->Equals(*Other.Path)))
+			   && ((!Outer && !Other.Outer) || (Outer && Other.Outer && *Outer == *Other.Outer)) &&
+			   // Intentionally don't compare bNoLoadOnClient since it does not affect equality.
+			   bUseClassPathToLoadObject == Other.bUseClassPathToLoadObject;
 	}
 
 	FORCEINLINE bool operator!=(const FUnrealObjectRef& Other) const

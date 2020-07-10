@@ -57,7 +57,7 @@ void USpatialMetrics::TickMetrics(float NetDriverTime)
 
 	SpatialGDK::SpatialMetrics Metrics;
 	Metrics.Load = WorkerLoad;
-	
+
 	// User supplied metrics
 	TArray<FString> UnboundMetrics;
 	for (const TPair<FString, UserSuppliedMetric>& Gauge : UserSuppliedMetrics)
@@ -159,8 +159,7 @@ void USpatialMetrics::SpatialStopRPCMetrics()
 		RecentRPCs.GenerateValueArray(RecentRPCArray);
 
 		// Show the most frequently called RPCs at the top.
-		RecentRPCArray.Sort([](const RPCStat& A, const RPCStat& B)
-		{
+		RecentRPCArray.Sort([](const RPCStat& A, const RPCStat& B) {
 			if (A.Type != B.Type)
 			{
 				return static_cast<int>(A.Type) < static_cast<int>(B.Type);
@@ -193,12 +192,29 @@ void USpatialMetrics::SpatialStopRPCMetrics()
 				PrevType = Stat.Type;
 				UE_LOG(LogSpatialMetrics, Log, TEXT("%s"), *SeparatorLine);
 			}
-			UE_LOG(LogSpatialMetrics, Log, TEXT("%s | %s | %10d | %10.4f | %13d | %12.4f | %11.4f"), *RPCTypeField.RightPad(18), *Stat.Name.RightPad(MaxRPCNameLen), Stat.Calls, Stat.Calls / TrackRPCInterval, Stat.TotalPayload, (float)Stat.TotalPayload / Stat.Calls, Stat.TotalPayload / TrackRPCInterval);
+			UE_LOG(LogSpatialMetrics,
+				   Log,
+				   TEXT("%s | %s | %10d | %10.4f | %13d | %12.4f | %11.4f"),
+				   *RPCTypeField.RightPad(18),
+				   *Stat.Name.RightPad(MaxRPCNameLen),
+				   Stat.Calls,
+				   Stat.Calls / TrackRPCInterval,
+				   Stat.TotalPayload,
+				   (float)Stat.TotalPayload / Stat.Calls,
+				   Stat.TotalPayload / TrackRPCInterval);
 			TotalCalls += Stat.Calls;
 			TotalPayload += Stat.TotalPayload;
 		}
 		UE_LOG(LogSpatialMetrics, Log, TEXT("%s"), *SeparatorLine);
-		UE_LOG(LogSpatialMetrics, Log, TEXT("Total              | %s | %10d | %10.4f | %13d | %12.4f | %11.4f"), *FString::ChrN(MaxRPCNameLen, ' '), TotalCalls, TotalCalls / TrackRPCInterval, TotalPayload, (float)TotalPayload / TotalCalls, TotalPayload / TrackRPCInterval);
+		UE_LOG(LogSpatialMetrics,
+			   Log,
+			   TEXT("Total              | %s | %10d | %10.4f | %13d | %12.4f | %11.4f"),
+			   *FString::ChrN(MaxRPCNameLen, ' '),
+			   TotalCalls,
+			   TotalCalls / TrackRPCInterval,
+			   TotalPayload,
+			   (float)TotalPayload / TotalCalls,
+			   TotalPayload / TrackRPCInterval);
 
 		RecentRPCs.Empty();
 	}
@@ -244,7 +260,7 @@ void USpatialMetrics::SpatialModifySetting(const FString& Name, float Value)
 			Request.component_id = SpatialConstants::DEBUG_METRICS_COMPONENT_ID;
 			Request.command_index = SpatialConstants::DEBUG_METRICS_MODIFY_SETTINGS_ID;
 			Request.schema_type = Schema_CreateCommandRequest();
-			
+
 			Schema_Object* RequestObject = Schema_GetCommandRequestObject(Request.schema_type);
 			SpatialGDK::AddStringToSchema(RequestObject, SpatialConstants::MODIFY_SETTING_PAYLOAD_NAME_ID, Name);
 			Schema_AddFloat(RequestObject, SpatialConstants::MODIFY_SETTING_PAYLOAD_VALUE_ID, Value);
@@ -363,7 +379,11 @@ void USpatialMetrics::RemoveCustomMetric(const FString& Metric)
 {
 	if (UserSuppliedMetric* ExistingMetric = UserSuppliedMetrics.Find(Metric))
 	{
-		UE_LOG(LogSpatialMetrics, Log, TEXT("USpatialMetrics: Removing custom metric %s (%s)"), *Metric, ExistingMetric->GetUObject() ? *GetNameSafe(ExistingMetric->GetUObject()) : TEXT("Not attached to UObject"));
+		UE_LOG(LogSpatialMetrics,
+			   Log,
+			   TEXT("USpatialMetrics: Removing custom metric %s (%s)"),
+			   *Metric,
+			   ExistingMetric->GetUObject() ? *GetNameSafe(ExistingMetric->GetUObject()) : TEXT("Not attached to UObject"));
 		UserSuppliedMetrics.Remove(Metric);
 	}
 }

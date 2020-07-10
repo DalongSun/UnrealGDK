@@ -33,7 +33,7 @@ public:
 	template <typename... T>
 	FCodeWriter& Printf(const FString& Format, const T&... Args)
 	{
-		return Print(FString::Format(*Format, TArray<FStringFormatArg>{Args...}));
+		return Print(FString::Format(*Format, TArray<FStringFormatArg>{ Args... }));
 	}
 
 	FCodeWriter& PrintNewLine();

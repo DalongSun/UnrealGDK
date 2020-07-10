@@ -22,7 +22,6 @@ ADormancyTestActor::ADormancyTestActor()
 #endif
 }
 
-
 void ADormancyTestActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

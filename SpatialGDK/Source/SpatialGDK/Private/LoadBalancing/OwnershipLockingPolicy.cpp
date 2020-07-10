@@ -45,12 +45,18 @@ ActorLockToken UOwnershipLockingPolicy::AcquireLock(AActor* Actor, FString Debug
 
 		AActor* OwnershipHierarchyRoot = SpatialGDK::GetHierarchyRoot(Actor);
 		AddOwnershipHierarchyRootInformation(OwnershipHierarchyRoot, Actor);
-		
+
 		ActorToLockingState.Add(Actor, MigrationLockElement{ 1, OwnershipHierarchyRoot });
 	}
 
-	UE_LOG(LogOwnershipLockingPolicy, Verbose, TEXT("Acquiring migration lock. "
-		"Actor: %s. Lock name: %s. Token %d: Locks held: %d."), *GetNameSafe(Actor), *DebugString, NextToken, ActorToLockingState.Find(Actor)->LockCount);
+	UE_LOG(LogOwnershipLockingPolicy,
+		   Verbose,
+		   TEXT("Acquiring migration lock. "
+				"Actor: %s. Lock name: %s. Token %d: Locks held: %d."),
+		   *GetNameSafe(Actor),
+		   *DebugString,
+		   NextToken,
+		   ActorToLockingState.Find(Actor)->LockCount);
 	TokenToNameAndActor.Emplace(NextToken, LockNameAndActor{ MoveTemp(DebugString), Actor });
 	return NextToken++;
 }
@@ -177,7 +183,7 @@ void UOwnershipLockingPolicy::OnOwnerUpdated(const AActor* Actor, const AActor* 
 			RecalculateAllExplicitlyLockedActorsInThisHierarchy(OldHierarchyRoot);
 		}
 	}
- }
+}
 
 void UOwnershipLockingPolicy::OnExplicitlyLockedActorDeleted(AActor* DestroyedActor)
 {

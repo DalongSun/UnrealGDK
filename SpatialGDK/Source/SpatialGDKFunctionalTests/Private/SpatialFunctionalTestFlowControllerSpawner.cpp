@@ -1,25 +1,23 @@
 #include "SpatialFunctionalTestFlowControllerSpawner.h"
 
-
-#include "Engine/World.h"
 #include "Engine/NetDriver.h"
+#include "Engine/World.h"
+#include "EngineClasses/SpatialNetDriver.h"
 #include "GameFramework/PlayerController.h"
 #include "LoadBalancing/AbstractLBStrategy.h"
-#include "EngineClasses/SpatialNetDriver.h"
-#include "SpatialFunctionalTestFlowController.h"
 #include "SpatialFunctionalTest.h"
+#include "SpatialFunctionalTestFlowController.h"
 
 SpatialFunctionalTestFlowControllerSpawner::SpatialFunctionalTestFlowControllerSpawner()
 	: SpatialFunctionalTestFlowControllerSpawner(nullptr, TSubclassOf<ASpatialFunctionalTestFlowController>(ASpatialFunctionalTestFlowController::StaticClass()))
-{
-}
+{}
 
-SpatialFunctionalTestFlowControllerSpawner::SpatialFunctionalTestFlowControllerSpawner(ASpatialFunctionalTest* ControllerOwningTest, TSubclassOf<ASpatialFunctionalTestFlowController> FlowControllerClassToSpawn)
-	: OwningTest(ControllerOwningTest),
-	FlowControllerClass(FlowControllerClassToSpawn),
-	NextClientControllerId(1)
-{
-}
+SpatialFunctionalTestFlowControllerSpawner::SpatialFunctionalTestFlowControllerSpawner(ASpatialFunctionalTest* ControllerOwningTest,
+																					   TSubclassOf<ASpatialFunctionalTestFlowController> FlowControllerClassToSpawn)
+	: OwningTest(ControllerOwningTest)
+	, FlowControllerClass(FlowControllerClassToSpawn)
+	, NextClientControllerId(1)
+{}
 
 void SpatialFunctionalTestFlowControllerSpawner::ModifyFlowControllerClassToSpawn(TSubclassOf<ASpatialFunctionalTestFlowController> FlowControllerClassToSpawn)
 {
@@ -32,7 +30,7 @@ ASpatialFunctionalTestFlowController* SpatialFunctionalTestFlowControllerSpawner
 	UNetDriver* NetDriver = World->GetNetDriver();
 	if (NetDriver != nullptr && !NetDriver->IsServer())
 	{
-		//Not a server, quit
+		// Not a server, quit
 		return nullptr;
 	}
 
@@ -56,7 +54,7 @@ ASpatialFunctionalTestFlowController* SpatialFunctionalTestFlowControllerSpawner
 	FlowController->OwningTest = OwningTest;
 	FlowController->ControllerType = ESpatialFunctionalTestFlowControllerType::Client;
 	FlowController->ControllerInstanceId = INVALID_FLOW_CONTROLLER_ID; // by default have invalid id, Test Authority will set it to ensure uniqueness
-	
+
 	FlowController->FinishSpawning(OwningTest->GetActorTransform(), true);
 	// TODO: Replace locking with custom LB strategy - UNR-3393
 	LockFlowControllerDelegations(FlowController);
@@ -66,7 +64,8 @@ ASpatialFunctionalTestFlowController* SpatialFunctionalTestFlowControllerSpawner
 
 void SpatialFunctionalTestFlowControllerSpawner::AssignClientFlowControllerId(ASpatialFunctionalTestFlowController* ClientFlowController)
 {
-	check(OwningTest->HasAuthority() && ClientFlowController != nullptr && ClientFlowController->ControllerType == ESpatialFunctionalTestFlowControllerType::Client && ClientFlowController->ControllerInstanceId == INVALID_FLOW_CONTROLLER_ID);
+	check(OwningTest->HasAuthority() && ClientFlowController != nullptr && ClientFlowController->ControllerType == ESpatialFunctionalTestFlowControllerType::Client
+		  && ClientFlowController->ControllerInstanceId == INVALID_FLOW_CONTROLLER_ID);
 
 	ClientFlowController->CrossServerSetControllerInstanceId(NextClientControllerId++);
 }
@@ -76,7 +75,7 @@ uint8 SpatialFunctionalTestFlowControllerSpawner::OwningServerIntanceId(UWorld* 
 	USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
 	if (SpatialNetDriver == nullptr || SpatialNetDriver->LoadBalanceStrategy == nullptr)
 	{
-		//not loadbalanced test, default instance 1
+		// not loadbalanced test, default instance 1
 		return 1;
 	}
 	else
@@ -88,7 +87,7 @@ uint8 SpatialFunctionalTestFlowControllerSpawner::OwningServerIntanceId(UWorld* 
 void SpatialFunctionalTestFlowControllerSpawner::LockFlowControllerDelegations(ASpatialFunctionalTestFlowController* FlowController) const
 {
 	USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(FlowController->GetNetDriver());
-	if(SpatialNetDriver == nullptr || SpatialNetDriver->LoadBalanceStrategy == nullptr)
+	if (SpatialNetDriver == nullptr || SpatialNetDriver->LoadBalanceStrategy == nullptr)
 	{
 		return;
 	}

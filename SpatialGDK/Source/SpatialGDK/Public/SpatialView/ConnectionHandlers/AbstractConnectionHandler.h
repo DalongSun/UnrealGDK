@@ -9,7 +9,6 @@
 
 namespace SpatialGDK
 {
-
 class AbstractConnectionHandler
 {
 public:
@@ -37,4 +36,4 @@ public:
 	// virtual const TArray<FString>& GetWorkerAttributes() const = 0;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

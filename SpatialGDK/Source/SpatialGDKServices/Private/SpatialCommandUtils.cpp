@@ -136,8 +136,7 @@ FProcHandle SpatialCommandUtils::LocalWorkerReplace(const FString& ServicePort, 
 	Command.Append(FString::Printf(TEXT(" --existing_worker_id %s"), *OldWorker));
 	Command.Append(FString::Printf(TEXT(" --replacing_worker_id %s"), *NewWorker));
 
-	return FPlatformProcess::CreateProc(*SpatialGDKServicesConstants::SpatialExe, *Command, false, true, true, OutProcessID, 2 /*PriorityModifier*/,
-		nullptr, nullptr, nullptr);
+	return FPlatformProcess::CreateProc(*SpatialGDKServicesConstants::SpatialExe, *Command, false, true, true, OutProcessID, 2 /*PriorityModifier*/, nullptr, nullptr, nullptr);
 }
 
 bool SpatialCommandUtils::GenerateDevAuthToken(bool bIsRunningInChina, FString& OutTokenSecret, FText& OutErrorMessage)
@@ -178,7 +177,8 @@ bool SpatialCommandUtils::GenerateDevAuthToken(bool bIsRunningInChina, FString& 
 	TSharedPtr<FJsonObject> JsonRootObject;
 	if (!(FJsonSerializer::Deserialize(JsonReader, JsonRootObject) && JsonRootObject.IsValid()))
 	{
-		OutErrorMessage = FText::Format(LOCTEXT("UnableToParseDevAuthToken_Error", "Unable to parse the received development authentication token. Result: {0}"), FText::FromString(DevAuthTokenResult));
+		OutErrorMessage
+			= FText::Format(LOCTEXT("UnableToParseDevAuthToken_Error", "Unable to parse the received development authentication token. Result: {0}"), FText::FromString(DevAuthTokenResult));
 		return false;
 	}
 
@@ -193,7 +193,8 @@ bool SpatialCommandUtils::GenerateDevAuthToken(bool bIsRunningInChina, FString& 
 	FString TokenSecret;
 	if (!(*JsonDataObject)->TryGetStringField("token_secret", TokenSecret))
 	{
-		OutErrorMessage = FText::Format(LOCTEXT("UnableToParseTokenSecretFromJson_Error", "Unable to parse the token_secret field inside the received json data. Result: {0}"), FText::FromString(DevAuthTokenResult));
+		OutErrorMessage = FText::Format(LOCTEXT("UnableToParseTokenSecretFromJson_Error", "Unable to parse the token_secret field inside the received json data. Result: {0}"),
+										FText::FromString(DevAuthTokenResult));
 		return false;
 	}
 
@@ -227,7 +228,9 @@ bool SpatialCommandUtils::HasDevLoginTag(const FString& DeploymentName, bool bIs
 		{
 			JsonRootObject->TryGetStringField("error", ErrorMessage);
 		}
-		OutErrorMessage = FText::Format(LOCTEXT("DeploymentTagsRetrievalFailed", "Unable to retrieve deployment tags. Is the deployment {0} running?\nResult: {1}"), FText::FromString(DeploymentName), FText::FromString(ErrorMessage));
+		OutErrorMessage = FText::Format(LOCTEXT("DeploymentTagsRetrievalFailed", "Unable to retrieve deployment tags. Is the deployment {0} running?\nResult: {1}"),
+										FText::FromString(DeploymentName),
+										FText::FromString(ErrorMessage));
 		return false;
 	};
 
@@ -247,7 +250,6 @@ bool SpatialCommandUtils::HasDevLoginTag(const FString& DeploymentName, bool bIs
 		OutErrorMessage = FText::Format(LOCTEXT("DeploymentTagsJsonInvalid", "Unable to parse the received tags.\nResult: {0}"), FText::FromString(RetrieveTagsResult));
 		return false;
 	}
-
 
 	FString JsonMessage;
 	if (!JsonRootObject->TryGetStringField("msg", JsonMessage))
@@ -276,7 +278,9 @@ bool SpatialCommandUtils::HasDevLoginTag(const FString& DeploymentName, bool bIs
 		return true;
 	}
 
-	OutErrorMessage = FText::Format(LOCTEXT("DevLoginTagNotAvailable", "The cloud deployment {0} does not have the {1} tag associated with it. The client won't be able to connect to the deployment."), FText::FromString(DeploymentName), FText::FromString(SpatialGDKServicesConstants::DevLoginDeploymentTag));
+	OutErrorMessage = FText::Format(LOCTEXT("DevLoginTagNotAvailable", "The cloud deployment {0} does not have the {1} tag associated with it. The client won't be able to connect to the deployment."),
+									FText::FromString(DeploymentName),
+									FText::FromString(SpatialGDKServicesConstants::DevLoginDeploymentTag));
 	return false;
 }
 

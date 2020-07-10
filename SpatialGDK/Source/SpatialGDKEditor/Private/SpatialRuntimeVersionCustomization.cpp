@@ -18,14 +18,12 @@ TSharedRef<IPropertyTypeCustomization> FSpatialRuntimeVersionCustomization::Make
 
 void FSpatialRuntimeVersionCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	HeaderRow
-		.NameContent()
-		[
-			StructPropertyHandle->CreatePropertyNameWidget()
-		];
+	HeaderRow.NameContent()[StructPropertyHandle->CreatePropertyNameWidget()];
 }
 
-void FSpatialRuntimeVersionCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FSpatialRuntimeVersionCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
+															IDetailChildrenBuilder& StructBuilder,
+															IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	const FName& PinnedGDKRuntimeLocalPropertyName = GET_MEMBER_NAME_CHECKED(FRuntimeVariantVersion, bUseGDKPinnedRuntimeVersionForLocal);
 	const FName& PinnedGDKRuntimeCloudPropertyName = GET_MEMBER_NAME_CHECKED(FRuntimeVariantVersion, bUseGDKPinnedRuntimeVersionForCloud);
@@ -54,27 +52,8 @@ void FSpatialRuntimeVersionCustomization::CustomizeChildren(TSharedRef<IProperty
 		FString PinnedVersionDisplay = FString::Printf(TEXT("GDK Pinned Version : %s"), *VariantVersion->GetPinnedVersion());
 
 		CustomRow.CustomWidget()
-			.NameContent()
-			[
-				ChildProperty->CreatePropertyNameWidget()
-			]
-			.ValueContent()
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.HAlign(HAlign_Left)
-				.AutoWidth()
-				[
-					ChildProperty->CreatePropertyValueWidget()
-				]
-				+ SHorizontalBox::Slot()
-				.Padding(5)
-				.HAlign(HAlign_Center)
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text(FText::FromString(PinnedVersionDisplay))
-				]
-			];
+			.NameContent()[ChildProperty->CreatePropertyNameWidget()]
+			.ValueContent()[SNew(SHorizontalBox) + SHorizontalBox::Slot().HAlign(HAlign_Left).AutoWidth()[ChildProperty->CreatePropertyValueWidget()]
+							+ SHorizontalBox::Slot().Padding(5).HAlign(HAlign_Center).AutoWidth()[SNew(STextBlock).Text(FText::FromString(PinnedVersionDisplay))]];
 	}
 }

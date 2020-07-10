@@ -9,8 +9,8 @@
 #include "Interop/SpatialClassInfoManager.h"
 #include "Interop/SpatialStaticComponentView.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "Schema/StandardLibrary.h"
 #include "Schema/RPCPayload.h"
+#include "Schema/StandardLibrary.h"
 #include "SpatialCommonTypes.h"
 #include "SpatialGDKSettings.h"
 #include "Utils/RepDataUtils.h"
@@ -35,11 +35,16 @@ struct FObjectReferences
 		, Array(MoveTemp(Other.Array))
 		, ShadowOffset(Other.ShadowOffset)
 		, ParentIndex(Other.ParentIndex)
-		, Property(Other.Property) {}
+		, Property(Other.Property)
+	{}
 
 	// Single property constructor
 	FObjectReferences(const FUnrealObjectRef& InObjectRef, bool bUnresolved, int32 InCmdIndex, int32 InParentIndex, UProperty* InProperty)
-		: bSingleProp(true), bFastArrayProp(false), ShadowOffset(InCmdIndex), ParentIndex(InParentIndex), Property(InProperty)
+		: bSingleProp(true)
+		, bFastArrayProp(false)
+		, ShadowOffset(InCmdIndex)
+		, ParentIndex(InParentIndex)
+		, Property(InProperty)
 	{
 		if (bUnresolved)
 		{
@@ -52,25 +57,47 @@ struct FObjectReferences
 	}
 
 	// Struct (memory stream) constructor
-	FObjectReferences(const TArray<uint8>& InBuffer, int32 InNumBufferBits, TSet<FUnrealObjectRef>&& InDynamicRefs, TSet<FUnrealObjectRef>&& InUnresolvedRefs, int32 InCmdIndex, int32 InParentIndex, UProperty* InProperty, bool InFastArrayProp = false)
-		: MappedRefs(MoveTemp(InDynamicRefs)), UnresolvedRefs(MoveTemp(InUnresolvedRefs)), bSingleProp(false), bFastArrayProp(InFastArrayProp), Buffer(InBuffer), NumBufferBits(InNumBufferBits), ShadowOffset(InCmdIndex), ParentIndex(InParentIndex), Property(InProperty) {}
+	FObjectReferences(const TArray<uint8>& InBuffer,
+					  int32 InNumBufferBits,
+					  TSet<FUnrealObjectRef>&& InDynamicRefs,
+					  TSet<FUnrealObjectRef>&& InUnresolvedRefs,
+					  int32 InCmdIndex,
+					  int32 InParentIndex,
+					  UProperty* InProperty,
+					  bool InFastArrayProp = false)
+		: MappedRefs(MoveTemp(InDynamicRefs))
+		, UnresolvedRefs(MoveTemp(InUnresolvedRefs))
+		, bSingleProp(false)
+		, bFastArrayProp(InFastArrayProp)
+		, Buffer(InBuffer)
+		, NumBufferBits(InNumBufferBits)
+		, ShadowOffset(InCmdIndex)
+		, ParentIndex(InParentIndex)
+		, Property(InProperty)
+	{}
 
 	// Array constructor
 	FObjectReferences(FObjectReferencesMap* InArray, int32 InCmdIndex, int32 InParentIndex, UProperty* InProperty)
-		: bSingleProp(false), bFastArrayProp(false), Array(InArray), ShadowOffset(InCmdIndex), ParentIndex(InParentIndex), Property(InProperty) {}
+		: bSingleProp(false)
+		, bFastArrayProp(false)
+		, Array(InArray)
+		, ShadowOffset(InCmdIndex)
+		, ParentIndex(InParentIndex)
+		, Property(InProperty)
+	{}
 
-	TSet<FUnrealObjectRef>				MappedRefs;
-	TSet<FUnrealObjectRef>				UnresolvedRefs;
+	TSet<FUnrealObjectRef> MappedRefs;
+	TSet<FUnrealObjectRef> UnresolvedRefs;
 
-	bool								bSingleProp;
-	bool								bFastArrayProp;
-	TArray<uint8>						Buffer;
-	int32								NumBufferBits;
+	bool bSingleProp;
+	bool bFastArrayProp;
+	TArray<uint8> Buffer;
+	int32 NumBufferBits;
 
-	TUniquePtr<FObjectReferencesMap>	Array;
-	int32								ShadowOffset;
-	int32								ParentIndex;
-	UProperty*							Property;
+	TUniquePtr<FObjectReferencesMap> Array;
+	int32 ShadowOffset;
+	int32 ParentIndex;
+	UProperty* Property;
 };
 
 struct FPendingSubobjectAttachment
@@ -86,18 +113,25 @@ struct FPendingSubobjectAttachment
 class FSpatialObjectRepState
 {
 public:
-
-	FSpatialObjectRepState(FChannelObjectPair InThisObj) : ThisObj(InThisObj) {}
+	FSpatialObjectRepState(FChannelObjectPair InThisObj)
+		: ThisObj(InThisObj)
+	{}
 
 	void UpdateRefToRepStateMap(FObjectToRepStateMap& ReplicatorMap);
 	bool MoveMappedObjectToUnmapped(const FUnrealObjectRef& ObjRef);
-	bool HasUnresolved() const { return UnresolvedRefs.Num() == 0; }
+	bool HasUnresolved() const
+	{
+		return UnresolvedRefs.Num() == 0;
+	}
 
-	const FChannelObjectPair& GetChannelObjectPair() const { return ThisObj; }
+	const FChannelObjectPair& GetChannelObjectPair() const
+	{
+		return ThisObj;
+	}
 
 	FObjectReferencesMap ReferenceMap;
-	TSet< FUnrealObjectRef > ReferencedObj;
-	TSet< FUnrealObjectRef > UnresolvedRefs;
+	TSet<FUnrealObjectRef> ReferencedObj;
+	TSet<FUnrealObjectRef> UnresolvedRefs;
 
 private:
 	bool MoveMappedObjectToUnmapped_r(const FUnrealObjectRef& ObjRef, FObjectReferencesMap& ObjectReferencesMap);
@@ -106,14 +140,13 @@ private:
 	FChannelObjectPair ThisObj;
 };
 
-
 UCLASS(Transient)
 class SPATIALGDK_API USpatialActorChannel : public UActorChannel
 {
 	GENERATED_BODY()
 
 public:
-	USpatialActorChannel(const FObjectInitializer & ObjectInitializer = FObjectInitializer::Get());
+	USpatialActorChannel(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// SpatialOS Entity ID.
 	FORCEINLINE Worker_EntityId GetEntityId() const
@@ -166,7 +199,6 @@ public:
 		bIsAuthClient = IsAuth;
 	}
 
-
 	// Indicates whether this client worker has "ownership" (authority over Client endpoint) over the entity corresponding to this channel.
 	inline bool IsAuthoritativeClient() const
 	{
@@ -213,7 +245,7 @@ public:
 	}
 
 	// Begin UChannel interface
-	virtual void Init(UNetConnection * InConnection, int32 ChannelIndex, EChannelCreateFlags CreateFlag) override;
+	virtual void Init(UNetConnection* InConnection, int32 ChannelIndex, EChannelCreateFlags CreateFlag) override;
 	virtual int64 Close(EChannelCloseReason Reason) override;
 	// End UChannel interface
 
@@ -250,8 +282,14 @@ public:
 	void ServerProcessOwnershipChange();
 	void ClientProcessOwnershipChange(bool bNewNetOwned);
 
-	FORCEINLINE void MarkInterestDirty() { bInterestDirty = true; }
-	FORCEINLINE bool GetInterestDirty() const { return bInterestDirty; }
+	FORCEINLINE void MarkInterestDirty()
+	{
+		bInterestDirty = true;
+	}
+	FORCEINLINE bool GetInterestDirty() const
+	{
+		return bInterestDirty;
+	}
 
 	bool IsListening() const;
 

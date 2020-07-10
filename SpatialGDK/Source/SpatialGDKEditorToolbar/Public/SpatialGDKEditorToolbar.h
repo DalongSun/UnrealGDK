@@ -179,7 +179,7 @@ private:
 
 	TSharedPtr<SWindow> CloudDeploymentSettingsWindowPtr;
 	TSharedPtr<SSpatialGDKCloudDeploymentConfiguration> CloudDeploymentConfigPtr;
-	
+
 	FLocalDeploymentManager* LocalDeploymentManager;
 
 	TFuture<bool> AttemptSpatialAuthResult;

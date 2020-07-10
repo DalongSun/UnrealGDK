@@ -1,17 +1,16 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
-
 #include "SpatialTestCharacterMovement.h"
-#include "TestMovementCharacter.h"
-#include "SpatialFunctionalTestFlowController.h"
-#include "GameFramework/PlayerController.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "Engine/TriggerBox.h"
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "SpatialFunctionalTestFlowController.h"
+#include "TestMovementCharacter.h"
 
 /**
  * This test tests if the movement of a character from a starting point to a Destination, performed on a client, is correctly replicated on the server and on all other clients.
- * Note: The Destination is a TriggerBox spawned locally on each connected worker, either client or server. 
+ * Note: The Destination is a TriggerBox spawned locally on each connected worker, either client or server.
  *		 This test requires the CharacterMovementTestGameMode, trying to run this test on a different game mode will fail.
  *
  * The test includes a single server and two client workers. The client workers begin with a PlayerController and a TestCharacterMovement
@@ -67,7 +66,7 @@ void ASpatialTestCharacterMovement::BeginPlay()
 		TriggerBox->OnActorBeginOverlap.AddDynamic(Test, &ASpatialTestCharacterMovement::OnOverlapBegin);
 
 		Test->FinishStep();
-		});
+	});
 
 	// The server checks if the clients received a TestCharacterMovement and moves them to the mentioned locations
 	AddServerStep(TEXT("SpatialTestCharacterMovementServerSetupStep"), 1, nullptr, [this](ASpatialFunctionalTest* NetTest) {
@@ -96,15 +95,17 @@ void ASpatialTestCharacterMovement::BeginPlay()
 		}
 
 		Test->FinishStep();
-		});
+	});
 
 	// Client 1 moves his character and asserts that it reached the Destination locally.
-	AddClientStep(TEXT("SpatialTestCharacterMovementClient1Move"), 1,
+	AddClientStep(
+		TEXT("SpatialTestCharacterMovementClient1Move"),
+		1,
 		[](ASpatialFunctionalTest* NetTest) -> bool {
 			AController* PlayerController = Cast<AController>(NetTest->GetLocalFlowController()->GetOwner());
 			// Since the character is simulating gravity, it will drop from the original position close to (0, 0, 40), depending on the size of the CapsuleComponent in the TestMovementCharacter
-			return IsValid(PlayerController->GetPawn()) && PlayerController->GetPawn()->GetActorLocation().Equals(FVector(0.0f,0.0f,40.0f), 0.5f);
-		}, 
+			return IsValid(PlayerController->GetPawn()) && PlayerController->GetPawn()->GetActorLocation().Equals(FVector(0.0f, 0.0f, 40.0f), 0.5f);
+		},
 		nullptr,
 		[](ASpatialFunctionalTest* NetTest, float DeltaTime) {
 			ASpatialTestCharacterMovement* Test = Cast<ASpatialTestCharacterMovement>(NetTest);
@@ -113,7 +114,7 @@ void ASpatialTestCharacterMovement::BeginPlay()
 
 			//  Apply movement input for half a second
 			if (Test->ElapsedTime < 0.5f)
-			{ 
+			{
 				Test->ElapsedTime += DeltaTime;
 				PlayerCharacter->AddMovementInput(PlayerCharacter->GetActorForwardVector(), 1.0f);
 			}
@@ -132,7 +133,7 @@ void ASpatialTestCharacterMovement::BeginPlay()
 		Test->AssertTrue(Test->bCharacterReachedDestination, TEXT("Player character has reached the destination on the server."));
 
 		Test->FinishStep();
-		});
+	});
 
 	// Client 2 asserts that the character of client 1 has reached the Destination.
 	AddClientStep(TEXT("SpatialTestCharacterMovementClient2CheckMovementVisibility"), 2, nullptr, [](ASpatialFunctionalTest* NetTest) {
@@ -141,10 +142,9 @@ void ASpatialTestCharacterMovement::BeginPlay()
 		Test->AssertTrue(Test->bCharacterReachedDestination, TEXT("Player character has reached the destination on the simulated proxy"));
 
 		Test->FinishStep();
-		});
+	});
 
-
-	// Universal clean-up step to delete the TriggerBox from all connected clients and servers		
+	// Universal clean-up step to delete the TriggerBox from all connected clients and servers
 	AddUniversalStep(TEXT("SpatialTestCharacterMovementUniversalCleanUp"), nullptr, [](ASpatialFunctionalTest* NetTest) {
 		TArray<AActor*> FoundTriggers;
 		UGameplayStatics::GetAllActorsOfClass(NetTest->GetWorld(), ATriggerBox::StaticClass(), FoundTriggers);
@@ -155,5 +155,5 @@ void ASpatialTestCharacterMovement::BeginPlay()
 		}
 
 		NetTest->FinishStep();
-		});
+	});
 }

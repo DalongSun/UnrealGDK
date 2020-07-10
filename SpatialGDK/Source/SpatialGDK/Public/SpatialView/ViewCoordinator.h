@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "SpatialView/WorkerView.h"
 #include "SpatialView/ConnectionHandlers/AbstractConnectionHandler.h"
+#include "SpatialView/WorkerView.h"
 #include "Templates/UniquePtr.h"
 
 namespace SpatialGDK
 {
-
 class ViewCoordinator
 {
 public:

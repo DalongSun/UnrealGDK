@@ -18,32 +18,30 @@ struct FPendingRPCParams;
 struct FRPCErrorInfo;
 DECLARE_DELEGATE_RetVal_OneParam(FRPCErrorInfo, FProcessRPCDelegate, const FPendingRPCParams&)
 
-UENUM()
-enum class ERPCResult : uint8
-{
-	Success,
+	UENUM() enum class ERPCResult : uint8 {
+		Success,
 
-	// Shared across Sender and Receiver
-	UnresolvedTargetObject,
-	MissingFunctionInfo,
-	UnresolvedParameters,
+		// Shared across Sender and Receiver
+		UnresolvedTargetObject,
+		MissingFunctionInfo,
+		UnresolvedParameters,
 
-	// Sender specific
-	NoActorChannel,
-	SpatialActorChannelNotListening,
-	NoNetConnection,
-	NoAuthority,
-	InvalidRPCType,
+		// Sender specific
+		NoActorChannel,
+		SpatialActorChannelNotListening,
+		NoNetConnection,
+		NoAuthority,
+		InvalidRPCType,
 
-	// Specific to packing
-	NoOwningController,
-	NoControllerChannel,
-	ControllerChannelNotListening,
+		// Specific to packing
+		NoOwningController,
+		NoControllerChannel,
+		ControllerChannelNotListening,
 
-	RPCServiceFailure,
+		RPCServiceFailure,
 
-	Unknown
-};
+		Unknown
+	};
 
 enum class ERPCQueueType : uint8_t
 {
@@ -66,7 +64,7 @@ struct FRPCErrorInfo
 };
 
 struct SPATIALGDK_API FPendingRPCParams
-{ 
+{
 	FPendingRPCParams(const FUnrealObjectRef& InTargetObjectRef, ERPCType InType, SpatialGDK::RPCPayload&& InPayload);
 
 	// Moveable, not copyable.

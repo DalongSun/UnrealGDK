@@ -71,5 +71,4 @@ public:
 
 private:
 	bool ConditionMap[COND_Max];
-
 };

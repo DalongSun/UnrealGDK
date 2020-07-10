@@ -26,7 +26,6 @@ struct FComponentIdGenerator
 	}
 
 private:
-
 	void ValidateNextId()
 	{
 		if (RESERVED_COMPONENT_ID_START <= NextId && NextId <= RESERVED_COMPONENT_ID_END)

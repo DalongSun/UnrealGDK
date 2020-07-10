@@ -9,7 +9,7 @@
 
 namespace
 {
-	constexpr uint8 INVALID_FLOW_CONTROLLER_ID = 0;
+constexpr uint8 INVALID_FLOW_CONTROLLER_ID = 0;
 }
 
 class ASpatialFunctionalTest;
@@ -20,10 +20,9 @@ class SPATIALGDKFUNCTIONALTESTS_API ASpatialFunctionalTestFlowController : publi
 	GENERATED_BODY()
 
 public:
-
 	ASpatialFunctionalTestFlowController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void OnAuthorityGained() override;
 
@@ -31,7 +30,7 @@ public:
 
 	// Convenience function to know if this FlowController is locally owned
 	bool IsLocalController() const;
-	
+
 	// # Testing APIs
 
 	// Locally triggers StepIndex Test Step to start
@@ -41,9 +40,9 @@ public:
 	// Tells Test owner that the current Step is finished locally
 	void NotifyStepFinished();
 
-	// Tell the Test owner that we want to end the Test 
+	// Tell the Test owner that we want to end the Test
 	void NotifyFinishTest(EFunctionalTestResult TestResult, const FString& Message);
-	
+
 	UPROPERTY(Replicated)
 	ASpatialFunctionalTest* OwningTest;
 
@@ -51,7 +50,7 @@ public:
 	ESpatialFunctionalTestFlowControllerType ControllerType;
 
 	UPROPERTY(Replicated)
-	uint8 ControllerInstanceId; //client defined by login order; server maps to virtual worker
+	uint8 ControllerInstanceId; // client defined by login order; server maps to virtual worker
 
 	// Prettier way to display type+id combo since it can be quite useful
 	const FString GetDisplayName();
@@ -60,7 +59,10 @@ public:
 	void OnTestFinished();
 
 	// Returns if the data regarding the FlowControllers has been replicated to their owners
-	bool IsReadyToRunTest() { return ControllerInstanceId != INVALID_FLOW_CONTROLLER_ID && bIsReadyToRunTest; }
+	bool IsReadyToRunTest()
+	{
+		return ControllerInstanceId != INVALID_FLOW_CONTROLLER_ID && bIsReadyToRunTest;
+	}
 
 	// Each server worker will assign local client ids, this function will be used by
 	// the Test owner server worker to guarantee they are all unique
@@ -87,18 +89,17 @@ private:
 	void ClientStartStep(int StepIndex);
 
 	void StartStepInternal(const int StepIndex);
-	
+
 	void StopStepInternal();
 
 	UFUNCTION(Server, Reliable)
 	void ServerNotifyStepFinished();
-
 
 	UFUNCTION(CrossServer, Reliable)
 	void CrossServerNotifyStepFinished();
 
 	UFUNCTION(Server, Reliable)
 	void ServerNotifyFinishTest(EFunctionalTestResult TestResult, const FString& Message);
-	
+
 	void ServerNotifyFinishTestInternal(EFunctionalTestResult TestResult, const FString& Message);
 };

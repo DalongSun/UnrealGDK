@@ -2,17 +2,16 @@
 
 #include "SpatialFunctionalTestStep.h"
 
+#include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
-#include "Engine/Engine.h"
-#include "SpatialFunctionalTestFlowController.h"
 #include "SpatialFunctionalTest.h"
+#include "SpatialFunctionalTestFlowController.h"
 
 SpatialFunctionalTestStep::SpatialFunctionalTestStep()
 	: bIsRunning(false)
 	, bIsReady(false)
-{
-}
+{}
 
 void SpatialFunctionalTestStep::Start(FSpatialFunctionalTestStepDefinition NewStepDefinition)
 {
@@ -60,7 +59,7 @@ void SpatialFunctionalTestStep::Tick(float DeltaTime)
 			}
 		}
 	}
-	
+
 	if (bIsReady)
 	{
 		if (StepDefinition.bIsNativeDefinition)

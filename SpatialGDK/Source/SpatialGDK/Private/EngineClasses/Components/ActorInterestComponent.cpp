@@ -2,8 +2,8 @@
 
 #include "EngineClasses/Components/ActorInterestComponent.h"
 
-#include "Schema/Interest.h"
 #include "Interop/SpatialClassInfoManager.h"
+#include "Schema/Interest.h"
 
 void UActorInterestComponent::PopulateFrequencyToConstraintsMap(const USpatialClassInfoManager& ClassInfoManager, SpatialGDK::FrequencyToConstraintsMap& OutFrequencyToQueryConstraints) const
 {

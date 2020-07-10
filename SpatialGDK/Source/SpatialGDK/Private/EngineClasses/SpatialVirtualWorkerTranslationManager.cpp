@@ -9,10 +9,9 @@
 
 DEFINE_LOG_CATEGORY(LogSpatialVirtualWorkerTranslationManager);
 
-SpatialVirtualWorkerTranslationManager::SpatialVirtualWorkerTranslationManager(
-	SpatialOSDispatcherInterface* InReceiver,
-	SpatialOSWorkerInterface* InConnection,
-	SpatialVirtualWorkerTranslator* InTranslator)
+SpatialVirtualWorkerTranslationManager::SpatialVirtualWorkerTranslationManager(SpatialOSDispatcherInterface* InReceiver,
+																			   SpatialOSWorkerInterface* InConnection,
+																			   SpatialVirtualWorkerTranslator* InTranslator)
 	: Receiver(InReceiver)
 	, Connection(InConnection)
 	, Translator(InTranslator)

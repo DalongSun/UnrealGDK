@@ -9,7 +9,7 @@
 
 ASpatialFunctionalTestFlowController::ASpatialFunctionalTestFlowController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-{	
+{
 	bReplicates = true;
 	bAlwaysRelevant = true;
 
@@ -25,7 +25,7 @@ ASpatialFunctionalTestFlowController::ASpatialFunctionalTestFlowController(const
 #endif
 }
 
-void ASpatialFunctionalTestFlowController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+void ASpatialFunctionalTestFlowController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -57,7 +57,7 @@ void ASpatialFunctionalTestFlowController::CrossServerSetControllerInstanceId_Im
 
 void ASpatialFunctionalTestFlowController::OnReadyToRegisterWithTest()
 {
-	if(!bReadyToRegisterWithTest || OwningTest == nullptr)
+	if (!bReadyToRegisterWithTest || OwningTest == nullptr)
 	{
 		return;
 	}
@@ -112,7 +112,6 @@ void ASpatialFunctionalTestFlowController::NotifyStepFinished()
 	}
 }
 
-
 bool ASpatialFunctionalTestFlowController::IsLocalController() const
 {
 	ENetMode NetMode = GetNetMode();
@@ -124,14 +123,14 @@ bool ASpatialFunctionalTestFlowController::IsLocalController() const
 	{
 		// if no PlayerController owns it it's ours.
 		// @note keep in mind that this only works because each server worker has authority (by locking) their FlowController!
-		return GetOwner() == nullptr; 
+		return GetOwner() == nullptr;
 	}
-	else if(GetNetMode() == ENetMode::NM_Client)
+	else if (GetNetMode() == ENetMode::NM_Client)
 	{
 		// @note Clients only know their own PlayerController
 		return GetOwner() != nullptr;
 	}
-	
+
 	return false;
 }
 

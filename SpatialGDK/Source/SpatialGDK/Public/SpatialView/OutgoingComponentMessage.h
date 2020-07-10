@@ -8,33 +8,44 @@
 
 namespace SpatialGDK
 {
-
 // Represents one of a component addition, update, or removal.
 // Internally schema data is stored using raw pointers. However the interface exclusively uses explicitly owning objects to denote ownership.
 class OutgoingComponentMessage
 {
 public:
-	enum MessageType {NONE, ADD, UPDATE, REMOVE};
+	enum MessageType
+	{
+		NONE,
+		ADD,
+		UPDATE,
+		REMOVE
+	};
 
 	explicit OutgoingComponentMessage()
-		: EntityId(0), ComponentId(0), Type(NONE)
-	{
-	}
+		: EntityId(0)
+		, ComponentId(0)
+		, Type(NONE)
+	{}
 
 	explicit OutgoingComponentMessage(Worker_EntityId EntityId, ComponentData ComponentAdded)
-		: EntityId(EntityId), ComponentId(ComponentAdded.GetComponentId()), ComponentAdded(MoveTemp(ComponentAdded).Release()), Type(ADD)
-	{
-	}
+		: EntityId(EntityId)
+		, ComponentId(ComponentAdded.GetComponentId())
+		, ComponentAdded(MoveTemp(ComponentAdded).Release())
+		, Type(ADD)
+	{}
 
 	explicit OutgoingComponentMessage(Worker_EntityId EntityId, ComponentUpdate ComponentUpdated)
-		: EntityId(EntityId), ComponentId(ComponentUpdated.GetComponentId()), ComponentUpdated(MoveTemp(ComponentUpdated).Release()), Type(UPDATE)
-	{
-	}
+		: EntityId(EntityId)
+		, ComponentId(ComponentUpdated.GetComponentId())
+		, ComponentUpdated(MoveTemp(ComponentUpdated).Release())
+		, Type(UPDATE)
+	{}
 
 	explicit OutgoingComponentMessage(Worker_EntityId EntityId, Worker_ComponentId RemovedComponentId)
-		: EntityId(EntityId), ComponentId(RemovedComponentId), Type(REMOVE)
-	{
-	}
+		: EntityId(EntityId)
+		, ComponentId(RemovedComponentId)
+		, Type(REMOVE)
+	{}
 
 	~OutgoingComponentMessage()
 	{
@@ -47,7 +58,9 @@ public:
 	OutgoingComponentMessage& operator=(const OutgoingComponentMessage& Other) = delete;
 
 	OutgoingComponentMessage(OutgoingComponentMessage&& Other) noexcept
-		: EntityId(Other.EntityId), ComponentId(Other.ComponentId), Type(Other.Type)
+		: EntityId(Other.EntityId)
+		, ComponentId(Other.ComponentId)
+		, Type(Other.Type)
 	{
 		switch (Other.Type)
 		{
@@ -67,8 +80,8 @@ public:
 		Other.Type = NONE;
 	}
 
-	OutgoingComponentMessage& operator=(OutgoingComponentMessage&& Other) noexcept {
-
+	OutgoingComponentMessage& operator=(OutgoingComponentMessage&& Other) noexcept
+	{
 		EntityId = Other.EntityId;
 		ComponentId = Other.ComponentId;
 
@@ -146,4 +159,4 @@ private:
 	MessageType Type;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

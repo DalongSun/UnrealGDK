@@ -2,14 +2,13 @@
 
 #pragma once
 
+#include "Containers/Set.h"
 #include "SpatialView/MessagesToSend.h"
 #include "SpatialView/ViewDelta.h"
-#include "Containers/Set.h"
 #include "Templates/UniquePtr.h"
 
 namespace SpatialGDK
 {
-
 class WorkerView
 {
 public:
@@ -46,4 +45,4 @@ private:
 	TSet<EntityComponentId> AddedComponents;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

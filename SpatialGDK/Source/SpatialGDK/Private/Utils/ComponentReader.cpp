@@ -11,8 +11,8 @@
 #include "EngineClasses/SpatialNetBitReader.h"
 #include "Interop/SpatialConditionMapFilter.h"
 #include "SpatialConstants.h"
-#include "Utils/SchemaUtils.h"
 #include "Utils/RepLayoutUtils.h"
+#include "Utils/SchemaUtils.h"
 
 DEFINE_LOG_CATEGORY(LogSpatialComponentReader);
 
@@ -24,73 +24,70 @@ DECLARE_CYCLE_STAT(TEXT("Reader ApplyArray"), STAT_ReaderApplyArray, STATGROUP_S
 
 namespace
 {
-	bool FORCEINLINE ObjectRefSetsAreSame(const TSet< FUnrealObjectRef >& A, const TSet< FUnrealObjectRef >& B)
+bool FORCEINLINE ObjectRefSetsAreSame(const TSet<FUnrealObjectRef>& A, const TSet<FUnrealObjectRef>& B)
+{
+	if (A.Num() != B.Num())
 	{
-		if (A.Num() != B.Num())
+		return false;
+	}
+
+	for (const FUnrealObjectRef& CompareRef : A)
+	{
+		if (!B.Contains(CompareRef))
 		{
 			return false;
 		}
+	}
 
-		for (const FUnrealObjectRef& CompareRef : A)
-		{
-			if (!B.Contains(CompareRef))
-			{
-				return false;
-			}
-		}
+	return true;
+}
 
+bool ReferencesChanged(FObjectReferencesMap& InObjectReferencesMap, int32 Offset, bool bHasReferences, const TSet<FUnrealObjectRef>& NewDynamicRefs, const TSet<FUnrealObjectRef> NewUnresolvedRefs)
+{
+	FObjectReferences* CurEntry = InObjectReferencesMap.Find(Offset);
+
+	if (bHasReferences ^ (CurEntry != nullptr))
+	{
 		return true;
 	}
-
-	bool ReferencesChanged(FObjectReferencesMap& InObjectReferencesMap, int32 Offset, bool bHasReferences, const TSet<FUnrealObjectRef>& NewDynamicRefs, const TSet<FUnrealObjectRef> NewUnresolvedRefs)
+	if (CurEntry && bHasReferences)
 	{
-		FObjectReferences* CurEntry = InObjectReferencesMap.Find(Offset);
-
-		if (bHasReferences ^ (CurEntry != nullptr))
-		{
-			return true;
-		}
-		if (CurEntry && bHasReferences)
-		{
-			return !ObjectRefSetsAreSame(NewDynamicRefs, CurEntry->MappedRefs) || !ObjectRefSetsAreSame(NewUnresolvedRefs, CurEntry->UnresolvedRefs);
-		}
-		return false;
+		return !ObjectRefSetsAreSame(NewDynamicRefs, CurEntry->MappedRefs) || !ObjectRefSetsAreSame(NewUnresolvedRefs, CurEntry->UnresolvedRefs);
 	}
-
-	bool ReferencesChanged(FObjectReferencesMap& InObjectReferencesMap, int32 Offset, bool bHasReferences, const FUnrealObjectRef& ObjectRef, bool bUnresolved)
-	{
-		FObjectReferences* CurEntry = InObjectReferencesMap.Find(Offset);
-
-		if (bHasReferences ^ (CurEntry != nullptr))
-		{
-			return true;
-		}
-		if (CurEntry && bHasReferences)
-		{
-			if (!bUnresolved)
-			{
-				return CurEntry->MappedRefs.Num() != 1 || CurEntry->UnresolvedRefs.Num() != 0 || *CurEntry->MappedRefs.begin() != ObjectRef;
-			}
-			else
-			{
-				return CurEntry->MappedRefs.Num() != 0 || CurEntry->UnresolvedRefs.Num() != 1 || *CurEntry->UnresolvedRefs.begin() != ObjectRef;
-			}
-
-		}
-		return false;
-	}
+	return false;
 }
+
+bool ReferencesChanged(FObjectReferencesMap& InObjectReferencesMap, int32 Offset, bool bHasReferences, const FUnrealObjectRef& ObjectRef, bool bUnresolved)
+{
+	FObjectReferences* CurEntry = InObjectReferencesMap.Find(Offset);
+
+	if (bHasReferences ^ (CurEntry != nullptr))
+	{
+		return true;
+	}
+	if (CurEntry && bHasReferences)
+	{
+		if (!bUnresolved)
+		{
+			return CurEntry->MappedRefs.Num() != 1 || CurEntry->UnresolvedRefs.Num() != 0 || *CurEntry->MappedRefs.begin() != ObjectRef;
+		}
+		else
+		{
+			return CurEntry->MappedRefs.Num() != 0 || CurEntry->UnresolvedRefs.Num() != 1 || *CurEntry->UnresolvedRefs.begin() != ObjectRef;
+		}
+	}
+	return false;
+}
+} // namespace
 
 namespace SpatialGDK
 {
-
-ComponentReader::ComponentReader(USpatialNetDriver* InNetDriver, FObjectReferencesMap& InObjectReferencesMap/*, TSet<FUnrealObjectRef>& InUnresolvedRefs*/)
+ComponentReader::ComponentReader(USpatialNetDriver* InNetDriver, FObjectReferencesMap& InObjectReferencesMap /*, TSet<FUnrealObjectRef>& InUnresolvedRefs*/)
 	: PackageMap(InNetDriver->PackageMap)
 	, NetDriver(InNetDriver)
 	, ClassInfoManager(InNetDriver->ClassInfoManager)
 	, RootObjectReferencesMap(InObjectReferencesMap)
-{
-}
+{}
 
 void ComponentReader::ApplyComponentData(const Worker_ComponentData& ComponentData, UObject& Object, USpatialActorChannel& Channel, bool bIsHandover, bool& bOutReferencesChanged)
 {
@@ -150,7 +147,13 @@ void ComponentReader::ApplyComponentUpdate(const Worker_ComponentUpdate& Compone
 	}
 }
 
-void ComponentReader::ApplySchemaObject(Schema_Object* ComponentObject, UObject& Object, USpatialActorChannel& Channel, bool bIsInitialData, const TArray<Schema_FieldId>& UpdatedIds, Worker_ComponentId ComponentId, bool& bOutReferencesChanged)
+void ComponentReader::ApplySchemaObject(Schema_Object* ComponentObject,
+										UObject& Object,
+										USpatialActorChannel& Channel,
+										bool bIsInitialData,
+										const TArray<Schema_FieldId>& UpdatedIds,
+										Worker_ComponentId ComponentId,
+										bool& bOutReferencesChanged)
 {
 	FObjectReplicator* Replicator = Channel.PreReceiveSpatialUpdate(&Object);
 	if (Replicator == nullptr)
@@ -181,7 +184,13 @@ void ComponentReader::ApplySchemaObject(Schema_Object* ComponentObject, UObject&
 			// FieldId is the same as rep handle
 			if (FieldId == 0 || (int)FieldId - 1 >= BaseHandleToCmdIndex.Num())
 			{
-				UE_LOG(LogSpatialComponentReader, Error, TEXT("ApplySchemaObject: Encountered an invalid field Id while applying schema. Object: %s, Field: %d, Entity: %lld, Component: %d"), *Object.GetPathName(), FieldId, Channel.GetEntityId(), ComponentId);
+				UE_LOG(LogSpatialComponentReader,
+					   Error,
+					   TEXT("ApplySchemaObject: Encountered an invalid field Id while applying schema. Object: %s, Field: %d, Entity: %lld, Component: %d"),
+					   *Object.GetPathName(),
+					   FieldId,
+					   Channel.GetEntityId(),
+					   ComponentId);
 				continue;
 			}
 
@@ -243,7 +252,10 @@ void ComponentReader::ApplySchemaObject(Schema_Object* ComponentObject, UObject&
 						{
 							if (bHasReferences)
 							{
-								RootObjectReferencesMap.Add(SwappedCmd.Offset, FObjectReferences(ValueData, CountBits, MoveTemp(NewMappedRefs), MoveTemp(NewUnresolvedRefs), ShadowOffset, Cmd.ParentIndex, ArrayProperty, /* bFastArrayProp */ true));
+								RootObjectReferencesMap.Add(
+									SwappedCmd.Offset,
+									FObjectReferences(
+										ValueData, CountBits, MoveTemp(NewMappedRefs), MoveTemp(NewUnresolvedRefs), ShadowOffset, Cmd.ParentIndex, ArrayProperty, /* bFastArrayProp */ true));
 							}
 							else
 							{
@@ -303,7 +315,13 @@ void ComponentReader::ApplySchemaObject(Schema_Object* ComponentObject, UObject&
 	Channel.PostReceiveSpatialUpdate(&Object, RepNotifies);
 }
 
-void ComponentReader::ApplyHandoverSchemaObject(Schema_Object* ComponentObject, UObject& Object, USpatialActorChannel& Channel, bool bIsInitialData, const TArray<Schema_FieldId>& UpdatedIds, Worker_ComponentId ComponentId, bool& bOutReferencesChanged)
+void ComponentReader::ApplyHandoverSchemaObject(Schema_Object* ComponentObject,
+												UObject& Object,
+												USpatialActorChannel& Channel,
+												bool bIsInitialData,
+												const TArray<Schema_FieldId>& UpdatedIds,
+												Worker_ComponentId ComponentId,
+												bool& bOutReferencesChanged)
 {
 	SCOPE_CYCLE_COUNTER(STAT_ReaderApplyHandoverPropertyUpdates);
 
@@ -321,7 +339,13 @@ void ComponentReader::ApplyHandoverSchemaObject(Schema_Object* ComponentObject, 
 		// FieldId is the same as handover handle
 		if (FieldId == 0 || (int)FieldId - 1 >= ClassInfo.HandoverProperties.Num())
 		{
-			UE_LOG(LogSpatialComponentReader, Error, TEXT("ApplyHandoverSchemaObject: Encountered an invalid field Id while applying schema. Object: %s, Field: %d, Entity: %lld, Component: %d"), *Object.GetPathName(), FieldId, Channel.GetEntityId(), ComponentId);
+			UE_LOG(LogSpatialComponentReader,
+				   Error,
+				   TEXT("ApplyHandoverSchemaObject: Encountered an invalid field Id while applying schema. Object: %s, Field: %d, Entity: %lld, Component: %d"),
+				   *Object.GetPathName(),
+				   FieldId,
+				   Channel.GetEntityId(),
+				   ComponentId);
 			continue;
 		}
 		const FHandoverPropertyInfo& PropertyInfo = ClassInfo.HandoverProperties[FieldId - 1];
@@ -341,7 +365,16 @@ void ComponentReader::ApplyHandoverSchemaObject(Schema_Object* ComponentObject, 
 	Channel.PostReceiveSpatialUpdate(&Object, TArray<UProperty*>());
 }
 
-void ComponentReader::ApplyProperty(Schema_Object* Object, Schema_FieldId FieldId, FObjectReferencesMap& InObjectReferencesMap, uint32 Index, UProperty* Property, uint8* Data, int32 Offset, int32 ShadowOffset, int32 ParentIndex, bool& bOutReferencesChanged)
+void ComponentReader::ApplyProperty(Schema_Object* Object,
+									Schema_FieldId FieldId,
+									FObjectReferencesMap& InObjectReferencesMap,
+									uint32 Index,
+									UProperty* Property,
+									uint8* Data,
+									int32 Offset,
+									int32 ShadowOffset,
+									int32 ParentIndex,
+									bool& bOutReferencesChanged)
 {
 	SCOPE_CYCLE_COUNTER(STAT_ReaderApplyProperty);
 
@@ -445,7 +478,7 @@ void ComponentReader::ApplyProperty(Schema_Object* Object, Schema_FieldId FieldI
 				}
 				bOutReferencesChanged = true;
 			}
-			if(!bUnresolved)
+			if (!bUnresolved)
 			{
 				ObjectProperty->SetObjectPropertyValue(Data, ObjectValue);
 				if (ObjectValue != nullptr)
@@ -484,7 +517,15 @@ void ComponentReader::ApplyProperty(Schema_Object* Object, Schema_FieldId FieldI
 	}
 }
 
-void ComponentReader::ApplyArray(Schema_Object* Object, Schema_FieldId FieldId, FObjectReferencesMap& InObjectReferencesMap, UArrayProperty* Property, uint8* Data, int32 Offset, int32 ShadowOffset, int32 ParentIndex, bool& bOutReferencesChanged)
+void ComponentReader::ApplyArray(Schema_Object* Object,
+								 Schema_FieldId FieldId,
+								 FObjectReferencesMap& InObjectReferencesMap,
+								 UArrayProperty* Property,
+								 uint8* Data,
+								 int32 Offset,
+								 int32 ShadowOffset,
+								 int32 ParentIndex,
+								 bool& bOutReferencesChanged)
 {
 	SCOPE_CYCLE_COUNTER(STAT_ReaderApplyArray);
 

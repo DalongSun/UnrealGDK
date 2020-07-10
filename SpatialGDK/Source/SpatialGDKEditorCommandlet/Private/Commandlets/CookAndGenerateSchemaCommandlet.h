@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Commandlets/CookCommandlet.h"
+#include "CoreMinimal.h"
 #include "CookAndGenerateSchemaCommandlet.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCookAndGenerateSchemaCommandlet, Log, All);

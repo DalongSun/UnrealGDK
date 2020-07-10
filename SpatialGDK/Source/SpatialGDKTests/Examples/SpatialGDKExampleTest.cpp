@@ -4,14 +4,12 @@
 
 #include "HAL/IPlatformFileProfilerWrapper.h"
 #include "HAL/PlatformFilemanager.h"
-#include "Misc/ScopeTryLock.h"
 #include "Misc/Paths.h"
+#include "Misc/ScopeTryLock.h"
 
-#define EXAMPLE_SIMPLE_TEST(TestName) \
-	GDK_TEST(SpatialGDKExamples, SimpleExamples, TestName)
+#define EXAMPLE_SIMPLE_TEST(TestName) GDK_TEST(SpatialGDKExamples, SimpleExamples, TestName)
 
-#define EXAMPLE_COMPLEX_TEST(TestName) \
-	GDK_COMPLEX_TEST(SpatialGDKExamples, ComplexExamples, TestName)
+#define EXAMPLE_COMPLEX_TEST(TestName) GDK_COMPLEX_TEST(SpatialGDKExamples, ComplexExamples, TestName)
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSpatialGDKExamples, Log, All);
 DEFINE_LOG_CATEGORY(LogSpatialGDKExamples);
@@ -35,8 +33,7 @@ DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FStartBackgroundThreadComputation
 bool FStartBackgroundThreadComputation::Update()
 {
 	TSharedPtr<ComputationResult> LocalResult = InResult;
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [LocalResult]
-	{
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [LocalResult] {
 		FScopeLock BackgroundComputationLock(&LocalResult->Mutex);
 		FPlatformProcess::Sleep(COMPUTATION_DURATION);
 		LocalResult->Value = 42;
@@ -148,7 +145,6 @@ public:
 	}
 
 private:
-
 	void CreateTestFolders()
 	{
 		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();

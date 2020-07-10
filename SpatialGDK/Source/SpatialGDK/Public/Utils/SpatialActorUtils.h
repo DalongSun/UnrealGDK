@@ -15,7 +15,6 @@
 
 namespace SpatialGDK
 {
-
 inline AActor* GetHierarchyRoot(const AActor* Actor)
 {
 	check(Actor != nullptr);

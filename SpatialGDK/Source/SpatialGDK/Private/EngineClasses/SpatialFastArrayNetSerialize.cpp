@@ -7,8 +7,8 @@
 
 namespace SpatialGDK
 {
-
-bool FSpatialNetDeltaSerializeInfo::DeltaSerializeRead(USpatialNetDriver* NetDriver, FSpatialNetBitReader& Reader, UObject* Object, int32 ArrayIndex, UProperty* ParentProperty, UScriptStruct* NetDeltaStruct)
+bool FSpatialNetDeltaSerializeInfo::DeltaSerializeRead(
+	USpatialNetDriver* NetDriver, FSpatialNetBitReader& Reader, UObject* Object, int32 ArrayIndex, UProperty* ParentProperty, UScriptStruct* NetDeltaStruct)
 {
 	FSpatialNetDeltaSerializeInfo NetDeltaInfo;
 
@@ -29,7 +29,8 @@ bool FSpatialNetDeltaSerializeInfo::DeltaSerializeRead(USpatialNetDriver* NetDri
 	return CppStructOps->NetDeltaSerialize(NetDeltaInfo, Destination);
 }
 
-bool FSpatialNetDeltaSerializeInfo::DeltaSerializeWrite(USpatialNetDriver* NetDriver, FSpatialNetBitWriter& Writer, UObject* Object, int32 ArrayIndex, UProperty* ParentProperty, UScriptStruct* NetDeltaStruct)
+bool FSpatialNetDeltaSerializeInfo::DeltaSerializeWrite(
+	USpatialNetDriver* NetDriver, FSpatialNetBitWriter& Writer, UObject* Object, int32 ArrayIndex, UProperty* ParentProperty, UScriptStruct* NetDeltaStruct)
 {
 	FSpatialNetDeltaSerializeInfo NetDeltaInfo;
 

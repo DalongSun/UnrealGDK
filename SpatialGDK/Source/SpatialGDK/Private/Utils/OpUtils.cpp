@@ -46,8 +46,7 @@ void FindFirstOpOfTypeForComponent(const TArray<Worker_OpList*>& InOpLists, cons
 		{
 			Worker_Op* Op = &OpList->ops[i];
 
-			if ((Op->op_type == InOpType) &&
-				GetComponentId(Op) == InComponentId)
+			if ((Op->op_type == InOpType) && GetComponentId(Op) == InComponentId)
 			{
 				*OutOp = Op;
 				return;

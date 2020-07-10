@@ -3,8 +3,8 @@
 #include "SpatialGDKSettings.h"
 
 #include "Improbable/SpatialEngineConstants.h"
-#include "Misc/MessageDialog.h"
 #include "Misc/CommandLine.h"
+#include "Misc/MessageDialog.h"
 #include "SpatialConstants.h"
 
 #if WITH_EDITOR
@@ -22,40 +22,40 @@ DEFINE_LOG_CATEGORY(LogSpatialGDKSettings);
 
 namespace
 {
-	void CheckCmdLineOverrideBool(const TCHAR* CommandLine, const TCHAR* Parameter, const TCHAR* PrettyName, bool& bOutValue)
+void CheckCmdLineOverrideBool(const TCHAR* CommandLine, const TCHAR* Parameter, const TCHAR* PrettyName, bool& bOutValue)
+{
+	if (FParse::Param(CommandLine, Parameter))
 	{
-		if(FParse::Param(CommandLine, Parameter))
-		{
-			bOutValue = true;
-		}
-		else
-		{
-			TCHAR TempStr[16];
-			if (FParse::Value(CommandLine, Parameter, TempStr, 16) && TempStr[0] == '=')
-			{
-				bOutValue = FCString::ToBool(TempStr + 1); // + 1 to skip =
-			}
-		}
-		UE_LOG(LogSpatialGDKSettings, Log, TEXT("%s is %s."), PrettyName, bOutValue ? TEXT("enabled") : TEXT("disabled"));
+		bOutValue = true;
 	}
-
-	void CheckCmdLineOverrideOptionalBool(const TCHAR* CommandLine, const TCHAR* Parameter, const TCHAR* PrettyName, TOptional<bool>& bOutValue)
+	else
 	{
-		if (FParse::Param(CommandLine, Parameter))
+		TCHAR TempStr[16];
+		if (FParse::Value(CommandLine, Parameter, TempStr, 16) && TempStr[0] == '=')
 		{
-			bOutValue = true;
+			bOutValue = FCString::ToBool(TempStr + 1); // + 1 to skip =
 		}
-		else
-		{
-			TCHAR TempStr[16];
-			if (FParse::Value(CommandLine, Parameter, TempStr, 16) && TempStr[0] == '=')
-			{
-				bOutValue = FCString::ToBool(TempStr + 1); // + 1 to skip =
-			}
-		}
-		UE_LOG(LogSpatialGDKSettings, Log, TEXT("%s is %s."), PrettyName, bOutValue.IsSet() ? bOutValue ? TEXT("enabled") : TEXT("disabled") : TEXT("not set"));
 	}
+	UE_LOG(LogSpatialGDKSettings, Log, TEXT("%s is %s."), PrettyName, bOutValue ? TEXT("enabled") : TEXT("disabled"));
 }
+
+void CheckCmdLineOverrideOptionalBool(const TCHAR* CommandLine, const TCHAR* Parameter, const TCHAR* PrettyName, TOptional<bool>& bOutValue)
+{
+	if (FParse::Param(CommandLine, Parameter))
+	{
+		bOutValue = true;
+	}
+	else
+	{
+		TCHAR TempStr[16];
+		if (FParse::Value(CommandLine, Parameter, TempStr, 16) && TempStr[0] == '=')
+		{
+			bOutValue = FCString::ToBool(TempStr + 1); // + 1 to skip =
+		}
+	}
+	UE_LOG(LogSpatialGDKSettings, Log, TEXT("%s is %s."), PrettyName, bOutValue.IsSet() ? bOutValue ? TEXT("enabled") : TEXT("disabled") : TEXT("not set"));
+}
+} // namespace
 
 USpatialGDKSettings::USpatialGDKSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -144,8 +144,9 @@ void USpatialGDKSettings::PostEditChangeProperty(struct FPropertyChangedEvent& P
 	if (Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, MaxDynamicallyAttachedSubobjectsPerClass))
 	{
 		FMessageDialog::Open(EAppMsgType::Ok,
-			LOCTEXT("RegenerateSchemaDynamicSubobjects_Prompt", "You MUST regenerate schema using the full scan option after changing the number of max dynamic subobjects. "
-				"Failing to do will result in unintended behavior or crashes!"));
+							 LOCTEXT("RegenerateSchemaDynamicSubobjects_Prompt",
+									 "You MUST regenerate schema using the full scan option after changing the number of max dynamic subobjects. "
+									 "Failing to do will result in unintended behavior or crashes!"));
 	}
 	else if (Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, ServicesRegion))
 	{
@@ -162,9 +163,8 @@ bool USpatialGDKSettings::CanEditChange(const UProperty* InProperty) const
 
 	const FName Name = InProperty->GetFName();
 
-	if (Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, DefaultRPCRingBufferSize)
-	 || Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, RPCRingBufferSizeMap)
-	 || Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, MaxRPCRingBufferSize))
+	if (Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, DefaultRPCRingBufferSize) || Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, RPCRingBufferSizeMap)
+		|| Name == GET_MEMBER_NAME_CHECKED(USpatialGDKSettings, MaxRPCRingBufferSize))
 	{
 		return UseRPCRingBuffer();
 	}
@@ -203,7 +203,6 @@ uint32 USpatialGDKSettings::GetRPCRingBufferSize(ERPCType RPCType) const
 
 	return DefaultRPCRingBufferSize;
 }
-
 
 bool USpatialGDKSettings::UseRPCRingBuffer() const
 {

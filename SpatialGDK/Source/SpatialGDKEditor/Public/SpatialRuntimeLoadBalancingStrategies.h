@@ -38,11 +38,11 @@ public:
 	/** Number of columns in the rectangle grid load balancing config. */
 	UPROPERTY(Category = "LoadBalancing", EditAnywhere, meta = (DisplayName = "Rectangle grid column count", ClampMin = "1", UIMin = "1"))
 	int32 Columns;
-	
+
 	/** Number of rows in the rectangle grid load balancing config. */
 	UPROPERTY(Category = "LoadBalancing", EditAnywhere, meta = (DisplayName = "Rectangle grid row count", ClampMin = "1", UIMin = "1"))
 	int32 Rows;
-	
+
 	int32 GetNumberOfWorkersForPIE() const override;
 };
 

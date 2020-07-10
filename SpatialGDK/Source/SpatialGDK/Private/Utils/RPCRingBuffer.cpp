@@ -6,7 +6,6 @@
 
 namespace SpatialGDK
 {
-
 RPCRingBuffer::RPCRingBuffer(ERPCType InType)
 	: Type(InType)
 {
@@ -15,7 +14,6 @@ RPCRingBuffer::RPCRingBuffer(ERPCType InType)
 
 namespace RPCRingBufferUtils
 {
-
 Worker_ComponentId GetRingBufferComponentId(ERPCType Type)
 {
 	switch (Type)

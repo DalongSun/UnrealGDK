@@ -5,11 +5,9 @@
 
 namespace SpatialGDK
 {
-
 WorkerView::WorkerView()
-: LocalChanges(MakeUnique<MessagesToSend>())
-{
-}
+	: LocalChanges(MakeUnique<MessagesToSend>())
+{}
 
 const ViewDelta* WorkerView::GenerateViewDelta()
 {
@@ -113,12 +111,7 @@ void WorkerView::HandleAuthorityChange(const Worker_AuthorityChangeOp& Authority
 
 void WorkerView::HandleCreateEntityResponse(const Worker_CreateEntityResponseOp& Response)
 {
-	Delta.AddCreateEntityResponse(CreateEntityResponse{
-		Response.request_id,
-		static_cast<Worker_StatusCode>(Response.status_code),
-		FString{Response.message},
-		Response.entity_id
-	});
+	Delta.AddCreateEntityResponse(CreateEntityResponse{ Response.request_id, static_cast<Worker_StatusCode>(Response.status_code), FString{ Response.message }, Response.entity_id });
 }
 
 void WorkerView::HandleAddComponent(const Worker_AddComponentOp& Component)
@@ -149,4 +142,4 @@ void WorkerView::HandleRemoveComponent(const Worker_RemoveComponentOp& Component
 		Delta.RemoveComponent(Id.EntityId, Id.ComponentId);
 	}
 }
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

@@ -13,16 +13,13 @@ DEFINE_LOG_CATEGORY(LogSpatialGDKDevAuthTokenGenerator);
 
 FSpatialGDKDevAuthTokenGenerator::FSpatialGDKDevAuthTokenGenerator()
 	: bIsGenerating(false)
-{
-}
+{}
 
 void FSpatialGDKDevAuthTokenGenerator::DoGenerateDevAuthTokenTasks()
 {
 	bool bIsRunningInChina = GetDefault<USpatialGDKSettings>()->IsRunningInChina();
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this, bIsRunningInChina]
-	{
-		AsyncTask(ENamedThreads::GameThread, [this]()
-		{
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this, bIsRunningInChina] {
+		AsyncTask(ENamedThreads::GameThread, [this]() {
 			ShowTaskStartedNotification(TEXT("Generating Development Authentication Token"));
 		});
 
@@ -30,8 +27,7 @@ void FSpatialGDKDevAuthTokenGenerator::DoGenerateDevAuthTokenTasks()
 		FText ErrorMessage;
 		if (SpatialCommandUtils::GenerateDevAuthToken(bIsRunningInChina, DevAuthToken, ErrorMessage))
 		{
-			AsyncTask(ENamedThreads::GameThread, [this, DevAuthToken]()
-			{
+			AsyncTask(ENamedThreads::GameThread, [this, DevAuthToken]() {
 				GetMutableDefault<USpatialGDKEditorSettings>()->SetDevelopmentAuthenticationToken(DevAuthToken);
 				EndTask(/* bSuccess */ true);
 			});
@@ -39,8 +35,7 @@ void FSpatialGDKDevAuthTokenGenerator::DoGenerateDevAuthTokenTasks()
 		else
 		{
 			UE_LOG(LogSpatialGDKDevAuthTokenGenerator, Error, TEXT("Failed to generate a Development Authentication Token: %s"), *ErrorMessage.ToString());
-			AsyncTask(ENamedThreads::GameThread, [this]()
-			{
+			AsyncTask(ENamedThreads::GameThread, [this]() {
 				EndTask(/* bSuccess */ false);
 			});
 		}

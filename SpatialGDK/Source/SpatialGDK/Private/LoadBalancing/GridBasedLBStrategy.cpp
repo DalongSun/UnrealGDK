@@ -18,8 +18,7 @@ UGridBasedLBStrategy::UGridBasedLBStrategy()
 	, InterestBorder(0.f)
 	, LocalCellId(0)
 	, bIsStrategyUsedOnLocalWorker(false)
-{
-}
+{}
 
 void UGridBasedLBStrategy::Init()
 {
@@ -130,11 +129,11 @@ SpatialGDK::QueryConstraint UGridBasedLBStrategy::GetWorkerInterestQueryConstrai
 	const FBox2D Interest2D = WorkerCells[LocalCellId].ExpandBy(InterestBorder);
 
 	const FVector2D Center2D = Interest2D.GetCenter();
-	const FVector Center3D{ Center2D.X, Center2D.Y, 0.0f};
+	const FVector Center3D{ Center2D.X, Center2D.Y, 0.0f };
 
 	const FVector2D EdgeLengths2D = Interest2D.GetSize();
 	check(EdgeLengths2D.X > 0.0f && EdgeLengths2D.Y > 0.0f);
-	const FVector EdgeLengths3D{ EdgeLengths2D.X, EdgeLengths2D.Y, FLT_MAX};
+	const FVector EdgeLengths3D{ EdgeLengths2D.X, EdgeLengths2D.Y, FLT_MAX };
 
 	SpatialGDK::QueryConstraint Constraint;
 	Constraint.BoxConstraint = SpatialGDK::BoxConstraint{ SpatialGDK::Coordinates::FromFVector(Center3D), SpatialGDK::EdgeLength::FromFVector(EdgeLengths3D) };
@@ -165,8 +164,7 @@ void UGridBasedLBStrategy::SetVirtualWorkerIds(const VirtualWorkerId& FirstVirtu
 
 bool UGridBasedLBStrategy::IsInside(const FBox2D& Box, const FVector2D& Location)
 {
-	return Location.X >= Box.Min.X && Location.Y >= Box.Min.Y
-		&& Location.X < Box.Max.X && Location.Y < Box.Max.Y;
+	return Location.X >= Box.Min.X && Location.Y >= Box.Min.Y && Location.X < Box.Max.X && Location.Y < Box.Max.Y;
 }
 
 UGridBasedLBStrategy::LBStrategyRegions UGridBasedLBStrategy::GetLBStrategyRegions() const

@@ -12,7 +12,6 @@
 
 namespace SpatialGDK
 {
-
 void RepLayout_SerializeProperties(FRepLayout& RepLayout, FArchive& Ar, UPackageMap* Map, const int32 CmdStart, const int32 CmdEnd, void* Data, bool& bHasUnmapped);
 
 inline void RepLayout_SerializeProperties_DynamicArray(FRepLayout& RepLayout, FArchive& Ar, UPackageMap* Map, const int32 CmdIndex, uint8* Data, bool& bHasUnmapped)
@@ -54,7 +53,7 @@ inline void RepLayout_SerializeProperties(FRepLayout& RepLayout, FArchive& Ar, U
 		if (Cmd.Type == ERepLayoutCmdType::DynamicArray)
 		{
 			RepLayout_SerializeProperties_DynamicArray(RepLayout, Ar, Map, CmdIndex, (uint8*)Data + Cmd.Offset, bHasUnmapped);
-			CmdIndex = Cmd.EndCmd - 1;		// The -1 to handle the ++ in the for loop
+			CmdIndex = Cmd.EndCmd - 1; // The -1 to handle the ++ in the for loop
 			continue;
 		}
 
@@ -162,14 +161,11 @@ inline TArray<UFunction*> GetClassRPCFunctions(const UClass* Class)
 	// Get all remote functions from the class. This includes parents super functions and child override functions.
 	TArray<UFunction*> AllClassFunctions;
 
-	TFieldIterator<UFunction> RemoteFunction(Class, EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated,
-		EFieldIteratorFlags::IncludeInterfaces);
+	TFieldIterator<UFunction> RemoteFunction(Class, EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces);
 	for (; RemoteFunction; ++RemoteFunction)
 	{
-		if (RemoteFunction->FunctionFlags & FUNC_NetClient ||
-			RemoteFunction->FunctionFlags & FUNC_NetServer ||
-			RemoteFunction->FunctionFlags & FUNC_NetCrossServer ||
-			RemoteFunction->FunctionFlags & FUNC_NetMulticast)
+		if (RemoteFunction->FunctionFlags & FUNC_NetClient || RemoteFunction->FunctionFlags & FUNC_NetServer || RemoteFunction->FunctionFlags & FUNC_NetCrossServer
+			|| RemoteFunction->FunctionFlags & FUNC_NetMulticast)
 		{
 			AllClassFunctions.Add(*RemoteFunction);
 		}
@@ -194,8 +190,7 @@ inline TArray<UFunction*> GetClassRPCFunctions(const UClass* Class)
 	}
 
 	// When using multiple EventGraphs in blueprints, the functions could be iterated in different order, so just sort them alphabetically.
-	RelevantClassFunctions.Sort([](const UFunction& A, const UFunction& B)
-	{
+	RelevantClassFunctions.Sort([](const UFunction& A, const UFunction& B) {
 		return FNameLexicalLess()(A.GetFName(), B.GetFName());
 	});
 

@@ -29,7 +29,6 @@ public:
 class FTestDerivedLBStrategyEditorExtension : public FLBStrategyEditorExtensionTemplate<UDerivedDummyLoadBalancingStrategy, FTestDerivedLBStrategyEditorExtension>
 {
 public:
-
 	bool GetDefaultLaunchConfiguration(const UDerivedDummyLoadBalancingStrategy* Strategy, UAbstractRuntimeLoadBalancingStrategy*& OutConfiguration, FIntPoint& OutWorldDimensions) const
 	{
 		if (Strategy == nullptr)

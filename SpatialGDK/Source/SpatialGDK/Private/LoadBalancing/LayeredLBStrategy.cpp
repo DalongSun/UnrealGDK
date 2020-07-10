@@ -14,8 +14,7 @@ DEFINE_LOG_CATEGORY(LogLayeredLBStrategy);
 
 ULayeredLBStrategy::ULayeredLBStrategy()
 	: Super()
-{
-}
+{}
 
 void ULayeredLBStrategy::Init()
 {
@@ -58,7 +57,6 @@ void ULayeredLBStrategy::Init()
 		{
 			UE_LOG(LogLayeredLBStrategy, Log, TEXT(" - Adding class %s."), *ClassPtr.GetAssetName());
 			ClassPathToLayer.Add(ClassPtr, LayerName);
-
 		}
 	}
 
@@ -89,9 +87,7 @@ void ULayeredLBStrategy::SetLocalVirtualWorkerId(VirtualWorkerId InLocalVirtualW
 {
 	if (LocalVirtualWorkerId != SpatialConstants::INVALID_VIRTUAL_WORKER_ID)
 	{
-		UE_LOG(LogLayeredLBStrategy, Error,
-			TEXT("The Local Virtual Worker Id cannot be set twice. Current value: %d Requested new value: %d"),
-			LocalVirtualWorkerId, InLocalVirtualWorkerId);
+		UE_LOG(LogLayeredLBStrategy, Error, TEXT("The Local Virtual Worker Id cannot be set twice. Current value: %d Requested new value: %d"), LocalVirtualWorkerId, InLocalVirtualWorkerId);
 		return;
 	}
 

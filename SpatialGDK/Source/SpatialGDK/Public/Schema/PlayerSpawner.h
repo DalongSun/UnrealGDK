@@ -18,7 +18,6 @@
 
 namespace SpatialGDK
 {
-
 struct SpawnPlayerRequest
 {
 	FURL LoginURL;

@@ -2,20 +2,18 @@
 
 #pragma once
 
-#include "SpatialView/OpList/AbstractOpList.h"
 #include "Containers/Array.h"
+#include "SpatialView/OpList/AbstractOpList.h"
 #include <improbable/c_worker.h>
 
 namespace SpatialGDK
 {
-
 class ViewDeltaLegacyOpList : public AbstractOpList
 {
 public:
 	explicit ViewDeltaLegacyOpList(TArray<Worker_Op> OpList)
-	: OpList(MoveTemp(OpList))
-	{
-	}
+		: OpList(MoveTemp(OpList))
+	{}
 
 	virtual uint32 GetCount() const override
 	{
@@ -36,4 +34,4 @@ private:
 	TArray<Worker_Op> OpList;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

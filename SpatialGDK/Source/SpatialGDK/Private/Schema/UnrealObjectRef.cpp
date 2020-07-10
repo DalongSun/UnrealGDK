@@ -58,8 +58,11 @@ UObject* FUnrealObjectRef::ToObjectPtr(const FUnrealObjectRef& ObjectRef, USpati
 				// So we do the same.
 				FString FullPath;
 				SpatialGDK::GetFullPathFromUnrealObjectReference(ObjectRef, FullPath);
-				UE_LOG(LogUnrealObjectRef, Warning, TEXT("Object ref did not map to valid object. Streaming level not loaded or actor deleted. Will be set to nullptr: %s %s"),
-					*ObjectRef.ToString(), FullPath.IsEmpty() ? TEXT("[NO PATH]") : *FullPath);
+				UE_LOG(LogUnrealObjectRef,
+					   Warning,
+					   TEXT("Object ref did not map to valid object. Streaming level not loaded or actor deleted. Will be set to nullptr: %s %s"),
+					   *ObjectRef.ToString(),
+					   FullPath.IsEmpty() ? TEXT("[NO PATH]") : *FullPath);
 			}
 
 			return Value;
@@ -212,10 +215,7 @@ bool FUnrealObjectRef::ShouldLoadObjectFromClassPath(UObject* Object)
 
 bool FUnrealObjectRef::IsUniqueActorClass(UClass* Class)
 {
-	return Class->IsChildOf<AGameStateBase>()
-		|| Class->IsChildOf<AGameModeBase>()
-		|| Class->IsChildOf<ASpatialMetricsDisplay>()
-		|| Class->IsChildOf<ASpatialDebugger>();
+	return Class->IsChildOf<AGameStateBase>() || Class->IsChildOf<AGameModeBase>() || Class->IsChildOf<ASpatialMetricsDisplay>() || Class->IsChildOf<ASpatialDebugger>();
 }
 
 FUnrealObjectRef FUnrealObjectRef::GetRefFromObjectClassPath(UObject* Object, USpatialPackageMapClient* PackageMap)

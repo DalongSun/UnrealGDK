@@ -72,8 +72,8 @@ private:
 	USpatialWorkerFlags* SpatialWorkerFlags;
 
 	// This index is incremented and returned every time an AddOpCallback function is called.
-	// CallbackIds enable you to deregister callbacks using the RemoveOpCallback function. 
-	// RunCallbacks is called by the SpatialDispatcher and executes all user registered 
+	// CallbackIds enable you to deregister callbacks using the RemoveOpCallback function.
+	// RunCallbacks is called by the SpatialDispatcher and executes all user registered
 	// callbacks for the matching component ID and network operation type.
 	FCallbackId NextCallbackId;
 	TMap<Worker_ComponentId, OpTypeToCallbacksMap> ComponentOpTypeToCallbacksMap;

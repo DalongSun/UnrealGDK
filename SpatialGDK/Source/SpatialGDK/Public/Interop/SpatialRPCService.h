@@ -21,7 +21,6 @@ DECLARE_DELEGATE_RetVal_ThreeParams(bool, ExtractRPCDelegate, Worker_EntityId, E
 
 namespace SpatialGDK
 {
-
 struct EntityRPCType
 {
 	EntityRPCType(Worker_EntityId EntityId, ERPCType Type)

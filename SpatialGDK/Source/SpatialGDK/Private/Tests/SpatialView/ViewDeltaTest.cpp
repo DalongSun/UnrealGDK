@@ -4,10 +4,9 @@
 
 #include "SpatialView/ViewDelta.h"
 
-#define VIEWDELTA_TEST(TestName) \
-	GDK_TEST(Core, ViewDelta, TestName)
+#define VIEWDELTA_TEST(TestName) GDK_TEST(Core, ViewDelta, TestName)
 
-using namespace SpatialGDK; 
+using namespace SpatialGDK;
 
 VIEWDELTA_TEST(GIVEN_ViewDelta_with_multiple_CreateEntityResponse_added_WHEN_GetCreateEntityResponse_called_THEN_multiple_CreateEntityResponses_returned)
 {

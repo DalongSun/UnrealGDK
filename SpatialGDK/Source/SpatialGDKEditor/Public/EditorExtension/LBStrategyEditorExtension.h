@@ -15,6 +15,7 @@ class FLBStrategyEditorExtensionInterface
 {
 public:
 	virtual ~FLBStrategyEditorExtensionInterface() {}
+
 private:
 	friend FLBStrategyEditorExtensionManager;
 	virtual bool GetDefaultLaunchConfiguration_Virtual(const UAbstractLBStrategy* Strategy, UAbstractRuntimeLoadBalancingStrategy*& OutConfiguration, FIntPoint& OutWorldDimensions) const = 0;

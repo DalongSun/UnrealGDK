@@ -10,8 +10,8 @@
 #include "Interop/SpatialRPCService.h"
 #include "Schema/RPCPayload.h"
 #include "TimerManager.h"
-#include "Utils/RepDataUtils.h"
 #include "Utils/RPCContainer.h"
+#include "Utils/RepDataUtils.h"
 
 #include <WorkerSDK/improbable/c_schema.h>
 #include <WorkerSDK/improbable/c_worker.h>
@@ -70,7 +70,8 @@ public:
 	void Init(USpatialNetDriver* InNetDriver, FTimerManager* InTimerManager, SpatialGDK::SpatialRPCService* InRPCService);
 
 	// Actor Updates
-	void SendComponentUpdates(UObject* Object, const FClassInfo& Info, USpatialActorChannel* Channel, const FRepChangeState* RepChanges, const FHandoverChangeState* HandoverChanges, uint32& OutBytesWritten);
+	void SendComponentUpdates(
+		UObject* Object, const FClassInfo& Info, USpatialActorChannel* Channel, const FRepChangeState* RepChanges, const FHandoverChangeState* HandoverChanges, uint32& OutBytesWritten);
 	void SendPositionUpdate(Worker_EntityId EntityId, const FVector& Location);
 	void SendAuthorityIntentUpdate(const AActor& Actor, VirtualWorkerId NewAuthoritativeVirtualWorkerId);
 	void SetAclWriteAuthority(const SpatialLoadBalanceEnforcer::AclWriteAuthorityRequest& Request);
@@ -149,7 +150,8 @@ private:
 	// RPC Construction
 	FSpatialNetBitWriter PackRPCDataToSpatialNetBitWriter(UFunction* Function, void* Parameters) const;
 
-	Worker_CommandRequest CreateRPCCommandRequest(UObject* TargetObject, const SpatialGDK::RPCPayload& Payload, Worker_ComponentId ComponentId, Schema_FieldId CommandIndex, Worker_EntityId& OutEntityId);
+	Worker_CommandRequest CreateRPCCommandRequest(
+		UObject* TargetObject, const SpatialGDK::RPCPayload& Payload, Worker_ComponentId ComponentId, Schema_FieldId CommandIndex, Worker_EntityId& OutEntityId);
 	Worker_CommandRequest CreateRetryRPCCommandRequest(const FReliableRPCForRetry& RPC, uint32 TargetObjectOffset);
 	FWorkerComponentUpdate CreateRPCEventUpdate(UObject* TargetObject, const SpatialGDK::RPCPayload& Payload, Worker_ComponentId ComponentId, Schema_FieldId EventIndext);
 

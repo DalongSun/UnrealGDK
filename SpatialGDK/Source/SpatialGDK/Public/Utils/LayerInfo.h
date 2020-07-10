@@ -14,9 +14,9 @@ struct FLayerInfo
 {
 	GENERATED_BODY()
 
-	FLayerInfo() : Name(NAME_None)
-	{
-	}
+	FLayerInfo()
+		: Name(NAME_None)
+	{}
 
 	UPROPERTY()
 	FName Name;

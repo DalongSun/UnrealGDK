@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "SpatialView/EntityComponentId.h"
 #include "SpatialView/ComponentData.h"
 #include "SpatialView/ComponentUpdate.h"
+#include "SpatialView/EntityComponentId.h"
 
 namespace SpatialGDK
 {
-
 struct EntityComponentUpdate
 {
 	Worker_EntityId EntityId;
@@ -63,4 +62,4 @@ struct EntityComponentIdEquality
 	}
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

@@ -8,14 +8,14 @@
 #include "Editor.h"
 #include "FileHelpers.h"
 #include "GeneralProjectSettings.h"
-#include "Internationalization/Regex.h"
 #include "IUATHelperModule.h"
+#include "Internationalization/Regex.h"
 #include "Misc/MessageDialog.h"
 #include "Misc/ScopedSlowTask.h"
 #include "PackageTools.h"
 #include "Settings/ProjectPackagingSettings.h"
-#include "UnrealEdMisc.h"
 #include "UObject/StrongObjectPtr.h"
+#include "UnrealEdMisc.h"
 
 #include "SpatialGDKDevAuthTokenGenerator.h"
 #include "SpatialGDKEditorCloudLauncher.h"
@@ -31,9 +31,8 @@ DEFINE_LOG_CATEGORY(LogSpatialGDKEditor);
 
 #define LOCTEXT_NAMESPACE "FSpatialGDKEditor"
 
-namespace 
+namespace
 {
-
 bool CheckAutomationToolsUpToDate()
 {
 #if PLATFORM_WINDOWS
@@ -48,7 +47,7 @@ bool CheckAutomationToolsUpToDate()
 #endif
 
 	FString UatPath = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Build/BatchFiles") / RunUATScriptName);
-	
+
 	if (!FPaths::FileExists(UatPath))
 	{
 		FFormatNamedArguments Arguments;
@@ -79,21 +78,21 @@ bool CheckAutomationToolsUpToDate()
 		return true;
 	}
 
-	FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("GenerateSchemaUATOutOfDate",
-	"Could not generate Schema because the AutomationTool is out of date.\n"
-	"Please rebuild the AutomationTool project which can be found alongside the UE4 project files"));
+	FMessageDialog::Open(EAppMsgType::Ok,
+						 LOCTEXT("GenerateSchemaUATOutOfDate",
+								 "Could not generate Schema because the AutomationTool is out of date.\n"
+								 "Please rebuild the AutomationTool project which can be found alongside the UE4 project files"));
 
 	return false;
 }
 
-}
+} // namespace
 
 FSpatialGDKEditor::FSpatialGDKEditor()
 	: bSchemaGeneratorRunning(false)
 	, SpatialGDKDevAuthTokenGeneratorInstance(MakeShared<FSpatialGDKDevAuthTokenGenerator>())
 	, SpatialGDKPackageAssemblyInstance(MakeShared<FSpatialGDKPackageAssembly>())
-{
-}
+{}
 
 bool FSpatialGDKEditor::GenerateSchema(ESchemaGenerationMethod Method)
 {
@@ -159,19 +158,19 @@ bool FSpatialGDKEditor::GenerateSchema(ESchemaGenerationMethod Method)
 		OptionalParams += FString::Printf(TEXT(" -targetplatform=%s"), *PlatformName);
 
 		FString ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath());
-		FString UATCommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" CookAndGenerateSchema -nocompile -nocompileeditor -server -noclient %s -nop4 -project=\"%s\" -cook -skipstage -ue4exe=\"%s\" %s -utf8output"),
+		FString UATCommandLine = FString::Printf(
+			TEXT("-ScriptsForProject=\"%s\" CookAndGenerateSchema -nocompile -nocompileeditor -server -noclient %s -nop4 -project=\"%s\" -cook -skipstage -ue4exe=\"%s\" %s -utf8output"),
 			*ProjectPath,
 			FApp::IsEngineInstalled() ? TEXT(" -installed") : TEXT(""),
 			*ProjectPath,
 			*FUnrealEdMisc::Get().GetExecutableForCommandlets(),
-			*OptionalParams
-		);
+			*OptionalParams);
 
 		IUATHelperModule::Get().CreateUatTask(UATCommandLine,
-			FText::FromString(PlatformName),
-			LOCTEXT("CookAndGenerateSchemaTaskName", "Cook and generate project schema"),
-			LOCTEXT("CookAndGenerateSchemaTaskShortName", "Generating Schema"),
-			FEditorStyle::GetBrush(TEXT("MainFrame.PackageProject")));
+											  FText::FromString(PlatformName),
+											  LOCTEXT("CookAndGenerateSchemaTaskName", "Cook and generate project schema"),
+											  LOCTEXT("CookAndGenerateSchemaTaskShortName", "Generating Schema"),
+											  FEditorStyle::GetBrush(TEXT("MainFrame.PackageProject")));
 
 		return true;
 	}
@@ -246,8 +245,7 @@ bool FSpatialGDKEditor::LoadPotentialAssets(TArray<TStrongObjectPtr<UObject>>& O
 	const TArray<FDirectoryPath>& DirectoriesToNeverCook = GetDefault<UProjectPackagingSettings>()->DirectoriesToNeverCook;
 
 	// Filter assets to game blueprint classes that are not loaded and not inside DirectoriesToNeverCook.
-	FoundAssets = FoundAssets.FilterByPredicate([&DirectoriesToNeverCook](const FAssetData& Data)
-	{
+	FoundAssets = FoundAssets.FilterByPredicate([&DirectoriesToNeverCook](const FAssetData& Data) {
 		if (Data.IsAssetLoaded())
 		{
 			return false;
@@ -316,9 +314,12 @@ void FSpatialGDKEditor::GenerateSnapshot(UWorld* World, FString SnapshotFilename
 
 void FSpatialGDKEditor::StartCloudDeployment(const FCloudDeploymentConfiguration& Configuration, FSimpleDelegate SuccessCallback, FSimpleDelegate FailureCallback)
 {
-	LaunchCloudResult = Async(EAsyncExecution::Thread, [&Configuration]() { return SpatialGDKCloudLaunch(Configuration); },
-		[this, SuccessCallback, FailureCallback]
-		{
+	LaunchCloudResult = Async(
+		EAsyncExecution::Thread,
+		[&Configuration]() {
+			return SpatialGDKCloudLaunch(Configuration);
+		},
+		[this, SuccessCallback, FailureCallback] {
 			if (!LaunchCloudResult.IsReady() || LaunchCloudResult.Get() != true)
 			{
 				FailureCallback.ExecuteIfBound();
@@ -332,18 +333,16 @@ void FSpatialGDKEditor::StartCloudDeployment(const FCloudDeploymentConfiguration
 
 void FSpatialGDKEditor::StopCloudDeployment(FSimpleDelegate SuccessCallback, FSimpleDelegate FailureCallback)
 {
-	StopCloudResult = Async(EAsyncExecution::Thread, SpatialGDKCloudStop,
-		[this, SuccessCallback, FailureCallback]
+	StopCloudResult = Async(EAsyncExecution::Thread, SpatialGDKCloudStop, [this, SuccessCallback, FailureCallback] {
+		if (!StopCloudResult.IsReady() || StopCloudResult.Get() != true)
 		{
-			if (!StopCloudResult.IsReady() || StopCloudResult.Get() != true)
-			{
-				FailureCallback.ExecuteIfBound();
-			}
-			else
-			{
-				SuccessCallback.ExecuteIfBound();
-			}
-		});
+			FailureCallback.ExecuteIfBound();
+		}
+		else
+		{
+			SuccessCallback.ExecuteIfBound();
+		}
+	});
 }
 
 bool FSpatialGDKEditor::FullScanRequired()
@@ -376,7 +375,6 @@ void FSpatialGDKEditor::RemoveEditorAssetLoadedCallback()
 			OnAssetLoaded(Asset);
 		});
 	}
-
 }
 
 // This callback is copied from UEditorEngine::OnAssetLoaded so that we can turn it off during schema gen in editor.
@@ -395,12 +393,7 @@ void FSpatialGDKEditor::OnAssetLoaded(UObject* Asset)
 		{
 			// Create the world without a physics scene because creating too many physics scenes causes deadlock issues in PhysX. The scene will be created when it is opened in the level editor.
 			// Also, don't create an FXSystem because it consumes too much video memory. This is also created when the level editor opens this world.
-			World->InitWorld(UWorld::InitializationValues()
-				.ShouldSimulatePhysics(false)
-				.EnableTraceCollision(true)
-				.CreatePhysicsScene(false)
-				.CreateFXSystem(false)
-			);
+			World->InitWorld(UWorld::InitializationValues().ShouldSimulatePhysics(false).EnableTraceCollision(true).CreatePhysicsScene(false).CreateFXSystem(false));
 
 			// Update components so the scene is populated
 			World->UpdateWorldComponents(true, true);

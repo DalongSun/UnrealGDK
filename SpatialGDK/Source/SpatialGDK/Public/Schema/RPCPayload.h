@@ -12,7 +12,6 @@
 
 namespace SpatialGDK
 {
-
 struct RPCPayload
 {
 	RPCPayload() = delete;

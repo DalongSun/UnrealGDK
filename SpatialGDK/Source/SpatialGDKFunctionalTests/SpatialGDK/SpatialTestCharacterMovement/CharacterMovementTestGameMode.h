@@ -13,5 +13,4 @@ UCLASS(Blueprintable)
 class ACharacterMovementTestGameMode : public AGameModeBase
 {
 	GENERATED_UCLASS_BODY()
-	
 };

@@ -10,7 +10,6 @@
 
 namespace SpatialGDK
 {
-
 // The SpatialDebugging component exists to hold information which needs to be displayed by the
 // SpatialDebugger on clients but which would not normally be available to clients.
 struct SpatialDebugging : Component
@@ -25,7 +24,8 @@ struct SpatialDebugging : Component
 		, IsLocked(false)
 	{}
 
-	SpatialDebugging(const VirtualWorkerId AuthoritativeVirtualWorkerIdIn, const FColor& AuthoritativeColorIn, const VirtualWorkerId IntentVirtualWorkerIdIn, const FColor& IntentColorIn, bool IsLockedIn)
+	SpatialDebugging(
+		const VirtualWorkerId AuthoritativeVirtualWorkerIdIn, const FColor& AuthoritativeColorIn, const VirtualWorkerId IntentVirtualWorkerIdIn, const FColor& IntentColorIn, bool IsLockedIn)
 	{
 		AuthoritativeVirtualWorkerId = AuthoritativeVirtualWorkerIdIn;
 		AuthoritativeColor = AuthoritativeColorIn;
@@ -107,4 +107,3 @@ struct SpatialDebugging : Component
 };
 
 } // namespace SpatialGDK
-

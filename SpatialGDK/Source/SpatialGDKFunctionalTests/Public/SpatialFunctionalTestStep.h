@@ -27,13 +27,12 @@ enum class ESpatialFunctionalTestFlowControllerType : uint8
 	Client
 };
 
-
 USTRUCT(BlueprintType)
 struct FWorkerDefinition
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, Category="Spatial Functional Test")
+	UPROPERTY(BlueprintReadWrite, Category = "Spatial Functional Test")
 	ESpatialFunctionalTestFlowControllerType ControllerType;
 	UPROPERTY(BlueprintReadWrite, Category = "Spatial Functional Test")
 	int32 WorkerId;
@@ -49,8 +48,7 @@ struct FSpatialFunctionalTestStepDefinition
 	FSpatialFunctionalTestStepDefinition()
 		: bIsNativeDefinition(false)
 		, TimeLimit(0.0f)
-	{
-	}
+	{}
 
 	UPROPERTY()
 	FString StepName;
@@ -75,7 +73,6 @@ struct FSpatialFunctionalTestStepDefinition
 	float TimeLimit;
 };
 
-
 class SpatialFunctionalTestStep
 {
 public:
@@ -92,7 +89,6 @@ public:
 	ASpatialFunctionalTest* Owner;
 	bool bIsRunning;
 	bool bIsReady;
-	
+
 	FSpatialFunctionalTestStepDefinition StepDefinition;
 };
-

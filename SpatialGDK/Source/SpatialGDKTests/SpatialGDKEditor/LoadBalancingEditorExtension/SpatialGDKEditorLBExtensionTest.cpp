@@ -7,17 +7,15 @@
 
 #include "TestLoadBalancingStrategyEditorExtension.h"
 
-#define LB_EXTENSION_TEST(TestName) \
-	GDK_TEST(SpatialGDKEditor, LoadBalancingEditorExtension, TestName)
+#define LB_EXTENSION_TEST(TestName) GDK_TEST(SpatialGDKEditor, LoadBalancingEditorExtension, TestName)
 
 namespace
 {
-
 struct TestFixture
 {
 	TestFixture()
 		: ExtensionManager(FModuleManager::GetModuleChecked<FSpatialGDKEditorModule>("SpatialGDKEditor").GetLBStrategyExtensionManager())
-	{	}
+	{}
 
 	~TestFixture()
 	{
@@ -55,7 +53,7 @@ struct TestFixture
 	UAbstractRuntimeLoadBalancingStrategy* RuntimeStrategy = nullptr;
 };
 
-}
+} // namespace
 LB_EXTENSION_TEST(GIVEN_not_registered_strategy_WHEN_looking_for_extension_THEN_extension_is_not_found)
 {
 	TestFixture Fixture;
@@ -113,7 +111,6 @@ LB_EXTENSION_TEST(GIVEN_registered_strategy_WHEN_getting_launch_settings_THEN_la
 
 	return true;
 }
-
 
 LB_EXTENSION_TEST(GIVEN_registered_derived_strategy_WHEN_looking_for_extension_THEN_most_derived_extension_is_found)
 {

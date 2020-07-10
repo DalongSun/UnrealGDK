@@ -28,9 +28,10 @@ public:
 	bool KillProcessBlockingPort(int32 Port);
 	bool LocalDeploymentPreRunChecks();
 
-    using LocalDeploymentCallback = TFunction<void(bool)>;
+	using LocalDeploymentCallback = TFunction<void(bool)>;
 
-	void SPATIALGDKSERVICES_API TryStartLocalDeployment(FString LaunchConfig, FString RuntimeVersion, FString LaunchArgs, FString SnapshotName, FString RuntimeIPToExpose, const LocalDeploymentCallback& CallBack);
+	void SPATIALGDKSERVICES_API
+	TryStartLocalDeployment(FString LaunchConfig, FString RuntimeVersion, FString LaunchArgs, FString SnapshotName, FString RuntimeIPToExpose, const LocalDeploymentCallback& CallBack);
 	bool SPATIALGDKSERVICES_API TryStopLocalDeployment();
 
 	bool SPATIALGDKSERVICES_API TryStartSpatialService(FString RuntimeIPToExpose);

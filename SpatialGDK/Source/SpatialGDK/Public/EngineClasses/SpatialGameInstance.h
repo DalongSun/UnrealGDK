@@ -46,10 +46,22 @@ public:
 	// Destroying the SpatialConnectionManager disconnects us from SpatialOS.
 	void DestroySpatialConnectionManager();
 
-	FORCEINLINE USpatialConnectionManager* GetSpatialConnectionManager() { return SpatialConnectionManager; }
-	FORCEINLINE USpatialLatencyTracer* GetSpatialLatencyTracer() { return SpatialLatencyTracer; }
-	FORCEINLINE UGlobalStateManager* GetGlobalStateManager() { return GlobalStateManager; };
-	FORCEINLINE USpatialStaticComponentView* GetStaticComponentView() { return StaticComponentView; };
+	FORCEINLINE USpatialConnectionManager* GetSpatialConnectionManager()
+	{
+		return SpatialConnectionManager;
+	}
+	FORCEINLINE USpatialLatencyTracer* GetSpatialLatencyTracer()
+	{
+		return SpatialLatencyTracer;
+	}
+	FORCEINLINE UGlobalStateManager* GetGlobalStateManager()
+	{
+		return GlobalStateManager;
+	};
+	FORCEINLINE USpatialStaticComponentView* GetStaticComponentView()
+	{
+		return StaticComponentView;
+	};
 
 	void HandleOnConnected();
 	void HandleOnConnectionFailed(const FString& Reason);
@@ -67,8 +79,14 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerSpawnFailedEvent OnSpatialPlayerSpawnFailed;
 
-	void DisableShouldConnectUsingCommandLineArgs() { bShouldConnectUsingCommandLineArgs = false; }
-	bool GetShouldConnectUsingCommandLineArgs() const { return bShouldConnectUsingCommandLineArgs; }
+	void DisableShouldConnectUsingCommandLineArgs()
+	{
+		bShouldConnectUsingCommandLineArgs = false;
+	}
+	bool GetShouldConnectUsingCommandLineArgs() const
+	{
+		return bShouldConnectUsingCommandLineArgs;
+	}
 
 	void TryInjectSpatialLocatorIntoCommandLine();
 
@@ -105,8 +123,14 @@ private:
 	// Initializes the Spatial connection manager if Spatial networking is enabled, otherwise does nothing.
 	void StartSpatialConnection();
 
-	void SetHasPreviouslyConnectedToSpatial() { bHasPreviouslyConnectedToSpatial = true; }
-	bool HasPreviouslyConnectedToSpatial() const { return bHasPreviouslyConnectedToSpatial; }
+	void SetHasPreviouslyConnectedToSpatial()
+	{
+		bHasPreviouslyConnectedToSpatial = true;
+	}
+	bool HasPreviouslyConnectedToSpatial() const
+	{
+		return bHasPreviouslyConnectedToSpatial;
+	}
 
 	UFUNCTION()
 	void OnLevelInitializedNetworkActors(ULevel* LoadedLevel, UWorld* OwningWorld);

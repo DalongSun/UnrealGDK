@@ -6,8 +6,8 @@
 #include "Containers/UnrealString.h"
 #include "HAL/Platform.h"
 #include "Misc/Optional.h"
-#include "Templates/UnrealTemplate.h"
 #include "Templates/UniquePtr.h"
+#include "Templates/UnrealTemplate.h"
 #include "UObject/NameTypes.h"
 #include "Utils/SpatialLatencyTracer.h"
 
@@ -17,7 +17,6 @@
 
 namespace SpatialGDK
 {
-
 enum class EOutgoingMessageType : int32
 {
 	ReserveEntityIdsRequest,
@@ -37,7 +36,9 @@ enum class EOutgoingMessageType : int32
 
 struct FOutgoingMessage
 {
-	FOutgoingMessage(const EOutgoingMessageType& InType) : Type(InType) {}
+	FOutgoingMessage(const EOutgoingMessageType& InType)
+		: Type(InType)
+	{}
 	virtual ~FOutgoingMessage() {}
 
 	EOutgoingMessageType Type;
@@ -247,4 +248,4 @@ struct FMetrics : FOutgoingMessage
 	SpatialMetrics Metrics;
 };
 
-}
+} // namespace SpatialGDK

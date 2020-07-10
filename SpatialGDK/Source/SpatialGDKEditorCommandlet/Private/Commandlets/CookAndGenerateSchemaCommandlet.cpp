@@ -38,8 +38,7 @@ public:
 		{
 			if (IsSupportedClass(Object->GetClass()))
 			{
-				UE_LOG(LogCookAndGenerateSchemaCommandlet, Verbose, TEXT("Object [%s] Created, Consider Class [%s] For Schema."),
-					*Object->GetFName().ToString(), *GetPathNameSafe(Object->GetClass()));
+				UE_LOG(LogCookAndGenerateSchemaCommandlet, Verbose, TEXT("Object [%s] Created, Consider Class [%s] For Schema."), *Object->GetFName().ToString(), *GetPathNameSafe(Object->GetClass()));
 				VisitedClasses->Add(SoftClass);
 			}
 			else
@@ -119,8 +118,7 @@ int32 UCookAndGenerateSchemaCommandlet::Main(const FString& CmdLineParams)
 	ObjectListener.StopListening();
 
 	// Sort classes here so that batching does not have an effect on ordering.
-	ReferencedClasses.Sort([](const FSoftClassPath& A, const FSoftClassPath& B)
-	{
+	ReferencedClasses.Sort([](const FSoftClassPath& A, const FSoftClassPath& B) {
 		return FNameLexicalLess()(A.GetAssetPathName(), B.GetAssetPathName());
 	});
 

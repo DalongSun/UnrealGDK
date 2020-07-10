@@ -4,8 +4,8 @@
 
 #include "Logging/LogMacros.h"
 
-#include "SpatialGDKSettings.h"
 #include "SpatialGDKEditorSettings.h"
+#include "SpatialGDKSettings.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSpatialGDKDefaultLaunchConfigGenerator, Log, All);
 

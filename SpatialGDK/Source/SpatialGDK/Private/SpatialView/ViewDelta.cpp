@@ -1,12 +1,11 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
 #include "SpatialView/ViewDelta.h"
-#include "SpatialView/OpList/ViewDeltaLegacyOpList.h"
 #include "Containers/StringConv.h"
+#include "SpatialView/OpList/ViewDeltaLegacyOpList.h"
 
 namespace SpatialGDK
 {
-
 void ViewDelta::AddCreateEntityResponse(CreateEntityResponse Response)
 {
 	CreateEntityResponses.Push(MoveTemp(Response));
@@ -156,4 +155,4 @@ void ViewDelta::Clear()
 	AuthorityChanges.Clear();
 }
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

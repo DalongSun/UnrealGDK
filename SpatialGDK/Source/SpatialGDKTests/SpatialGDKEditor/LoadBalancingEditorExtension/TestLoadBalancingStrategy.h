@@ -16,11 +16,8 @@ class UDummyLoadBalancingStrategy : public UAbstractLBStrategy
 public:
 	UDummyLoadBalancingStrategy() = default;
 
-
 	/* UAbstractLBStrategy Interface */
-	void Init() override
-	{
-	}
+	void Init() override {}
 
 	TSet<VirtualWorkerId> GetVirtualWorkerIds() const override
 	{
@@ -54,7 +51,6 @@ public:
 	/* End UAbstractLBStrategy Interface */
 
 	uint32 NumberOfWorkers = 1;
-
 };
 
 UCLASS()

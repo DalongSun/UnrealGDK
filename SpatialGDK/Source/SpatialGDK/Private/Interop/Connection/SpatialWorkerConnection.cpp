@@ -15,8 +15,8 @@ void USpatialWorkerConnection::SetConnection(Worker_Connection* WorkerConnection
 
 	CacheWorkerAttributes();
 
-	const USpatialGDKSettings* SpatialGDKSettings = GetDefault<USpatialGDKSettings>();    
-	if (!SpatialGDKSettings->bRunSpatialWorkerConnectionOnGameThread)  
+	const USpatialGDKSettings* SpatialGDKSettings = GetDefault<USpatialGDKSettings>();
+	if (!SpatialGDKSettings->bRunSpatialWorkerConnectionOnGameThread)
 	{
 		if (OpsProcessingThread == nullptr)
 		{
@@ -26,7 +26,7 @@ void USpatialWorkerConnection::SetConnection(Worker_Connection* WorkerConnection
 			if (WaitTimeMs <= 0)
 			{
 				UE_LOG(LogSpatialWorkerConnection, Warning, TEXT("Clamping wait time for worker ops thread to the minimum rate of 1ms."));
-				WaitTimeMs = 1; 
+				WaitTimeMs = 1;
 			}
 			ThreadWaitCondition.Emplace(bCanWake, WaitTimeMs);
 
@@ -57,8 +57,7 @@ void USpatialWorkerConnection::DestroyConnection()
 
 	if (WorkerConnection)
 	{
-		AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [WorkerConnection = WorkerConnection]
-		{
+		AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [WorkerConnection = WorkerConnection] {
 			Worker_Connection_Destroy(WorkerConnection);
 		});
 
@@ -236,17 +235,13 @@ void USpatialWorkerConnection::ProcessOutgoingMessages()
 
 		switch (OutgoingMessage->Type)
 		{
-		case EOutgoingMessageType::ReserveEntityIdsRequest:
-		{
+		case EOutgoingMessageType::ReserveEntityIdsRequest: {
 			FReserveEntityIdsRequest* Message = static_cast<FReserveEntityIdsRequest*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendReserveEntityIdsRequest(WorkerConnection,
-				Message->NumOfEntities,
-				nullptr);
+			Worker_Connection_SendReserveEntityIdsRequest(WorkerConnection, Message->NumOfEntities, nullptr);
 			break;
 		}
-		case EOutgoingMessageType::CreateEntityRequest:
-		{
+		case EOutgoingMessageType::CreateEntityRequest: {
 			FCreateEntityRequest* Message = static_cast<FCreateEntityRequest*>(OutgoingMessage.Get());
 
 #if TRACE_LIB_ACTIVE
@@ -263,85 +258,54 @@ void USpatialWorkerConnection::ProcessOutgoingMessages()
 			Worker_ComponentData* ComponentData = Message->Components.GetData();
 			uint32 ComponentCount = Message->Components.Num();
 #endif
-			Worker_Connection_SendCreateEntityRequest(WorkerConnection,
-				ComponentCount,
-				ComponentData,
-				Message->EntityId.IsSet() ? &(Message->EntityId.GetValue()) : nullptr,
-				nullptr);
+			Worker_Connection_SendCreateEntityRequest(WorkerConnection, ComponentCount, ComponentData, Message->EntityId.IsSet() ? &(Message->EntityId.GetValue()) : nullptr, nullptr);
 			break;
 		}
-		case EOutgoingMessageType::DeleteEntityRequest:
-		{
+		case EOutgoingMessageType::DeleteEntityRequest: {
 			FDeleteEntityRequest* Message = static_cast<FDeleteEntityRequest*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendDeleteEntityRequest(WorkerConnection,
-				Message->EntityId,
-				nullptr);
+			Worker_Connection_SendDeleteEntityRequest(WorkerConnection, Message->EntityId, nullptr);
 			break;
 		}
-		case EOutgoingMessageType::AddComponent:
-		{
+		case EOutgoingMessageType::AddComponent: {
 			FAddComponent* Message = static_cast<FAddComponent*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendAddComponent(WorkerConnection,
-				Message->EntityId,
-				&Message->Data,
-				&DisableLoopback);
+			Worker_Connection_SendAddComponent(WorkerConnection, Message->EntityId, &Message->Data, &DisableLoopback);
 			break;
 		}
-		case EOutgoingMessageType::RemoveComponent:
-		{
+		case EOutgoingMessageType::RemoveComponent: {
 			FRemoveComponent* Message = static_cast<FRemoveComponent*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendRemoveComponent(WorkerConnection,
-				Message->EntityId,
-				Message->ComponentId,
-				&DisableLoopback);
+			Worker_Connection_SendRemoveComponent(WorkerConnection, Message->EntityId, Message->ComponentId, &DisableLoopback);
 			break;
 		}
-		case EOutgoingMessageType::ComponentUpdate:
-		{
+		case EOutgoingMessageType::ComponentUpdate: {
 			FComponentUpdate* Message = static_cast<FComponentUpdate*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendComponentUpdate(WorkerConnection,
-				Message->EntityId,
-				&Message->Update,
-				&DisableLoopback);
+			Worker_Connection_SendComponentUpdate(WorkerConnection, Message->EntityId, &Message->Update, &DisableLoopback);
 
 			break;
 		}
-		case EOutgoingMessageType::CommandRequest:
-		{
+		case EOutgoingMessageType::CommandRequest: {
 			FCommandRequest* Message = static_cast<FCommandRequest*>(OutgoingMessage.Get());
 
 			static const Worker_CommandParameters DefaultCommandParams{};
-			Worker_Connection_SendCommandRequest(WorkerConnection,
-				Message->EntityId,
-				&Message->Request,
-				nullptr,
-				&DefaultCommandParams);
+			Worker_Connection_SendCommandRequest(WorkerConnection, Message->EntityId, &Message->Request, nullptr, &DefaultCommandParams);
 			break;
 		}
-		case EOutgoingMessageType::CommandResponse:
-		{
+		case EOutgoingMessageType::CommandResponse: {
 			FCommandResponse* Message = static_cast<FCommandResponse*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendCommandResponse(WorkerConnection,
-				Message->RequestId,
-				&Message->Response);
+			Worker_Connection_SendCommandResponse(WorkerConnection, Message->RequestId, &Message->Response);
 			break;
 		}
-		case EOutgoingMessageType::CommandFailure:
-		{
+		case EOutgoingMessageType::CommandFailure: {
 			FCommandFailure* Message = static_cast<FCommandFailure*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendCommandFailure(WorkerConnection,
-				Message->RequestId,
-				TCHAR_TO_UTF8(*Message->Message));
+			Worker_Connection_SendCommandFailure(WorkerConnection, Message->RequestId, TCHAR_TO_UTF8(*Message->Message));
 			break;
 		}
-		case EOutgoingMessageType::LogMessage:
-		{
+		case EOutgoingMessageType::LogMessage: {
 			FLogMessage* Message = static_cast<FLogMessage*>(OutgoingMessage.Get());
 
 			FTCHARToUTF8 LoggerName(*Message->LoggerName.ToString());
@@ -354,27 +318,19 @@ void USpatialWorkerConnection::ProcessOutgoingMessages()
 			Worker_Connection_SendLogMessage(WorkerConnection, &LogMessage);
 			break;
 		}
-		case EOutgoingMessageType::ComponentInterest:
-		{
+		case EOutgoingMessageType::ComponentInterest: {
 			FComponentInterest* Message = static_cast<FComponentInterest*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendComponentInterest(WorkerConnection,
-				Message->EntityId,
-				Message->Interests.GetData(),
-				Message->Interests.Num());
+			Worker_Connection_SendComponentInterest(WorkerConnection, Message->EntityId, Message->Interests.GetData(), Message->Interests.Num());
 			break;
 		}
-		case EOutgoingMessageType::EntityQueryRequest:
-		{
+		case EOutgoingMessageType::EntityQueryRequest: {
 			FEntityQueryRequest* Message = static_cast<FEntityQueryRequest*>(OutgoingMessage.Get());
 
-			Worker_Connection_SendEntityQueryRequest(WorkerConnection,
-				&Message->EntityQuery,
-				nullptr);
+			Worker_Connection_SendEntityQueryRequest(WorkerConnection, &Message->EntityQuery, nullptr);
 			break;
 		}
-		case EOutgoingMessageType::Metrics:
-		{
+		case EOutgoingMessageType::Metrics: {
 			FMetrics* Message = static_cast<FMetrics*>(OutgoingMessage.Get());
 
 			// Do the conversion here so we can store everything on the stack.
@@ -419,8 +375,7 @@ void USpatialWorkerConnection::ProcessOutgoingMessages()
 			Worker_Connection_SendMetrics(WorkerConnection, &WorkerMetrics);
 			break;
 		}
-		default:
-		{
+		default: {
 			checkNoEntry();
 			break;
 		}

@@ -14,11 +14,10 @@ class ATestMovementCharacter : public ACharacter
 private:
 	UPROPERTY()
 	UStaticMeshComponent* SphereComponent;
-	
+
 	UPROPERTY()
 	class UCameraComponent* CameraComponent;
 
 public:
 	ATestMovementCharacter();
-
 };

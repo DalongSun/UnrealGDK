@@ -4,9 +4,9 @@
 
 #include "GameFramework/PlayerController.h"
 #include "Net/UnrealNetwork.h"
-#include "TestPossessionPawn.h"
-#include "SpatialTestPossession.h"
 #include "SpatialFunctionalTestFlowController.h"
+#include "SpatialTestPossession.h"
+#include "TestPossessionPawn.h"
 
 void ASpatialTestRepossession::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -60,7 +60,7 @@ void ASpatialTestRepossession::BeginPlay()
 		}
 
 		Test->FinishStep();
-		});
+	});
 
 	auto ClientCheckPossessionTickLambda = [](ASpatialFunctionalTest* NetTest, float DeltaTime) {
 		ASpatialTestRepossession* Test = Cast<ASpatialTestRepossession>(NetTest);
@@ -85,11 +85,16 @@ void ASpatialTestRepossession::BeginPlay()
 		}
 	};
 
-	AddClientStep(TEXT("SpatialTestRepossessionClientCheckPossessionStep"), 0, [](ASpatialFunctionalTest* NetTest) -> bool {
-		ASpatialTestRepossession* Test = Cast<ASpatialTestRepossession>(NetTest);
-		int NumClients = Test->GetNumRequiredClients();
-		return Test->Controllers.Num() == NumClients && Test->TestPawns.Num() == NumClients;
-		}, nullptr, ClientCheckPossessionTickLambda);
+	AddClientStep(
+		TEXT("SpatialTestRepossessionClientCheckPossessionStep"),
+		0,
+		[](ASpatialFunctionalTest* NetTest) -> bool {
+			ASpatialTestRepossession* Test = Cast<ASpatialTestRepossession>(NetTest);
+			int NumClients = Test->GetNumRequiredClients();
+			return Test->Controllers.Num() == NumClients && Test->TestPawns.Num() == NumClients;
+		},
+		nullptr,
+		ClientCheckPossessionTickLambda);
 
 	AddServerStep(TEXT("SpatialTestRepossessionServerSwitchStep"), 1, nullptr, nullptr, [](ASpatialFunctionalTest* NetTest, float DeltaTime) {
 		ASpatialTestRepossession* Test = Cast<ASpatialTestRepossession>(NetTest);
@@ -110,7 +115,7 @@ void ASpatialTestRepossession::BeginPlay()
 		Test->Controllers[NumPawns - 1] = FirstController;
 
 		Test->FinishStep();
-		});
+	});
 
 	AddClientStep(TEXT("SpatialTestRepossessionClientCheckRepossessionStep"), 0, nullptr, nullptr, ClientCheckPossessionTickLambda);
 
@@ -121,5 +126,5 @@ void ASpatialTestRepossession::BeginPlay()
 			OriginalPawnPair.Key->Possess(OriginalPawnPair.Value);
 		}
 		Test->FinishStep();
-		});
+	});
 }

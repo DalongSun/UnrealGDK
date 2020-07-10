@@ -5,7 +5,6 @@
 
 namespace SpatialGDK
 {
-
 void ComponentDataDeleter::operator()(Schema_ComponentData* ComponentData) const noexcept
 {
 	if (ComponentData == nullptr)
@@ -19,14 +18,12 @@ void ComponentDataDeleter::operator()(Schema_ComponentData* ComponentData) const
 ComponentData::ComponentData(Worker_ComponentId Id)
 	: ComponentId(Id)
 	, Data(Schema_CreateComponentData())
-{
-}
+{}
 
 ComponentData::ComponentData(OwningComponentDataPtr Data, Worker_ComponentId Id)
 	: ComponentId(Id)
 	, Data(MoveTemp(Data))
-{
-}
+{}
 
 ComponentData ComponentData::CreateCopy(const Schema_ComponentData* Data, Worker_ComponentId Id)
 {

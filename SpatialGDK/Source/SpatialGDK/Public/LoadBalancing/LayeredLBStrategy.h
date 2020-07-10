@@ -20,9 +20,9 @@ struct FLBLayerInfo
 {
 	GENERATED_BODY()
 
-	FLBLayerInfo() : Name(NAME_None)
-	{
-	}
+	FLBLayerInfo()
+		: Name(NAME_None)
+	{}
 
 	UPROPERTY()
 	FName Name;
@@ -60,7 +60,10 @@ public:
 
 	virtual SpatialGDK::QueryConstraint GetWorkerInterestQueryConstraint() const override;
 
-	virtual bool RequiresHandoverData() const override { return GetMinimumRequiredWorkers() > 1; }
+	virtual bool RequiresHandoverData() const override
+	{
+		return GetMinimumRequiredWorkers() > 1;
+	}
 
 	virtual FVector GetWorkerEntityPosition() const override;
 
@@ -69,7 +72,7 @@ public:
 	/* End UAbstractLBStrategy Interface */
 
 	// This is provided to support the offloading interface in SpatialStatics. It should be removed once users
-	// switch to Load Balancing. 
+	// switch to Load Balancing.
 	bool CouldHaveAuthority(TSubclassOf<AActor> Class) const;
 
 	// This returns the LBStrategy which should be rendered in the SpatialDebugger.
@@ -84,7 +87,7 @@ private:
 	TMap<VirtualWorkerId, FName> VirtualWorkerIdToLayerName;
 
 	UPROPERTY()
-	TMap<FName, UAbstractLBStrategy* > LayerNameToLBStrategy;
+	TMap<FName, UAbstractLBStrategy*> LayerNameToLBStrategy;
 
 	// Returns the name of the first Layer that contains this, or a parent of this class,
 	// or the default actor group, if no mapping is found.

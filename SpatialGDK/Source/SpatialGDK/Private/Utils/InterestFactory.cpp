@@ -12,8 +12,8 @@
 #include "SpatialGDKSettings.h"
 #include "Utils/Interest/NetCullDistanceInterest.h"
 
-#include "Engine/World.h"
 #include "Engine/Classes/GameFramework/Actor.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "UObject/UObjectIterator.h"
 
@@ -24,7 +24,6 @@ DECLARE_CYCLE_STAT(TEXT("AddUserDefinedQueries"), STAT_InterestFactoryAddUserDef
 
 namespace SpatialGDK
 {
-
 InterestFactory::InterestFactory(USpatialClassInfoManager* InClassInfoManager, USpatialPackageMapClient* InPackageMap)
 	: ClassInfoManager(InClassInfoManager)
 	, PackageMap(InPackageMap)
@@ -214,7 +213,8 @@ void InterestFactory::AddServerSelfInterest(Interest& OutInterest, const Worker_
 	// Add a query for the load balancing worker (whoever is delegated the ACL) to read the authority intent
 	Query LoadBalanceQuery;
 	LoadBalanceQuery.Constraint.EntityIdConstraint = EntityId;
-	LoadBalanceQuery.ResultComponentIds = SchemaResultType{ SpatialConstants::AUTHORITY_INTENT_COMPONENT_ID, SpatialConstants::COMPONENT_PRESENCE_COMPONENT_ID, SpatialConstants::NET_OWNING_CLIENT_WORKER_COMPONENT_ID };
+	LoadBalanceQuery.ResultComponentIds
+		= SchemaResultType{ SpatialConstants::AUTHORITY_INTENT_COMPONENT_ID, SpatialConstants::COMPONENT_PRESENCE_COMPONENT_ID, SpatialConstants::NET_OWNING_CLIENT_WORKER_COMPONENT_ID };
 	AddComponentQueryPairToInterestComponent(OutInterest, SpatialConstants::ENTITY_ACL_COMPONENT_ID, LoadBalanceQuery);
 }
 
@@ -474,11 +474,8 @@ QueryConstraint InterestFactory::CreateAlwaysRelevantConstraint() const
 {
 	QueryConstraint AlwaysRelevantConstraint;
 
-	Worker_ComponentId ComponentIds[] = {
-		SpatialConstants::STARTUP_ACTOR_MANAGER_COMPONENT_ID,
-		SpatialConstants::VIRTUAL_WORKER_TRANSLATION_COMPONENT_ID,
-		SpatialConstants::ALWAYS_RELEVANT_COMPONENT_ID
-	};
+	Worker_ComponentId ComponentIds[]
+		= { SpatialConstants::STARTUP_ACTOR_MANAGER_COMPONENT_ID, SpatialConstants::VIRTUAL_WORKER_TRANSLATION_COMPONENT_ID, SpatialConstants::ALWAYS_RELEVANT_COMPONENT_ID };
 
 	for (Worker_ComponentId ComponentId : ComponentIds)
 	{
@@ -517,8 +514,12 @@ QueryConstraint InterestFactory::CreateLevelConstraints(const AActor* InActor) c
 		}
 		else
 		{
-			UE_LOG(LogInterestFactory, Error, TEXT("Error creating query constraints for Actor %s. "
-				"Could not find Streaming Level Component for Level %s. Have you generated schema?"), *InActor->GetName(), *LevelPath.ToString());
+			UE_LOG(LogInterestFactory,
+				   Error,
+				   TEXT("Error creating query constraints for Actor %s. "
+						"Could not find Streaming Level Component for Level %s. Have you generated schema?"),
+				   *InActor->GetName(),
+				   *LevelPath.ToString());
 		}
 	}
 

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 
 #include "SpatialInterestConstraints.generated.h"
@@ -81,7 +81,7 @@ public:
 
 	/** Entities captured by any subconstraints will be included in interest results. */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "Or Constraint")
-	TArray<UAbstractQueryConstraint *> Constraints;
+	TArray<UAbstractQueryConstraint*> Constraints;
 };
 
 /**
@@ -99,7 +99,7 @@ public:
 
 	/** Entities captured by all subconstraints will be included in interest results. */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "And Constraint")
-	TArray<UAbstractQueryConstraint *> Constraints;
+	TArray<UAbstractQueryConstraint*> Constraints;
 };
 
 /**

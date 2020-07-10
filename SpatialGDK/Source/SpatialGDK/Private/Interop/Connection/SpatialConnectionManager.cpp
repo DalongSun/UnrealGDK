@@ -134,8 +134,7 @@ void USpatialConnectionManager::DestroyConnection()
 {
 	if (WorkerLocator)
 	{
-		AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [WorkerLocator = WorkerLocator]
-		{
+		AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [WorkerLocator = WorkerLocator] {
 			Worker_Locator_Destroy(WorkerLocator);
 		});
 
@@ -156,17 +155,16 @@ void USpatialConnectionManager::Connect(bool bInitAsClient, uint32 PlayInEditorI
 	if (bIsConnected)
 	{
 		check(bInitAsClient == bConnectAsClient);
-		AsyncTask(ENamedThreads::GameThread, [WeakThis = TWeakObjectPtr<USpatialConnectionManager>(this)]
+		AsyncTask(ENamedThreads::GameThread, [WeakThis = TWeakObjectPtr<USpatialConnectionManager>(this)] {
+			if (WeakThis.IsValid())
 			{
-				if (WeakThis.IsValid())
-				{
-					WeakThis->OnConnectionSuccess();
-				}
-				else
-				{
-					UE_LOG(LogSpatialConnectionManager, Error, TEXT("SpatialConnectionManager is not valid but was already connected."));
-				}
-			});
+				WeakThis->OnConnectionSuccess();
+			}
+			else
+			{
+				UE_LOG(LogSpatialConnectionManager, Error, TEXT("SpatialConnectionManager is not valid but was already connected."));
+			}
+		});
 		return;
 	}
 
@@ -247,7 +245,8 @@ void USpatialConnectionManager::ProcessLoginTokensResponse(const Worker_Alpha_Lo
 
 		if (!bFoundDeployment)
 		{
-			OnConnectionFailure(WORKER_CONNECTION_STATUS_CODE_NETWORK_ERROR, FString::Printf(TEXT("Deployment not found! Make sure that the deployment with name '%s' is running and has the 'dev_login' deployment tag."), *DeploymentToConnect));
+			OnConnectionFailure(WORKER_CONNECTION_STATUS_CODE_NETWORK_ERROR,
+								FString::Printf(TEXT("Deployment not found! Make sure that the deployment with name '%s' is running and has the 'dev_login' deployment tag."), *DeploymentToConnect));
 			return;
 		}
 	}
@@ -300,7 +299,8 @@ void USpatialConnectionManager::StartDevelopmentAuth(const FString& DevAuthToken
 	PITParams.metadata = MetaData.Get();
 	PITParams.use_insecure_connection = false;
 
-	if (Worker_Alpha_PlayerIdentityTokenResponseFuture* PITFuture = Worker_Alpha_CreateDevelopmentPlayerIdentityTokenAsync(TCHAR_TO_UTF8(*DevAuthConfig.LocatorHost), SpatialConstants::LOCATOR_PORT, &PITParams))
+	if (Worker_Alpha_PlayerIdentityTokenResponseFuture* PITFuture
+		= Worker_Alpha_CreateDevelopmentPlayerIdentityTokenAsync(TCHAR_TO_UTF8(*DevAuthConfig.LocatorHost), SpatialConstants::LOCATOR_PORT, &PITParams))
 	{
 		Worker_Alpha_PlayerIdentityTokenResponseFuture_Get(PITFuture, nullptr, this, &USpatialConnectionManager::OnPlayerIdentityToken);
 	}
@@ -317,8 +317,7 @@ void USpatialConnectionManager::ConnectToReceptionist(uint32 PlayInEditorID)
 	ConfigureConnection ConnectionConfig(ReceptionistConfig, bConnectAsClient);
 
 	Worker_ConnectionFuture* ConnectionFuture = Worker_ConnectAsync(
-		TCHAR_TO_UTF8(*ReceptionistConfig.GetReceptionistHost()), ReceptionistConfig.GetReceptionistPort(),
-		TCHAR_TO_UTF8(*ReceptionistConfig.WorkerId), &ConnectionConfig.Params);
+		TCHAR_TO_UTF8(*ReceptionistConfig.GetReceptionistHost()), ReceptionistConfig.GetReceptionistPort(), TCHAR_TO_UTF8(*ReceptionistConfig.WorkerId), &ConnectionConfig.Params);
 
 	FinishConnecting(ConnectionFuture);
 }
@@ -358,13 +357,11 @@ void USpatialConnectionManager::FinishConnecting(Worker_ConnectionFuture* Connec
 {
 	TWeakObjectPtr<USpatialConnectionManager> WeakSpatialConnectionManager(this);
 
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [ConnectionFuture, WeakSpatialConnectionManager]
-	{
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [ConnectionFuture, WeakSpatialConnectionManager] {
 		Worker_Connection* NewCAPIWorkerConnection = Worker_ConnectionFuture_Get(ConnectionFuture, nullptr);
 		Worker_ConnectionFuture_Destroy(ConnectionFuture);
 
-		AsyncTask(ENamedThreads::GameThread, [WeakSpatialConnectionManager, NewCAPIWorkerConnection]
-		{
+		AsyncTask(ENamedThreads::GameThread, [WeakSpatialConnectionManager, NewCAPIWorkerConnection] {
 			if (!WeakSpatialConnectionManager.IsValid())
 			{
 				// The game instance was destroyed before the connection finished, so just clean up the connection.
@@ -402,7 +399,8 @@ void USpatialConnectionManager::SetConnectionType(ESpatialConnectionType InConne
 	// The locator config may not have been initialized
 	check(!(InConnectionType == ESpatialConnectionType::Locator && LocatorConfig.LocatorHost.IsEmpty()))
 
-	ConnectionType = InConnectionType;
+		ConnectionType
+		= InConnectionType;
 }
 
 bool USpatialConnectionManager::TrySetupConnectionConfigFromCommandLine(const FString& SpatialWorkerType)

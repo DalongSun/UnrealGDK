@@ -16,8 +16,7 @@
 #include <WorkerSDK/improbable/c_schema.h>
 #include <WorkerSDK/improbable/c_worker.h>
 
-#define VIRTUALWORKERTRANSLATOR_TEST(TestName) \
-	GDK_TEST(Core, SpatialVirtualWorkerTranslator, TestName)
+#define VIRTUALWORKERTRANSLATOR_TEST(TestName) GDK_TEST(Core, SpatialVirtualWorkerTranslator, TestName)
 
 VIRTUALWORKERTRANSLATOR_TEST(GIVEN_init_is_not_called_THEN_return_not_ready)
 {
@@ -212,7 +211,6 @@ VIRTUALWORKERTRANSLATOR_TEST(GIVEN_have_a_valid_mapping_WHEN_another_valid_mappi
 
 	return true;
 }
-
 
 VIRTUALWORKERTRANSLATOR_TEST(GIVEN_have_a_valid_mapping_WHEN_try_to_change_local_virtual_worker_id_THEN_ignore_it)
 {

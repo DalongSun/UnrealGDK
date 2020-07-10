@@ -27,8 +27,7 @@ FSpatialGDKEditorCommandLineArgsManager::FSpatialGDKEditorCommandLineArgsManager
 #ifdef ENABLE_LAUNCHER_DELEGATE
 	: bAndroidDevice(false)
 #endif // ENABLE_LAUNCHER_DELEGATE
-{
-}
+{}
 
 void FSpatialGDKEditorCommandLineArgsManager::Init()
 {
@@ -84,7 +83,6 @@ void FSpatialGDKEditorCommandLineArgsManager::OnCreateLauncher(ILauncherRef Laun
 
 namespace
 {
-
 FString GetAdbExePath()
 {
 	FString AndroidHome = FPlatformMisc::GetEnvironmentVariable(TEXT("ANDROID_HOME"));
@@ -117,7 +115,9 @@ FReply FSpatialGDKEditorCommandLineArgsManager::PushCommandLineToIOSDevice()
 	}
 
 	FString Executable = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries/DotNET/IOS/deploymentserver.exe")));
-	FString DeploymentServerArguments = FString::Printf(TEXT("copyfile -bundle \"%s\" -file \"%s\" -file \"/Documents/ue4commandline.txt\""), *(IOSRuntimeSettings->BundleIdentifier.Replace(TEXT("[PROJECT_NAME]"), FApp::GetProjectName())), *OutCommandLineArgsFile);
+	FString DeploymentServerArguments = FString::Printf(TEXT("copyfile -bundle \"%s\" -file \"%s\" -file \"/Documents/ue4commandline.txt\""),
+														*(IOSRuntimeSettings->BundleIdentifier.Replace(TEXT("[PROJECT_NAME]"), FApp::GetProjectName())),
+														*OutCommandLineArgsFile);
 
 #if PLATFORM_MAC
 	DeploymentServerArguments = FString::Printf(TEXT("%s %s"), *Executable, *DeploymentServerArguments);
@@ -189,7 +189,8 @@ bool FSpatialGDKEditorCommandLineArgsManager::TryConstructMobileCommandLineArgum
 	const USpatialGDKEditorSettings* SpatialGDKSettings = GetDefault<USpatialGDKEditorSettings>();
 	const FString ProjectName = FApp::GetProjectName();
 
-	// The project path is based on this: https://github.com/improbableio/UnrealEngine/blob/4.22-SpatialOSUnrealGDK-release/Engine/Source/Programs/AutomationTool/AutomationUtils/DeploymentContext.cs#L408
+	// The project path is based on this:
+	// https://github.com/improbableio/UnrealEngine/blob/4.22-SpatialOSUnrealGDK-release/Engine/Source/Programs/AutomationTool/AutomationUtils/DeploymentContext.cs#L408
 	const FString MobileProjectPath = FString::Printf(TEXT("../../../%s/%s.uproject"), *ProjectName, *ProjectName);
 	FString TravelUrl;
 	FString SpatialOSOptions = FString::Printf(TEXT("-workerType %s"), *(SpatialGDKSettings->MobileWorkerType));

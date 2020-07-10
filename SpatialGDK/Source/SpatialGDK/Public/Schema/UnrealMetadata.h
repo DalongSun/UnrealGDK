@@ -10,8 +10,8 @@
 #include "Utils/SchemaUtils.h"
 
 #include "GameFramework/Actor.h"
-#include "UObject/UObjectHash.h"
 #include "UObject/Package.h"
+#include "UObject/UObjectHash.h"
 
 #include <WorkerSDK/improbable/c_schema.h>
 #include <WorkerSDK/improbable/c_worker.h>
@@ -22,7 +22,6 @@ using SubobjectToOffsetMap = TMap<UObject*, uint32>;
 
 namespace SpatialGDK
 {
-
 struct UnrealMetadata : Component
 {
 	static const Worker_ComponentId ComponentId = SpatialConstants::UNREAL_METADATA_COMPONENT_ID;
@@ -30,7 +29,10 @@ struct UnrealMetadata : Component
 	UnrealMetadata() = default;
 
 	UnrealMetadata(const TSchemaOption<FUnrealObjectRef>& InStablyNamedRef, const FString& InClassPath, const TSchemaOption<bool>& InbNetStartup)
-		: StablyNamedRef(InStablyNamedRef), ClassPath(InClassPath), bNetStartup(InbNetStartup) {}
+		: StablyNamedRef(InStablyNamedRef)
+		, ClassPath(InClassPath)
+		, bNetStartup(InbNetStartup)
+	{}
 
 	UnrealMetadata(const Worker_ComponentData& Data)
 	{
@@ -89,7 +91,10 @@ struct UnrealMetadata : Component
 		{
 			if (GetDefault<USpatialGDKSettings>()->bAsyncLoadNewClassesOnEntityCheckout)
 			{
-				UE_LOG(LogSpatialUnrealMetadata, Warning, TEXT("Class couldn't be found even though async loading on entity checkout is enabled. Will attempt to load it synchronously. Class: %s"), *ClassPath);
+				UE_LOG(LogSpatialUnrealMetadata,
+					   Warning,
+					   TEXT("Class couldn't be found even though async loading on entity checkout is enabled. Will attempt to load it synchronously. Class: %s"),
+					   *ClassPath);
 			}
 
 			Class = LoadObject<UClass>(nullptr, *ClassPath);

@@ -19,23 +19,18 @@ void FWorkerTypeCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle>
 
 	if (WorkerTypeNameProperty->IsValidHandle())
 	{
-		HeaderRow.NameContent()
-			[
-				StructPropertyHandle->CreatePropertyNameWidget()
-			]
-		.ValueContent()
-			[
-				PropertyCustomizationHelpers::MakePropertyComboBox(WorkerTypeNameProperty,
-				FOnGetPropertyComboBoxStrings::CreateStatic(&FWorkerTypeCustomization::OnGetStrings),
-				FOnGetPropertyComboBoxValue::CreateStatic(&FWorkerTypeCustomization::OnGetValue, WorkerTypeNameProperty),
-				FOnPropertyComboBoxValueSelected::CreateStatic(&FWorkerTypeCustomization::OnValueSelected, WorkerTypeNameProperty))
-			];
+		HeaderRow.NameContent()[StructPropertyHandle->CreatePropertyNameWidget()]
+			.ValueContent()[PropertyCustomizationHelpers::MakePropertyComboBox(WorkerTypeNameProperty,
+																			   FOnGetPropertyComboBoxStrings::CreateStatic(&FWorkerTypeCustomization::OnGetStrings),
+																			   FOnGetPropertyComboBoxValue::CreateStatic(&FWorkerTypeCustomization::OnGetValue, WorkerTypeNameProperty),
+																			   FOnPropertyComboBoxValueSelected::CreateStatic(&FWorkerTypeCustomization::OnValueSelected, WorkerTypeNameProperty))];
 	}
 }
 
-void FWorkerTypeCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
-{
-}
+void FWorkerTypeCustomization::CustomizeChildren(TSharedRef<class IPropertyHandle> StructPropertyHandle,
+												 class IDetailChildrenBuilder& StructBuilder,
+												 IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+{}
 
 void FWorkerTypeCustomization::OnGetStrings(TArray<TSharedPtr<FString>>& OutComboBoxStrings, TArray<TSharedPtr<class SToolTip>>& OutToolTips, TArray<bool>& OutRestrictedItems)
 {

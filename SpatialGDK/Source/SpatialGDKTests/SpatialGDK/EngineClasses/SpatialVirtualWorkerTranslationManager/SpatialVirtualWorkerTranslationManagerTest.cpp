@@ -8,18 +8,16 @@
 #include "SpatialConstants.h"
 #include "SpatialGDKTests/SpatialGDK/Interop/Connection/SpatialOSWorkerInterface/SpatialOSWorkerConnectionSpy.h"
 #include "SpatialGDKTests/SpatialGDK/Interop/SpatialOSDispatcherInterface/SpatialOSDispatcherSpy.h"
-#include "Utils/SchemaUtils.h"
 #include "UObject/UObjectGlobals.h"
+#include "Utils/SchemaUtils.h"
 
 #include "CoreMinimal.h"
 
 #include <WorkerSDK/improbable/c_schema.h>
 
-#define VIRTUALWORKERTRANSLATIONMANAGER_TEST(TestName) \
-	GDK_TEST(Core, SpatialVirtualWorkerTranslationManager, TestName)
+#define VIRTUALWORKERTRANSLATIONMANAGER_TEST(TestName) GDK_TEST(Core, SpatialVirtualWorkerTranslationManager, TestName)
 namespace
 {
-
 // Given a TranslationManager, Dispatcher, and Connection, give the TranslationManager authority
 // so that it registers a QueryDelegate with the Dispatcher Mock, then query for that Delegate
 // and return it so that tests can focus on the Delegate's correctness.
@@ -40,7 +38,7 @@ EntityQueryDelegate* SetupQueryDelegateTests(SpatialVirtualWorkerTranslationMana
 	return Delegate;
 }
 
-}  // anonymous namespace
+} // anonymous namespace
 
 VIRTUALWORKERTRANSLATIONMANAGER_TEST(Given_an_authority_change_THEN_query_for_worker_entities_when_appropriate)
 {

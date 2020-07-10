@@ -13,9 +13,9 @@
 #include "SpatialGDKSettings.h"
 #include "Utils/SchemaUtils.h"
 
+#include "Containers/StringConv.h"
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
-#include "Containers/StringConv.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerStart.h"
 #include "HAL/Platform.h"
@@ -54,8 +54,7 @@ void USpatialPlayerSpawner::SendPlayerSpawnRequest()
 	const Worker_RequestId RequestID = NetDriver->Connection->SendEntityQueryRequest(&SpatialSpawnerQuery);
 
 	EntityQueryDelegate SpatialSpawnerQueryDelegate;
-	SpatialSpawnerQueryDelegate.BindLambda([this, RequestID](const Worker_EntityQueryResponseOp& Op)
-	{
+	SpatialSpawnerQueryDelegate.BindLambda([this, RequestID](const Worker_EntityQueryResponseOp& Op) {
 		FString Reason;
 
 		if (Op.status_code != WORKER_STATUS_CODE_SUCCESS)
@@ -151,22 +150,23 @@ void USpatialPlayerSpawner::ReceivePlayerSpawnResponseOnClient(const Worker_Comm
 	}
 	else if (NumberOfAttempts < SpatialConstants::MAX_NUMBER_COMMAND_ATTEMPTS)
 	{
-		UE_LOG(LogSpatialPlayerSpawner, Warning, TEXT("Player spawn request failed: \"%s\""),
-			UTF8_TO_TCHAR(Op.message));
+		UE_LOG(LogSpatialPlayerSpawner, Warning, TEXT("Player spawn request failed: \"%s\""), UTF8_TO_TCHAR(Op.message));
 
 		FTimerHandle RetryTimer;
-		TimerManager->SetTimer(RetryTimer, [WeakThis = TWeakObjectPtr<USpatialPlayerSpawner>(this)]()
-		{
-			if (USpatialPlayerSpawner* Spawner = WeakThis.Get())
-			{
-				Spawner->SendPlayerSpawnRequest();
-			}
-		}, SpatialConstants::GetCommandRetryWaitTimeSeconds(NumberOfAttempts), false);
+		TimerManager->SetTimer(
+			RetryTimer,
+			[WeakThis = TWeakObjectPtr<USpatialPlayerSpawner>(this)]() {
+				if (USpatialPlayerSpawner* Spawner = WeakThis.Get())
+				{
+					Spawner->SendPlayerSpawnRequest();
+				}
+			},
+			SpatialConstants::GetCommandRetryWaitTimeSeconds(NumberOfAttempts),
+			false);
 	}
 	else
 	{
-		FString Reason = FString::Printf(TEXT("Player spawn request failed too many times. (%u attempts)"),
-			SpatialConstants::MAX_NUMBER_COMMAND_ATTEMPTS);
+		FString Reason = FString::Printf(TEXT("Player spawn request failed too many times. (%u attempts)"), SpatialConstants::MAX_NUMBER_COMMAND_ATTEMPTS);
 		UE_LOG(LogSpatialPlayerSpawner, Error, TEXT("%s"), *Reason);
 		OnPlayerSpawnFailed.ExecuteIfBound(Reason);
 	}
@@ -204,10 +204,11 @@ void USpatialPlayerSpawner::FindPlayerStartAndProcessPlayerSpawn(Schema_Object* 
 	// This implementation depends on:
 	// 1) the load-balancing strategy having the same rules for PlayerStart Actors and Characters / Controllers / Player States or,
 	// 2) the authoritative virtual worker ID for a PlayerStart Actor not changing during the lifetime of a deployment.
-	check (NetDriver->LoadBalanceStrategy != nullptr)
+	check(NetDriver->LoadBalanceStrategy != nullptr)
 
-	// We need to specifically extract the URL from the PlayerSpawn request for finding a PlayerStart.
-	const FURL Url = PlayerSpawner::ExtractUrlFromPlayerSpawnParams(SpawnPlayerRequest);
+		// We need to specifically extract the URL from the PlayerSpawn request for finding a PlayerStart.
+		const FURL Url
+		= PlayerSpawner::ExtractUrlFromPlayerSpawnParams(SpawnPlayerRequest);
 
 	// Find a PlayerStart Actor on this server.
 	AActor* PlayerStartActor = NetDriver->GetWorld()->GetAuthGameMode()->FindPlayerStart(nullptr, Url.Portal);
@@ -240,8 +241,7 @@ void USpatialPlayerSpawner::FindPlayerStartAndProcessPlayerSpawn(Schema_Object* 
 		VirtualWorkerToForwardTo = NetDriver->LoadBalanceStrategy->WhoShouldHaveAuthority(*PlayerStartActor);
 		if (VirtualWorkerToForwardTo == SpatialConstants::INVALID_VIRTUAL_WORKER_ID)
 		{
-			UE_LOG(LogSpatialPlayerSpawner, Error, TEXT("Load-balance strategy returned invalid virtual worker ID for selected PlayerStart Actor: %s"),
-				*GetNameSafe(PlayerStartActor));
+			UE_LOG(LogSpatialPlayerSpawner, Error, TEXT("Load-balance strategy returned invalid virtual worker ID for selected PlayerStart Actor: %s"), *GetNameSafe(PlayerStartActor));
 		}
 	}
 
@@ -268,17 +268,27 @@ void USpatialPlayerSpawner::PassSpawnRequestToNetDriver(const Schema_Object* Pla
 	GameMode->SetPrioritizedPlayerStart(nullptr);
 }
 
-void USpatialPlayerSpawner::ForwardSpawnRequestToStrategizedServer(const Schema_Object* OriginalPlayerSpawnRequest, AActor* PlayerStart, const PhysicalWorkerName& ClientWorkerId, const VirtualWorkerId SpawningVirtualWorker)
+void USpatialPlayerSpawner::ForwardSpawnRequestToStrategizedServer(const Schema_Object* OriginalPlayerSpawnRequest,
+																   AActor* PlayerStart,
+																   const PhysicalWorkerName& ClientWorkerId,
+																   const VirtualWorkerId SpawningVirtualWorker)
 {
-	UE_LOG(LogSpatialPlayerSpawner, Log, TEXT("Forwarding player spawn request to strategized worker. Client ID: %s. PlayerStart: %s. Strategeized virtual worker %d"),
-		*ClientWorkerId, *GetNameSafe(PlayerStart), SpawningVirtualWorker);
+	UE_LOG(LogSpatialPlayerSpawner,
+		   Log,
+		   TEXT("Forwarding player spawn request to strategized worker. Client ID: %s. PlayerStart: %s. Strategeized virtual worker %d"),
+		   *ClientWorkerId,
+		   *GetNameSafe(PlayerStart),
+		   SpawningVirtualWorker);
 
 	// Find the server worker entity corresponding to the PlayerStart strategized virtual worker.
 	const Worker_EntityId ServerWorkerEntity = NetDriver->VirtualWorkerTranslator->GetServerWorkerEntityForVirtualWorker(SpawningVirtualWorker);
 	if (ServerWorkerEntity == SpatialConstants::INVALID_ENTITY_ID)
 	{
-		UE_LOG(LogSpatialPlayerSpawner, Error, TEXT("Player spawning failed. Virtual worker translator returned invalid server worker entity ID. Virtual worker: %d. "
-			"Defaulting to normal player spawning flow."), SpawningVirtualWorker);
+		UE_LOG(LogSpatialPlayerSpawner,
+			   Error,
+			   TEXT("Player spawning failed. Virtual worker translator returned invalid server worker entity ID. Virtual worker: %d. "
+					"Defaulting to normal player spawning flow."),
+			   SpawningVirtualWorker);
 		PassSpawnRequestToNetDriver(OriginalPlayerSpawnRequest, nullptr);
 		return;
 	}
@@ -341,8 +351,10 @@ void USpatialPlayerSpawner::ReceiveForwardedPlayerSpawnRequest(const Worker_Comm
 	}
 	else
 	{
-		UE_LOG(LogSpatialPlayerSpawner, Log, TEXT("PlayerStart Actor was null object ref in forward spawn request. This is intentional when handing request to the correct "
-			"load balancing layer. Attempting to find a player start again."));
+		UE_LOG(LogSpatialPlayerSpawner,
+			   Log,
+			   TEXT("PlayerStart Actor was null object ref in forward spawn request. This is intentional when handing request to the correct "
+					"load balancing layer. Attempting to find a player start again."));
 		FindPlayerStartAndProcessPlayerSpawn(PlayerSpawnData, ClientWorkerId);
 	}
 
@@ -373,13 +385,16 @@ void USpatialPlayerSpawner::ReceiveForwardPlayerSpawnResponse(const Worker_Comma
 	UE_LOG(LogSpatialPlayerSpawner, Warning, TEXT("ForwardPlayerSpawn request failed: \"%s\". Retrying"), UTF8_TO_TCHAR(Op.message));
 
 	FTimerHandle RetryTimer;
-	TimerManager->SetTimer(RetryTimer, [EntityId = Op.entity_id, RequestId = Op.request_id, WeakThis = TWeakObjectPtr<USpatialPlayerSpawner>(this)]()
-	{
-		if (USpatialPlayerSpawner* Spawner = WeakThis.Get())
-		{
-			Spawner->RetryForwardSpawnPlayerRequest(EntityId, RequestId);
-		}
-	}, SpatialConstants::GetCommandRetryWaitTimeSeconds(SpatialConstants::FORWARD_PLAYER_SPAWN_COMMAND_WAIT_SECONDS), false);
+	TimerManager->SetTimer(
+		RetryTimer,
+		[EntityId = Op.entity_id, RequestId = Op.request_id, WeakThis = TWeakObjectPtr<USpatialPlayerSpawner>(this)]() {
+			if (USpatialPlayerSpawner* Spawner = WeakThis.Get())
+			{
+				Spawner->RetryForwardSpawnPlayerRequest(EntityId, RequestId);
+			}
+		},
+		SpatialConstants::GetCommandRetryWaitTimeSeconds(SpatialConstants::FORWARD_PLAYER_SPAWN_COMMAND_WAIT_SECONDS),
+		false);
 }
 
 void USpatialPlayerSpawner::RetryForwardSpawnPlayerRequest(const Worker_EntityId EntityId, const Worker_RequestId RequestId, const bool bShouldTryDifferentPlayerStart)

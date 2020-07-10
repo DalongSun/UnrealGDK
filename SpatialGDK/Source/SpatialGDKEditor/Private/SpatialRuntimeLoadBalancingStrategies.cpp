@@ -12,9 +12,7 @@ int32 USingleWorkerRuntimeStrategy::GetNumberOfWorkersForPIE() const
 UGridRuntimeLoadBalancingStrategy::UGridRuntimeLoadBalancingStrategy()
 	: Columns(1)
 	, Rows(1)
-{
-
-}
+{}
 
 int32 UGridRuntimeLoadBalancingStrategy::GetNumberOfWorkersForPIE() const
 {
@@ -23,9 +21,7 @@ int32 UGridRuntimeLoadBalancingStrategy::GetNumberOfWorkersForPIE() const
 
 UEntityShardingRuntimeLoadBalancingStrategy::UEntityShardingRuntimeLoadBalancingStrategy()
 	: NumWorkers(1)
-{
-
-}
+{}
 
 int32 UEntityShardingRuntimeLoadBalancingStrategy::GetNumberOfWorkersForPIE() const
 {

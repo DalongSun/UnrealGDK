@@ -4,27 +4,26 @@
 
 #include "SpatialView/AuthorityRecord.h"
 
-#define AUTHORITYRECORD_TEST(TestName) \
-	GDK_TEST(Core, AuthorityRecord, TestName)
+#define AUTHORITYRECORD_TEST(TestName) GDK_TEST(Core, AuthorityRecord, TestName)
 
 using namespace SpatialGDK;
 
 namespace
 {
-	class AuthorityChangeRecordFixture
-	{
-	public:
-		const Worker_EntityId kTestEntityId = 1337;
-		const Worker_ComponentId kTestComponentId = 1338;
+class AuthorityChangeRecordFixture
+{
+public:
+	const Worker_EntityId kTestEntityId = 1337;
+	const Worker_ComponentId kTestComponentId = 1338;
 
-		const EntityComponentId kEntityComponentId{ kTestEntityId, kTestComponentId };
+	const EntityComponentId kEntityComponentId{ kTestEntityId, kTestComponentId };
 
-		AuthorityRecord Record;
+	AuthorityRecord Record;
 
-		TArray<EntityComponentId> ExpectedAuthorityGained;
-		TArray<EntityComponentId> ExpectedAuthorityLost;
-		TArray<EntityComponentId> ExpectedAuthorityLostTemporarily;
-	};
+	TArray<EntityComponentId> ExpectedAuthorityGained;
+	TArray<EntityComponentId> ExpectedAuthorityLost;
+	TArray<EntityComponentId> ExpectedAuthorityLostTemporarily;
+};
 } // anonymous namespace
 
 AUTHORITYRECORD_TEST(GIVEN_EmptyAuthorityRecord_WHEN_set_to_authoritative_THEN_AuthorityRecord_has_AuthorityGainedRecord)

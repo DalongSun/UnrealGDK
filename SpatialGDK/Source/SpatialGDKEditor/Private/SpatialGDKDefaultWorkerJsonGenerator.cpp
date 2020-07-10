@@ -2,8 +2,8 @@
 
 #include "SpatialGDKDefaultWorkerJsonGenerator.h"
 
-#include "SpatialGDKSettings.h"
 #include "SpatialGDKServicesConstants.h"
+#include "SpatialGDKSettings.h"
 
 #include "Misc/FileHelper.h"
 

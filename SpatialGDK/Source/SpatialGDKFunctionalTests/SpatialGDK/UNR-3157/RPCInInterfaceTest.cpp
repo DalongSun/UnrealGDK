@@ -1,11 +1,10 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
-
 #include "RPCInInterfaceTest.h"
-#include "Net/UnrealNetwork.h"
 #include "Engine/World.h"
-#include "GameFramework/PlayerState.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerState.h"
+#include "Net/UnrealNetwork.h"
 #include "SpatialFunctionalTestFlowController.h"
 
 /**
@@ -22,7 +21,7 @@ void ARPCInInterfaceTest::BeginPlay()
 {
 	Super::BeginPlay();
 
-	{	// Step 1 - Create actor
+	{ // Step 1 - Create actor
 		AddServerStep(TEXT("ServerCreateActor"), 1, nullptr, [](ASpatialFunctionalTest* NetTest) {
 			ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);
 
@@ -37,7 +36,7 @@ void ARPCInInterfaceTest::BeginPlay()
 			}
 
 			Test->FinishStep();
-			});
+		});
 	}
 	{ // Step 2 - Make sure client has ownership of Actor
 		AddClientStep(TEXT("ClientCheckOwnership"), 1, nullptr, nullptr, [](ASpatialFunctionalTest* NetTest, float DeltaTime) {
@@ -46,23 +45,30 @@ void ARPCInInterfaceTest::BeginPlay()
 			{
 				Test->FinishStep();
 			}
-			});
+		});
 	}
-	{	// Step 3 - Call client RPC on interface
-		AddServerStep(TEXT("ServerCallRPC"), 1, [](ASpatialFunctionalTest* NetTest) -> bool {
-			ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);
+	{ // Step 3 - Call client RPC on interface
+		AddServerStep(
+			TEXT("ServerCallRPC"),
+			1,
+			[](ASpatialFunctionalTest* NetTest) -> bool {
+				ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);
 				return IsValid(Test->TestActor);
-			}, [](ASpatialFunctionalTest* NetTest) {
+			},
+			[](ASpatialFunctionalTest* NetTest) {
 				ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);
 				Test->TestActor->RPCInInterface();
 				Test->FinishStep();
 			});
 	}
-	{	// Step 4 - Check RPC was received on client
-		AddClientStep(TEXT("ClientCheckRPC"), 0, [](ASpatialFunctionalTest* NetTest) -> bool {
+	{ // Step 4 - Check RPC was received on client
+		AddClientStep(
+			TEXT("ClientCheckRPC"),
+			0,
+			[](ASpatialFunctionalTest* NetTest) -> bool {
 				ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);
 				return IsValid(Test->TestActor);
-			}, 
+			},
 			nullptr,
 			[](ASpatialFunctionalTest* NetTest, float DeltaTime) {
 				ARPCInInterfaceTest* Test = Cast<ARPCInInterfaceTest>(NetTest);

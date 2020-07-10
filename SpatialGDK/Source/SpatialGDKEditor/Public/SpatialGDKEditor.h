@@ -30,7 +30,10 @@ public:
 	void StartCloudDeployment(const FCloudDeploymentConfiguration& Configuration, FSimpleDelegate SuccessCallback, FSimpleDelegate FailureCallback);
 	void StopCloudDeployment(FSimpleDelegate SuccessCallback, FSimpleDelegate FailureCallback);
 
-	bool IsSchemaGeneratorRunning() { return bSchemaGeneratorRunning; }
+	bool IsSchemaGeneratorRunning()
+	{
+		return bSchemaGeneratorRunning;
+	}
 	bool FullScanRequired();
 	bool IsSchemaGenerated();
 

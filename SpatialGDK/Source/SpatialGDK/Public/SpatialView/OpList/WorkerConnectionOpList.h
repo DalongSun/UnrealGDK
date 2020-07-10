@@ -8,14 +8,12 @@
 
 namespace SpatialGDK
 {
-
 class WorkerConnectionOpList : public AbstractOpList
 {
 public:
 	explicit WorkerConnectionOpList(Worker_OpList* OpList)
-	: OpList(OpList)
-	{
-	}
+		: OpList(OpList)
+	{}
 
 	virtual uint32 GetCount() const override
 	{
@@ -44,4 +42,4 @@ private:
 	TUniquePtr<Worker_OpList, Deleter> OpList;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

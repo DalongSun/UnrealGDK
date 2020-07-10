@@ -38,14 +38,13 @@ void ULaunchConfigurationEditor::SaveConfiguration()
 	FString DefaultOutPath = SpatialGDKServicesConstants::SpatialOSDirectory;
 	TArray<FString> Filenames;
 
-	bool bSaved = DesktopPlatform->SaveFileDialog(
-		FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
-		TEXT("Save launch configuration"),
-		DefaultOutPath,
-		TEXT(""),
-		TEXT("JSON Configuration|*.json"),
-		EFileDialogFlags::None,
-		Filenames);
+	bool bSaved = DesktopPlatform->SaveFileDialog(FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
+												  TEXT("Save launch configuration"),
+												  DefaultOutPath,
+												  TEXT(""),
+												  TEXT("JSON Configuration|*.json"),
+												  EFileDialogFlags::None,
+												  Filenames);
 
 	if (bSaved && Filenames.Num() > 0)
 	{
@@ -58,33 +57,31 @@ void ULaunchConfigurationEditor::SaveConfiguration()
 
 namespace
 {
-	// Copied from FPropertyEditorModule::CreateFloatingDetailsView.
-	bool ShouldShowProperty(const FPropertyAndParent& PropertyAndParent, bool bHaveTemplate)
-	{
-		const UProperty& Property = PropertyAndParent.Property;
+// Copied from FPropertyEditorModule::CreateFloatingDetailsView.
+bool ShouldShowProperty(const FPropertyAndParent& PropertyAndParent, bool bHaveTemplate)
+{
+	const UProperty& Property = PropertyAndParent.Property;
 
-		if (bHaveTemplate)
+	if (bHaveTemplate)
+	{
+		const UClass* PropertyOwnerClass = Cast<const UClass>(Property.GetOuter());
+		const bool bDisableEditOnTemplate = PropertyOwnerClass && PropertyOwnerClass->IsNative() && Property.HasAnyPropertyFlags(CPF_DisableEditOnTemplate);
+
+		if (bDisableEditOnTemplate)
 		{
-			const UClass* PropertyOwnerClass = Cast<const UClass>(Property.GetOuter());
-			const bool bDisableEditOnTemplate = PropertyOwnerClass
-				&& PropertyOwnerClass->IsNative()
-				&& Property.HasAnyPropertyFlags(CPF_DisableEditOnTemplate);
-
-			if (bDisableEditOnTemplate)
-			{
-				return false;
-			}
+			return false;
 		}
-		return true;
 	}
-
-	FReply ExecuteEditorCommand(ULaunchConfigurationEditor* Instance, UFunction* MethodToExecute)
-	{
-		Instance->CallFunctionByNameWithArguments(*MethodToExecute->GetName(), *GLog, nullptr, true);
-
-		return FReply::Handled();
-	}
+	return true;
 }
+
+FReply ExecuteEditorCommand(ULaunchConfigurationEditor* Instance, UFunction* MethodToExecute)
+{
+	Instance->CallFunctionByNameWithArguments(*MethodToExecute->GetName(), *GLog, nullptr, true);
+
+	return FReply::Handled();
+}
+} // namespace
 
 void ULaunchConfigurationEditor::OpenModalWindow(TSharedPtr<SWindow> InParentWindow, OnLaunchConfigurationSaved InSaved)
 {
@@ -118,13 +115,7 @@ void ULaunchConfigurationEditor::OpenModalWindow(TSharedPtr<SWindow> InParentWin
 
 	DetailView->SetObjects(ObjectsToView);
 
-	TSharedRef<SVerticalBox> VBoxBuilder = SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.FillHeight(1.0)
-		[
-			DetailView
-		];
+	TSharedRef<SVerticalBox> VBoxBuilder = SNew(SVerticalBox) + SVerticalBox::Slot().AutoHeight().FillHeight(1.0)[DetailView];
 
 	// Add UFunction marked Exec as buttons in the editor's window
 	for (TFieldIterator<UFunction> FuncIt(ULaunchConfigurationEditor::StaticClass()); FuncIt; ++FuncIt)
@@ -138,31 +129,15 @@ void ULaunchConfigurationEditor::OpenModalWindow(TSharedPtr<SWindow> InParentWin
 				.AutoHeight()
 				.VAlign(VAlign_Bottom)
 				.HAlign(HAlign_Right)
-				.Padding(2.0)
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					.Padding(2.0)
-					[
-						SNew(SButton)
-						.Text(ButtonCaption)
-						.OnClicked(FOnClicked::CreateStatic(&ExecuteEditorCommand, ObjectInstance, Function))
-					]
-				];
+				.Padding(
+					2.0)[SNew(SHorizontalBox)
+						 + SHorizontalBox::Slot().AutoWidth().Padding(2.0)[SNew(SButton).Text(ButtonCaption).OnClicked(FOnClicked::CreateStatic(&ExecuteEditorCommand, ObjectInstance, Function))]];
 		}
 	}
 
 	TSharedRef<SWindow> NewSlateWindow = SNew(SWindow)
-		.Title(LOCTEXT("LaunchConfigurationEditor_Title", "Launch Configuration Editor"))
-		.ClientSize(FVector2D(600, 400))
-		[
-			SNew(SBorder)
-			.BorderImage(FEditorStyle::GetBrush(TEXT("PropertyWindow.WindowBorder")))
-			[
-				VBoxBuilder
-			]
-		];
+											 .Title(LOCTEXT("LaunchConfigurationEditor_Title", "Launch Configuration Editor"))
+											 .ClientSize(FVector2D(600, 400))[SNew(SBorder).BorderImage(FEditorStyle::GetBrush(TEXT("PropertyWindow.WindowBorder")))[VBoxBuilder]];
 
 	if (!InParentWindow.IsValid() && FModuleManager::Get().IsModuleLoaded("MainFrame"))
 	{

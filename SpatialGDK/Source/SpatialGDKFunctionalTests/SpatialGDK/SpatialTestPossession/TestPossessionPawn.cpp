@@ -1,9 +1,9 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
 #include "TestPossessionPawn.h"
-#include "Engine/World.h"
-#include "Engine/Classes/Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/Classes/Camera/CameraComponent.h"
+#include "Engine/World.h"
 #include "Materials/Material.h"
 
 ATestPossessionPawn::ATestPossessionPawn()

@@ -11,7 +11,6 @@
 
 namespace SpatialGDK
 {
-
 struct RPCRingBuffer
 {
 	RPCRingBuffer(ERPCType InType);
@@ -45,7 +44,6 @@ struct RPCRingBufferDescriptor
 
 namespace RPCRingBufferUtils
 {
-
 Worker_ComponentId GetRingBufferComponentId(ERPCType Type);
 RPCRingBufferDescriptor GetRingBufferDescriptor(ERPCType Type);
 uint32 GetRingBufferSize(ERPCType Type);

@@ -9,8 +9,7 @@
 
 #include "CoreMinimal.h"
 
-#define WORKERCONNECTION_TEST(TestName) \
-	GDK_TEST(Core, SpatialWorkerConnection, TestName)
+#define WORKERCONNECTION_TEST(TestName) GDK_TEST(Core, SpatialWorkerConnection, TestName)
 
 using namespace SpatialGDK;
 
@@ -90,12 +89,10 @@ bool FSetupWorkerConnection::Update()
 	const FURL TestURL = {};
 	FString WorkerType = "AutomationWorker";
 
-	ConnectionManager->OnConnectedCallback.BindLambda([bConnectAsClient = this->bConnectAsClient]()
-	{
+	ConnectionManager->OnConnectedCallback.BindLambda([bConnectAsClient = this->bConnectAsClient]() {
 		ConnectionProcessed(bConnectAsClient);
 	});
-	ConnectionManager->OnFailedToConnectCallback.BindLambda([bConnectAsClient = this->bConnectAsClient](uint8_t ErrorCode, const FString& ErrorMessage)
-	{
+	ConnectionManager->OnFailedToConnectCallback.BindLambda([bConnectAsClient = this->bConnectAsClient](uint8_t ErrorCode, const FString& ErrorMessage) {
 		ConnectionProcessed(bConnectAsClient);
 	});
 	bool bUseReceptionist = false;

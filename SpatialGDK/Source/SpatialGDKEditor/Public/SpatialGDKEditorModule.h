@@ -12,10 +12,12 @@ class FSpatialGDKEditorCommandLineArgsManager;
 class FSpatialGDKEditorModule : public ISpatialGDKEditorModule
 {
 public:
-
 	FSpatialGDKEditorModule();
 
-	SPATIALGDKEDITOR_API FLBStrategyEditorExtensionManager& GetLBStrategyExtensionManager() { return *ExtensionManager; }
+	SPATIALGDKEDITOR_API FLBStrategyEditorExtensionManager& GetLBStrategyExtensionManager()
+	{
+		return *ExtensionManager;
+	}
 
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;

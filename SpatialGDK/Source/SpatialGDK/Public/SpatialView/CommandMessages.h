@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "Misc/Optional.h"
 #include "Containers/UnrealString.h"
+#include "Misc/Optional.h"
 #include <improbable/c_worker.h>
 
 namespace SpatialGDK
 {
-
 struct CreateEntityRequest
 {
 	Worker_RequestId RequestId;
@@ -27,4 +26,4 @@ struct CreateEntityResponse
 	Worker_EntityId EntityId;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK

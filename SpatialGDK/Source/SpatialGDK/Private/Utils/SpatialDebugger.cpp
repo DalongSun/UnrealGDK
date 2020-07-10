@@ -29,7 +29,7 @@ DEFINE_LOG_CATEGORY(LogSpatialDebugger);
 
 namespace
 {
-	const FString DEFAULT_WORKER_REGION_MATERIAL = TEXT("/SpatialGDK/SpatialDebugger/Materials/TranslucentWorkerRegion.TranslucentWorkerRegion");
+const FString DEFAULT_WORKER_REGION_MATERIAL = TEXT("/SpatialGDK/SpatialDebugger/Materials/TranslucentWorkerRegion.TranslucentWorkerRegion");
 }
 
 ASpatialDebugger::ASpatialDebugger(const FObjectInitializer& ObjectInitializer)
@@ -174,8 +174,7 @@ void ASpatialDebugger::CreateWorkerRegions()
 	UMaterial* WorkerRegionMaterial = LoadObject<UMaterial>(nullptr, *DEFAULT_WORKER_REGION_MATERIAL);
 	if (WorkerRegionMaterial == nullptr)
 	{
-		UE_LOG(LogSpatialDebugger, Error, TEXT("Worker regions were not rendered. Could not find default material: %s"),
-			*DEFAULT_WORKER_REGION_MATERIAL);
+		UE_LOG(LogSpatialDebugger, Error, TEXT("Worker regions were not rendered. Could not find default material: %s"), *DEFAULT_WORKER_REGION_MATERIAL);
 		return;
 	}
 
@@ -301,7 +300,7 @@ void ASpatialDebugger::ActorAuthorityChanged(const Worker_AuthorityChangeOp& Aut
 		NetDriver->Sender->SendAddComponents(AuthOp.entity_id, { NewDebuggingInfo.CreateSpatialDebuggingData() });
 		return;
 	}
-		 
+
 	DebuggingInfo->AuthoritativeVirtualWorkerId = LocalVirtualWorkerId;
 	DebuggingInfo->AuthoritativeColor = LocalVirtualWorkerColor;
 	FWorkerComponentUpdate DebuggingUpdate = DebuggingInfo->CreateSpatialDebuggingUpdate();
@@ -484,12 +483,7 @@ void ASpatialDebugger::DrawDebugLocalPlayer(UCanvas* Canvas)
 		return;
 	}
 
-	const TArray<TWeakObjectPtr<AActor>> LocalPlayerActors =
-	{
-		LocalPawn,
-		LocalPlayerController,
-		LocalPlayerState
-	};
+	const TArray<TWeakObjectPtr<AActor>> LocalPlayerActors = { LocalPawn, LocalPlayerController, LocalPlayerState };
 
 	FVector2D ScreenLocation(PlayerPanelStartX, PlayerPanelStartY);
 

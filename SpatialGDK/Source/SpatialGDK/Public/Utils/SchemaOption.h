@@ -6,7 +6,6 @@
 
 namespace SpatialGDK
 {
-
 template <typename T>
 class TSchemaOption
 {

@@ -2,18 +2,17 @@
 
 #pragma once
 
-#include <WorkerSDK/improbable/c_worker.h>
+#include "Containers/Array.h"
 #include "SpatialView/AuthorityRecord.h"
 #include "SpatialView/CommandMessages.h"
 #include "SpatialView/EntityComponentRecord.h"
 #include "SpatialView/OpList/AbstractOpList.h"
-#include "Containers/Array.h"
 #include "Templates/UniquePtr.h"
+#include <WorkerSDK/improbable/c_worker.h>
 #include <improbable/c_worker.h>
 
 namespace SpatialGDK
 {
-
 class ViewDelta
 {
 public:
@@ -49,4 +48,4 @@ private:
 	EntityComponentRecord EntityComponentChanges;
 };
 
-}  // namespace SpatialGDK
+} // namespace SpatialGDK
