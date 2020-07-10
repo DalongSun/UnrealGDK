@@ -42,7 +42,7 @@ pushd "$(dirname "$0")"
     fi
 
     # Upload artifacts to Buildkite, capture output to extract artifact ID in the Slack message generation.
-    if buildkite-agent artifact upload "${TEST_RESULTS_DIRECTORY}/*" > bk_log.tmp; then
+    if ! buildkite-agent artifact upload "${TEST_RESULTS_DIRECTORY}/*" > bk_log.tmp; then
         echo "Failed to upload artifact."
         exit 1
     fi
