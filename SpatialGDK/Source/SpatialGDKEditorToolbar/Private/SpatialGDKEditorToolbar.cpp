@@ -758,7 +758,6 @@ void FSpatialGDKEditorToolbarModule::VerifyAndStartDeployment()
 	}
 
 	// Get the latest launch config.
-	const USpatialGDKSettings* SpatialGDKSettings = GetDefault<USpatialGDKSettings>();
 	const USpatialGDKEditorSettings* SpatialGDKEditorSettings = GetDefault<USpatialGDKEditorSettings>();
 
 	FString LaunchConfig;
@@ -780,13 +779,13 @@ void FSpatialGDKEditorToolbarModule::VerifyAndStartDeployment()
 		LaunchConfig = FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectIntermediateDir()), FString::Printf(TEXT("Improbable/%s_LocalLaunchConfig.json"), *EditorWorld->GetMapName()));
 
 		FSpatialLaunchConfigDescription LaunchConfigDescription = SpatialGDKEditorSettings->LaunchConfigDesc;
-		USingleWorkerRuntimeStrategy* DefaultStrategy = USingleWorkerRuntimeStrategy::StaticClass()->GetDefaultObject<USingleWorkerRuntimeStrategy>();
-		UAbstractRuntimeLoadBalancingStrategy* LoadBalancingStrat = DefaultStrategy;
+		// USingleWorkerRuntimeStrategy* DefaultStrategy = USingleWorkerRuntimeStrategy::StaticClass()->GetDefaultObject<USingleWorkerRuntimeStrategy>();
+		// UAbstractRuntimeLoadBalancingStrategy* LoadBalancingStrat = DefaultStrategy;
 
-		if (TryGetLoadBalancingStrategyFromWorldSettings(*EditorWorld, LoadBalancingStrat, LaunchConfigDescription.World.Dimensions))
-		{
-			LoadBalancingStrat->AddToRoot();
-		}
+		// if (TryGetLoadBalancingStrategyFromWorldSettings(*EditorWorld, LoadBalancingStrat, LaunchConfigDescription.World.Dimensions))
+		// {
+		// 	LoadBalancingStrat->AddToRoot();
+		// }
 
 		FWorkerTypeLaunchSection Conf = SpatialGDKEditorSettings->LaunchConfigDesc.ServerWorkerConfig;
 		// Force manual connection to true as this is the config for PIE.
@@ -812,10 +811,10 @@ void FSpatialGDKEditorToolbarModule::VerifyAndStartDeployment()
 			GenerateLaunchConfig(CloudLaunchConfig, &LaunchConfigDescription, Conf);
 		}
 
-		if (LoadBalancingStrat != DefaultStrategy)
-		{
-			LoadBalancingStrat->RemoveFromRoot();
-		}
+		// if (LoadBalancingStrat != DefaultStrategy)
+		// {
+		// 	LoadBalancingStrat->RemoveFromRoot();
+		// }
 	}
 	else
 	{
@@ -1251,8 +1250,8 @@ void FSpatialGDKEditorToolbarModule::GenerateConfigFromCurrentMap()
 
 	FSpatialLaunchConfigDescription LaunchConfiguration = SpatialGDKEditorSettings->LaunchConfigDesc;
 	FWorkerTypeLaunchSection& ServerWorkerConfig = LaunchConfiguration.ServerWorkerConfig;
+	ServerWorkerConfig.NumEditorInstances = GetWorkerCountFromWorldSettings(*EditorWorld);
 
-	FillWorkerConfigurationFromCurrentMap(ServerWorkerConfig, LaunchConfiguration.World.Dimensions);
 	GenerateLaunchConfig(LaunchConfig, &LaunchConfiguration, ServerWorkerConfig);
 
 	SpatialGDKEditorSettings->SetPrimaryLaunchConfigPath(LaunchConfig);

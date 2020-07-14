@@ -28,8 +28,7 @@ DEFINE_LOG_CATEGORY(LogSpatialGDKEditorModule);
 #define LOCTEXT_NAMESPACE "FSpatialGDKEditorModule"
 
 FSpatialGDKEditorModule::FSpatialGDKEditorModule()
-	: ExtensionManager(MakeUnique<FLBStrategyEditorExtensionManager>())
-	, CommandLineArgsManager(MakeUnique<FSpatialGDKEditorCommandLineArgsManager>())
+	: CommandLineArgsManager(MakeUnique<FSpatialGDKEditorCommandLineArgsManager>())
 {
 
 }
@@ -38,7 +37,6 @@ void FSpatialGDKEditorModule::StartupModule()
 {
 	RegisterSettings();
 
-	ExtensionManager->RegisterExtension<FGridLBStrategyEditorExtension>();
 	SpatialGDKEditorInstance = MakeShareable(new FSpatialGDKEditor());
 	CommandLineArgsManager->Init();
 
@@ -49,8 +47,6 @@ void FSpatialGDKEditorModule::StartupModule()
 
 void FSpatialGDKEditorModule::ShutdownModule()
 {
-	ExtensionManager->Cleanup();
-
 	if (UObjectInitialized())
 	{
 		UnregisterSettings();
@@ -98,7 +94,7 @@ bool FSpatialGDKEditorModule::TryStartLocalReceptionistProxyServer() const
 	{
 		const USpatialGDKEditorSettings* EditorSettings = GetDefault<USpatialGDKEditorSettings>();
 		bool bSuccess = LocalReceptionistProxyServerManager->TryStartReceptionistProxyServer(GetDefault<USpatialGDKSettings>()->IsRunningInChina(), EditorSettings->GetPrimaryDeploymentName(), EditorSettings->ListeningAddress, EditorSettings->LocalReceptionistPort);
-		
+
 		if (bSuccess)
 		{
 			UE_LOG(LogSpatialGDKEditorModule, Log, TEXT("Successfully started local receptionist proxy server!"));
